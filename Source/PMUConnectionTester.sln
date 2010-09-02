@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "PMUConnectionTester", "Tools\PMUConnectionTester\PMUConnectionTester\PMUConnectionTester.vbproj", "{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{18CAC75A-26A1-443A-8049-ED5353E5C60B}"
@@ -11,10 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{34207C22-6EEE-48B6-AD0D-5880BCE89091}"
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PMUConnectionTesterSetup", "Tools\PMUConnectionTester\PMUConnectionTesterSetup\PMUConnectionTesterSetup.vdproj", "{7644EA98-8F9C-41F2-AE94-D1EFBFA2207C}"
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PMUConnectionTesterSetup64", "Tools\PMUConnectionTester\PMUConnectionTesterSetup\PMUConnectionTesterSetup64.vdproj", "{4E01CBD9-A7E1-494B-B9FF-AC31DCF6CFB3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TVA", "TVA", "{9F66F141-5F50-4EDC-81AD-8CE261D7AC9D}"
 	ProjectSection(SolutionItems) = preProject
@@ -61,6 +55,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		NOTICE.txt = NOTICE.txt
 	EndProjectSection
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "PMUConnectionTester", "Tools\PMUConnectionTester\PMUConnectionTester\PMUConnectionTester.vbproj", "{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PMUConnectionTesterSetup", "Tools\PMUConnectionTester\PMUConnectionTesterSetup\PMUConnectionTesterSetup.vdproj", "{BABBC2A7-9784-4FF2-9918-8EE15676F5BC}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PMUConnectionTesterSetup64", "Tools\PMUConnectionTester\PMUConnectionTesterSetup\PMUConnectionTesterSetup64.vdproj", "{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 4
@@ -95,31 +95,31 @@ Global
 		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Release|x86.ActiveCfg = Release|x86
 		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Release|x86.Build.0 = Release|x86
-		{7644EA98-8F9C-41F2-AE94-D1EFBFA2207C}.Debug|Any CPU.ActiveCfg = Debug
-		{7644EA98-8F9C-41F2-AE94-D1EFBFA2207C}.Debug|Any CPU.Build.0 = Debug
-		{7644EA98-8F9C-41F2-AE94-D1EFBFA2207C}.Debug|x86.ActiveCfg = Debug
-		{7644EA98-8F9C-41F2-AE94-D1EFBFA2207C}.Debug|x86.Build.0 = Debug
-		{7644EA98-8F9C-41F2-AE94-D1EFBFA2207C}.Release|Any CPU.ActiveCfg = Release
-		{7644EA98-8F9C-41F2-AE94-D1EFBFA2207C}.Release|Any CPU.Build.0 = Release
-		{7644EA98-8F9C-41F2-AE94-D1EFBFA2207C}.Release|x86.ActiveCfg = Release
-		{7644EA98-8F9C-41F2-AE94-D1EFBFA2207C}.Release|x86.Build.0 = Release
-		{4E01CBD9-A7E1-494B-B9FF-AC31DCF6CFB3}.Debug|Any CPU.ActiveCfg = Debug
-		{4E01CBD9-A7E1-494B-B9FF-AC31DCF6CFB3}.Debug|Any CPU.Build.0 = Debug
-		{4E01CBD9-A7E1-494B-B9FF-AC31DCF6CFB3}.Debug|x86.ActiveCfg = Debug
-		{4E01CBD9-A7E1-494B-B9FF-AC31DCF6CFB3}.Debug|x86.Build.0 = Debug
-		{4E01CBD9-A7E1-494B-B9FF-AC31DCF6CFB3}.Release|Any CPU.ActiveCfg = Release
-		{4E01CBD9-A7E1-494B-B9FF-AC31DCF6CFB3}.Release|Any CPU.Build.0 = Release
-		{4E01CBD9-A7E1-494B-B9FF-AC31DCF6CFB3}.Release|x86.ActiveCfg = Release
-		{4E01CBD9-A7E1-494B-B9FF-AC31DCF6CFB3}.Release|x86.Build.0 = Release
+		{BABBC2A7-9784-4FF2-9918-8EE15676F5BC}.Debug|Any CPU.ActiveCfg = Debug
+		{BABBC2A7-9784-4FF2-9918-8EE15676F5BC}.Debug|Any CPU.Build.0 = Debug
+		{BABBC2A7-9784-4FF2-9918-8EE15676F5BC}.Debug|x86.ActiveCfg = Debug
+		{BABBC2A7-9784-4FF2-9918-8EE15676F5BC}.Debug|x86.Build.0 = Debug
+		{BABBC2A7-9784-4FF2-9918-8EE15676F5BC}.Release|Any CPU.ActiveCfg = Release
+		{BABBC2A7-9784-4FF2-9918-8EE15676F5BC}.Release|Any CPU.Build.0 = Release
+		{BABBC2A7-9784-4FF2-9918-8EE15676F5BC}.Release|x86.ActiveCfg = Release
+		{BABBC2A7-9784-4FF2-9918-8EE15676F5BC}.Release|x86.Build.0 = Release
+		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Debug|Any CPU.ActiveCfg = Debug
+		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Debug|Any CPU.Build.0 = Debug
+		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Debug|x86.ActiveCfg = Debug
+		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Debug|x86.Build.0 = Debug
+		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Release|Any CPU.ActiveCfg = Release
+		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Release|Any CPU.Build.0 = Release
+		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Release|x86.ActiveCfg = Release
+		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Release|x86.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
+		{BABBC2A7-9784-4FF2-9918-8EE15676F5BC} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
+		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
 		{9F66F141-5F50-4EDC-81AD-8CE261D7AC9D} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
 		{C4DB0733-6C94-4FFA-99D1-EB8828C1E1D9} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
-		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
-		{7644EA98-8F9C-41F2-AE94-D1EFBFA2207C} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
-		{4E01CBD9-A7E1-494B-B9FF-AC31DCF6CFB3} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
 	EndGlobalSection
 EndGlobal
