@@ -2,7 +2,7 @@
 Imports System.Runtime.InteropServices
 
 ' Assembly identity attributes.
-<Assembly: AssemblyVersion("1.1.83.54923")> 
+<Assembly: AssemblyVersion("4.1.2.54923")> 
 
 ' Informational attributes.
 <Assembly: AssemblyCompany("Grid Protection Alliance")> 

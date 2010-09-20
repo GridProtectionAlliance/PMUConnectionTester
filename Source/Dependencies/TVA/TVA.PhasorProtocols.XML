@@ -351,6 +351,12 @@
             </summary>
             <returns>A 32-bit signed integer hash code.</returns>
         </member>
+        <member name="M:TVA.PhasorProtocols.ConfigurationCellBase.ToString">
+            <summary>
+            Gets the string respresentation of this <see cref="T:TVA.PhasorProtocols.ConfigurationCellBase"/>.
+            </summary>
+            <returns>String respresentation of this <see cref="T:TVA.PhasorProtocols.ConfigurationCellBase"/>.</returns>
+        </member>
         <member name="M:TVA.PhasorProtocols.ConfigurationCellBase.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
             Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
@@ -1392,10 +1398,10 @@
         </member>
         <member name="M:TVA.PhasorProtocols.IChannelValue`1.GetMeasurementValueFilterFunction(System.Int32)">
             <summary>
-            Gets function used to apply a downsampling filter over a sequence of <see cref="T:TVA.Measurements.IMeasurement"/> values.
+            Gets function used to apply a downsampling filter over a sequence of <see cref="T:TimeSeriesFramework.IMeasurement"/> values.
             </summary>
             <param name="index">Index of composite value for which to retrieve its filter function.</param>
-            <returns>Function used to apply a downsampling filter over a sequence of <see cref="T:TVA.Measurements.IMeasurement"/> values, if defined; otherwise, <c>null</c>.</returns>
+            <returns>Function used to apply a downsampling filter over a sequence of <see cref="T:TimeSeriesFramework.IMeasurement"/> values, if defined; otherwise, <c>null</c>.</returns>
         </member>
         <member name="P:TVA.PhasorProtocols.IChannelValue`1.Parent">
             <summary>
@@ -1425,7 +1431,7 @@
         </member>
         <member name="P:TVA.PhasorProtocols.IChannelValue`1.Measurements">
             <summary>
-            Gets the composite values of this <see cref="T:TVA.PhasorProtocols.IChannelValue`1"/> as an array of <see cref="T:TVA.Measurements.IMeasurement"/> values.
+            Gets the composite values of this <see cref="T:TVA.PhasorProtocols.IChannelValue`1"/> as an array of <see cref="T:TimeSeriesFramework.IMeasurement"/> values.
             </summary>
         </member>
         <member name="P:TVA.PhasorProtocols.IChannelValue`1.CompositeValueCount">
@@ -1459,10 +1465,10 @@
         </member>
         <member name="M:TVA.PhasorProtocols.ChannelValueBase`1.GetMeasurementValueFilterFunction(System.Int32)">
             <summary>
-            Gets function used to apply a downsampling filter over a sequence of <see cref="T:TVA.Measurements.IMeasurement"/> values.
+            Gets function used to apply a downsampling filter over a sequence of <see cref="T:TimeSeriesFramework.IMeasurement"/> values.
             </summary>
             <param name="index">Index of composite value for which to retrieve its filter function.</param>
-            <returns>Function used to apply a downsampling filter over a sequence of <see cref="T:TVA.Measurements.IMeasurement"/> values, if defined; otherwise, <c>null</c>.</returns>
+            <returns>Function used to apply a downsampling filter over a sequence of <see cref="T:TimeSeriesFramework.IMeasurement"/> values, if defined; otherwise, <c>null</c>.</returns>
         </member>
         <member name="M:TVA.PhasorProtocols.ChannelValueBase`1.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -1504,7 +1510,7 @@
         </member>
         <member name="P:TVA.PhasorProtocols.ChannelValueBase`1.Measurements">
             <summary>
-            Gets the composite values of this <see cref="T:TVA.PhasorProtocols.ChannelValueBase`1"/> as an array of <see cref="T:TVA.Measurements.IMeasurement"/> values.
+            Gets the composite values of this <see cref="T:TVA.PhasorProtocols.ChannelValueBase`1"/> as an array of <see cref="T:TimeSeriesFramework.IMeasurement"/> values.
             </summary>
         </member>
         <member name="P:TVA.PhasorProtocols.ChannelValueBase`1.Attributes">
@@ -1601,10 +1607,10 @@
         </member>
         <member name="M:TVA.PhasorProtocols.PhasorValueBase.GetMeasurementValueFilterFunction(System.Int32)">
             <summary>
-            Gets function used to apply a downsampling filter over a sequence of <see cref="T:TVA.Measurements.IMeasurement"/> values.
+            Gets function used to apply a downsampling filter over a sequence of <see cref="T:TimeSeriesFramework.IMeasurement"/> values.
             </summary>
             <param name="index">Index of composite value for which to retrieve its filter function.</param>
-            <returns>Function used to apply a downsampling filter over a sequence of <see cref="T:TVA.Measurements.IMeasurement"/> values.</returns>
+            <returns>Function used to apply a downsampling filter over a sequence of <see cref="T:TimeSeriesFramework.IMeasurement"/> values.</returns>
             <remarks>
             Phase angles averaging filter takes angle wrapping into account, magnitudes apply a standard average filter.
             </remarks>
@@ -1654,12 +1660,12 @@
             </remarks>
             <returns>Calculated vars (total volt-amperes of reactive power) from imaginary and real components of specified <paramref name="voltage"/> and <paramref name="current"/> phasors.</returns>
         </member>
-        <member name="M:TVA.PhasorProtocols.PhasorValueBase.AverageAngleValueFilter(System.Collections.Generic.IEnumerable{TVA.Measurements.IMeasurement})">
+        <member name="M:TVA.PhasorProtocols.PhasorValueBase.AverageAngleValueFilter(System.Collections.Generic.IEnumerable{TimeSeriesFramework.IMeasurement})">
             <summary>
-            Calculates an average of the specified sequence of <see cref="T:TVA.Measurements.IMeasurement"/> phase angle values.
+            Calculates an average of the specified sequence of <see cref="T:TimeSeriesFramework.IMeasurement"/> phase angle values.
             </summary>
-            <param name="source">Sequence of <see cref="T:TVA.Measurements.IMeasurement"/> values over which to run calculation.</param>
-            <returns>Average of the specified sequence of <see cref="T:TVA.Measurements.IMeasurement"/> phase angle values.</returns>
+            <param name="source">Sequence of <see cref="T:TimeSeriesFramework.IMeasurement"/> values over which to run calculation.</param>
+            <returns>Average of the specified sequence of <see cref="T:TimeSeriesFramework.IMeasurement"/> phase angle values.</returns>
             <remarks>
             Phase angles wrap, so this algorithm takes the wrapping into account when calculating the average.
             </remarks>
@@ -1946,8 +1952,8 @@
             (derived from <see cref="T:TVA.PhasorProtocols.IChannelFrame"/>), that contains multiple PMU's coming from a PDC.
             </para>
             <para>
-            This interface inherits <see cref="T:TVA.Measurements.IFrame"/> so that classes implementing this interface can be cooperatively
-            integrated into measurement concentration (see <see cref="T:TVA.Measurements.ConcentratorBase"/>).
+            This interface inherits <see cref="T:TimeSeriesFramework.IFrame"/> so that classes implementing this interface can be cooperatively
+            integrated into measurement concentration (see <see cref="T:TimeSeriesFramework.ConcentratorBase"/>).
             </para>
             </remarks>
         </member>
@@ -2127,12 +2133,41 @@
             <param name="item">The object to insert.</param>
             <exception cref="T:System.OverflowException">Maximum collection item limit reached.</exception>
         </member>
+        <member name="M:TVA.PhasorProtocols.ChannelCollectionBase`1.RemoveItem(System.Int32)">
+            <summary>
+            Removes the element at the specified index of the <see cref="T:TVA.PhasorProtocols.ChannelCollectionBase`1"/>.
+            </summary>
+            <param name="index">The zero-based index of the element to remove.</param>
+        </member>
+        <member name="M:TVA.PhasorProtocols.ChannelCollectionBase`1.SetItem(System.Int32,`0)">
+            <summary>
+            Replaces the element at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the element to replace.</param>
+            <param name="item">The new value for the element at the specified index. The value can be null for reference types.</param>
+        </member>
+        <member name="M:TVA.PhasorProtocols.ChannelCollectionBase`1.ClearItems">
+            <summary>
+            Removes all elements from the <see cref="T:TVA.PhasorProtocols.ChannelCollectionBase`1"/>.
+            </summary>
+        </member>
+        <member name="M:TVA.PhasorProtocols.ChannelCollectionBase`1.OnCollectionChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs)">
+            <summary>
+            Raises the <see cref="T:System.Collections.Specialized.NotifyCollectionChangedEventHandler"/> event.
+            </summary>
+            <param name="e">Changed event arguments.</param>
+        </member>
         <member name="M:TVA.PhasorProtocols.ChannelCollectionBase`1.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
             Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
             </summary>
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
             <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
+        </member>
+        <member name="E:TVA.PhasorProtocols.ChannelCollectionBase`1.CollectionChanged">
+            <summary>
+            Notifies listeners of dynamic changes, such as when items get added and removed or the whole list is refreshed.
+            </summary>
         </member>
         <member name="P:TVA.PhasorProtocols.ChannelCollectionBase`1.MaximumCount">
             <summary>
@@ -2622,8 +2657,8 @@
             (derived from <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>), that contains multiple PMU's coming from a PDC.
             </para>
             <para>
-            This class implements the <see cref="T:TVA.Measurements.IFrame"/> interface so it can be cooperatively integrated into measurement concentration.
-            For more information see the <see cref="T:TVA.Measurements.ConcentratorBase"/> class.
+            This class implements the <see cref="T:TimeSeriesFramework.IFrame"/> interface so it can be cooperatively integrated into measurement concentration.
+            For more information see the <see cref="T:TimeSeriesFramework.ConcentratorBase"/> class.
             </para>
             </remarks>
             <typeparam name="T">Specific <see cref="T:TVA.PhasorProtocols.IChannelCell"/> type that the <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/> contains.</typeparam>
@@ -2634,8 +2669,8 @@
             contains a collection of <see cref="T:TVA.PhasorProtocols.IChannelCell"/> objects.
             </summary>
             <remarks>
-            This interface inherits <see cref="T:TVA.Measurements.IFrame"/> so that classes implementing this interface can be cooperatively
-            integrated into measurement concentration (see <see cref="T:TVA.Measurements.ConcentratorBase"/>).
+            This interface inherits <see cref="T:TimeSeriesFramework.IFrame"/> so that classes implementing this interface can be cooperatively
+            integrated into measurement concentration (see <see cref="T:TimeSeriesFramework.ConcentratorBase"/>).
             </remarks>
             <typeparam name="T">Specific <see cref="T:TVA.PhasorProtocols.IChannelCell"/> type that the <see cref="T:TVA.PhasorProtocols.IChannelFrame`1"/> contains.</typeparam>
         </member>
@@ -2736,11 +2771,11 @@
             </example>
             </remarks>
         </member>
-        <member name="M:TVA.PhasorProtocols.ChannelFrameBase`1.CompareTo(TVA.Measurements.IFrame)">
+        <member name="M:TVA.PhasorProtocols.ChannelFrameBase`1.CompareTo(TimeSeriesFramework.IFrame)">
             <summary>
-            Compares the <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/> with an <see cref="T:TVA.Measurements.IFrame"/>.
+            Compares the <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/> with an <see cref="T:TimeSeriesFramework.IFrame"/>.
             </summary>
-            <param name="other">The <see cref="T:TVA.Measurements.IFrame"/> to compare with the current <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>.</param>
+            <param name="other">The <see cref="T:TimeSeriesFramework.IFrame"/> to compare with the current <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>.</param>
             <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
             <remarks>This frame implementation compares itself by timestamp.</remarks>
         </member>
@@ -2750,16 +2785,16 @@
             </summary>
             <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>.</param>
             <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-            <exception cref="T:System.ArgumentException"><see cref="T:System.Object"/> is not an <see cref="T:TVA.Measurements.IFrame"/>.</exception>
+            <exception cref="T:System.ArgumentException"><see cref="T:System.Object"/> is not an <see cref="T:TimeSeriesFramework.IFrame"/>.</exception>
             <remarks>This frame implementation compares itself by timestamp.</remarks>
         </member>
-        <member name="M:TVA.PhasorProtocols.ChannelFrameBase`1.Equals(TVA.Measurements.IFrame)">
+        <member name="M:TVA.PhasorProtocols.ChannelFrameBase`1.Equals(TimeSeriesFramework.IFrame)">
             <summary>
-            Determines whether the specified <see cref="T:TVA.Measurements.IFrame"/> is equal to the current <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>.
+            Determines whether the specified <see cref="T:TimeSeriesFramework.IFrame"/> is equal to the current <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>.
             </summary>
-            <param name="other">The <see cref="T:TVA.Measurements.IFrame"/> to compare with the current <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>.</param>
+            <param name="other">The <see cref="T:TimeSeriesFramework.IFrame"/> to compare with the current <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>.</param>
             <returns>
-            true if the specified <see cref="T:TVA.Measurements.IFrame"/> is equal to the current <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>;
+            true if the specified <see cref="T:TimeSeriesFramework.IFrame"/> is equal to the current <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>;
             otherwise, false.
             </returns>
             <remarks>This frame implementation compares itself by timestamp.</remarks>
@@ -2773,7 +2808,7 @@
             true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>;
             otherwise, false.
             </returns>
-            <exception cref="T:System.ArgumentException"><see cref="T:System.Object"/> is not an <see cref="T:TVA.Measurements.IFrame"/>.</exception>
+            <exception cref="T:System.ArgumentException"><see cref="T:System.Object"/> is not an <see cref="T:TimeSeriesFramework.IFrame"/>.</exception>
         </member>
         <member name="M:TVA.PhasorProtocols.ChannelFrameBase`1.GetHashCode">
             <summary>
@@ -2803,7 +2838,7 @@
             Keyed measurements in this <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>.
             </summary>
             <remarks>
-            Represents a dictionary of measurements, keyed by <see cref="T:TVA.Measurements.MeasurementKey"/>.
+            Represents a dictionary of measurements, keyed by <see cref="T:TimeSeriesFramework.MeasurementKey"/>.
             </remarks>
         </member>
         <member name="P:TVA.PhasorProtocols.ChannelFrameBase`1.IDCode">
@@ -2831,7 +2866,7 @@
         </member>
         <member name="P:TVA.PhasorProtocols.ChannelFrameBase`1.LastSortedMeasurement">
             <summary>
-            Gets ot sets reference to last <see cref="T:TVA.Measurements.IMeasurement"/> that was sorted into this <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>.
+            Gets ot sets reference to last <see cref="T:TimeSeriesFramework.IMeasurement"/> that was sorted into this <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>.
             </summary>
             <remarks>
             This value is used to help monitor slow moving measurements that are being sorted into the <see cref="T:TVA.PhasorProtocols.ChannelFrameBase`1"/>.
@@ -3285,7 +3320,7 @@
             <summary>
             Returns a string representation of the status flags.
             </summary>
-            <returns>A string representation of the status flags <see cref="T:TVA.Measurements.IMeasurement"/>.</returns>
+            <returns>A string representation of the status flags <see cref="T:TimeSeriesFramework.IMeasurement"/>.</returns>
         </member>
         <member name="M:TVA.PhasorProtocols.DataCellBase.Equals(System.Object)">
             <summary>
@@ -5847,7 +5882,7 @@
         </member>
         <member name="M:TVA.PhasorProtocols.DigitalValueBase.GetMeasurementValueFilterFunction(System.Int32)">
             <summary>
-            Gets function used to apply a downsampling filter over a sequence of <see cref="T:TVA.Measurements.IMeasurement"/> values.
+            Gets function used to apply a downsampling filter over a sequence of <see cref="T:TimeSeriesFramework.IMeasurement"/> values.
             </summary>
             <param name="index">Index of composite value for which to retrieve its filter function.</param>
             <returns>Majority value filter function since all values are digital in nature.</returns>
@@ -6958,7 +6993,7 @@
             Represents the base class for calculated measurements that use phasor data.
             </summary>
             <remarks>
-            This base class extends <see cref="T:TVA.Measurements.Routing.ActionAdapterBase"/> by automatically looking up the
+            This base class extends <see cref="T:TimeSeriesFramework.Adapters.ActionAdapterBase"/> by automatically looking up the
             <see cref="T:TVA.PhasorProtocols.SignalType"/> for each of the input and output measurements.
             </remarks>
         </member>
@@ -6979,12 +7014,12 @@
         </member>
         <member name="P:TVA.PhasorProtocols.CalculatedMeasurementBase.InputMeasurementKeyTypes">
             <summary>
-            Gets or sets input measurement <see cref="T:TVA.PhasorProtocols.SignalType"/>'s for each of the <see cref="P:TVA.Measurements.Routing.ActionAdapterBase.InputMeasurementKeys"/>, if any.
+            Gets or sets input measurement <see cref="T:TVA.PhasorProtocols.SignalType"/>'s for each of the <see cref="P:TimeSeriesFramework.Adapters.ActionAdapterBase.InputMeasurementKeys"/>, if any.
             </summary>
         </member>
         <member name="P:TVA.PhasorProtocols.CalculatedMeasurementBase.OutputMeasurementTypes">
             <summary>
-            Gets or sets output measurement <see cref="T:TVA.PhasorProtocols.SignalType"/>'s for each of the <see cref="P:TVA.Measurements.Routing.ActionAdapterBase.OutputMeasurements"/>, if any.
+            Gets or sets output measurement <see cref="T:TVA.PhasorProtocols.SignalType"/>'s for each of the <see cref="P:TimeSeriesFramework.Adapters.ActionAdapterBase.OutputMeasurements"/>, if any.
             </summary>
         </member>
         <member name="P:TVA.PhasorProtocols.CalculatedMeasurementBase.ConfigurationSection">
@@ -7527,7 +7562,7 @@
         </member>
         <member name="T:TVA.PhasorProtocols.PhasorDataConcentratorBase">
             <summary>
-            Represents an <see cref="T:TVA.Measurements.Routing.IActionAdapter"/> used to generate and transmit concentrated stream
+            Represents an <see cref="T:TimeSeriesFramework.Adapters.IActionAdapter"/> used to generate and transmit concentrated stream
             of phasor measurements in a specific phasor protocol.
             </summary>
         </member>
@@ -7581,25 +7616,25 @@
             Reloads the configuration for this <see cref="T:TVA.PhasorProtocols.PhasorDataConcentratorBase"/>.
             </summary>
         </member>
-        <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.QueueMeasurementForProcessing(TVA.Measurements.IMeasurement)">
+        <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.QueueMeasurementForProcessing(TimeSeriesFramework.IMeasurement)">
             <summary>
             Queues a single measurement for processing.
             </summary>
             <param name="measurement">Measurement to queue for processing.</param>
         </member>
-        <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{TVA.Measurements.IMeasurement})">
+        <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{TimeSeriesFramework.IMeasurement})">
             <summary>
             Queues a collection of measurements for processing.
             </summary>
             <param name="measurements">Collection of measurements to queue for processing.</param>
         </member>
-        <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.AssignMeasurementToFrame(TVA.Measurements.IFrame,TVA.Measurements.IMeasurement)">
+        <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.AssignMeasurementToFrame(TimeSeriesFramework.IFrame,TimeSeriesFramework.IMeasurement)">
             <summary>
-            Assign <see cref="T:TVA.Measurements.IMeasurement"/> to its <see cref="T:TVA.Measurements.IFrame"/>.
+            Assign <see cref="T:TimeSeriesFramework.IMeasurement"/> to its <see cref="T:TimeSeriesFramework.IFrame"/>.
             </summary>
-            <param name="frame"><see cref="T:TVA.Measurements.IFrame"/> to assign <paramref name="measurement"/> to.</param>
-            <param name="measurement"><see cref="T:TVA.Measurements.IMeasurement"/> to assign to <paramref name="frame"/>.</param>
-            <returns><c>true</c> if <see cref="T:TVA.Measurements.IMeasurement"/> was successfully assigned to its <see cref="T:TVA.Measurements.IFrame"/>.</returns>
+            <param name="frame"><see cref="T:TimeSeriesFramework.IFrame"/> to assign <paramref name="measurement"/> to.</param>
+            <param name="measurement"><see cref="T:TimeSeriesFramework.IMeasurement"/> to assign to <paramref name="frame"/>.</param>
+            <returns><c>true</c> if <see cref="T:TimeSeriesFramework.IMeasurement"/> was successfully assigned to its <see cref="T:TimeSeriesFramework.IFrame"/>.</returns>
             <remarks>
             In simple concentration scenarios all you need to do is assign a measurement to its frame based on
             time. In the case of a phasor data concentrator you need to assign a measurement to its particular
@@ -7607,13 +7642,13 @@
             to accomplish this task.
             </remarks>
         </member>
-        <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.PublishFrame(TVA.Measurements.IFrame,System.Int32)">
+        <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.PublishFrame(TimeSeriesFramework.IFrame,System.Int32)">
             <summary>
-            Publish <see cref="T:TVA.Measurements.IFrame"/> of time-aligned collection of <see cref="T:TVA.Measurements.IMeasurement"/> values that arrived within the
-            concentrator's defined <see cref="P:TVA.Measurements.ConcentratorBase.LagTime"/>.
+            Publish <see cref="T:TimeSeriesFramework.IFrame"/> of time-aligned collection of <see cref="T:TimeSeriesFramework.IMeasurement"/> values that arrived within the
+            concentrator's defined <see cref="P:TimeSeriesFramework.ConcentratorBase.LagTime"/>.
             </summary>
-            <param name="frame"><see cref="T:TVA.Measurements.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:TVA.Measurements.ConcentratorBase.LagTime"/> that are ready for processing.</param>
-            <param name="index">Index of <see cref="T:TVA.Measurements.IFrame"/> within a second ranging from zero to <c><see cref="P:TVA.Measurements.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+            <param name="frame"><see cref="T:TimeSeriesFramework.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:TimeSeriesFramework.ConcentratorBase.LagTime"/> that are ready for processing.</param>
+            <param name="index">Index of <see cref="T:TimeSeriesFramework.IFrame"/> within a second ranging from zero to <c><see cref="P:TimeSeriesFramework.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
         </member>
         <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.DeviceCommandHandler(System.Guid,System.Byte[],System.Int32)">
             <summary>
@@ -7674,7 +7709,7 @@
         </member>
         <member name="P:TVA.PhasorProtocols.PhasorDataConcentratorBase.IDCode">
             <summary>
-            Gets ID code defined for this <see cref="T:TVA.PhasorProtocols.PhasorDataConcentratorBase"/> parsed from the <see cref="P:TVA.Measurements.Routing.ActionAdapterBase.ConnectionString"/>.
+            Gets ID code defined for this <see cref="T:TVA.PhasorProtocols.PhasorDataConcentratorBase"/> parsed from the <see cref="P:TimeSeriesFramework.Adapters.ActionAdapterBase.ConnectionString"/>.
             </summary>
         </member>
         <member name="P:TVA.PhasorProtocols.PhasorDataConcentratorBase.AutoPublishConfigurationFrame">
@@ -7813,13 +7848,13 @@
             <summary>
             Creates a new BPA PDCstream specific <see cref="T:TVA.PhasorProtocols.BpaPdcStream.DataFrame"/> for the given <paramref name="timestamp"/>.
             </summary>
-            <param name="timestamp">Timestamp for new <see cref="T:TVA.Measurements.IFrame"/> in <see cref="T:TVA.Ticks"/>.</param>
+            <param name="timestamp">Timestamp for new <see cref="T:TimeSeriesFramework.IFrame"/> in <see cref="T:TVA.Ticks"/>.</param>
             <returns>New BPA PDCstream <see cref="T:TVA.PhasorProtocols.BpaPdcStream.DataFrame"/> at given <paramref name="timestamp"/>.</returns>
             <remarks>
-            Note that the <see cref="T:TVA.Measurements.ConcentratorBase"/> class (which the <see cref="T:TVA.Measurements.Routing.ActionAdapterBase"/> is derived from)
-            is designed to sort <see cref="T:TVA.Measurements.IMeasurement"/> implementations into an <see cref="T:TVA.Measurements.IFrame"/> which represents
+            Note that the <see cref="T:TimeSeriesFramework.ConcentratorBase"/> class (which the <see cref="T:TimeSeriesFramework.Adapters.ActionAdapterBase"/> is derived from)
+            is designed to sort <see cref="T:TimeSeriesFramework.IMeasurement"/> implementations into an <see cref="T:TimeSeriesFramework.IFrame"/> which represents
             a collection of measurements at a given timestamp. The <c>CreateNewFrame</c> method allows consumers to create
-            their own <see cref="T:TVA.Measurements.IFrame"/> implementations, in our case this will be a BPA PDCstream data frame.
+            their own <see cref="T:TimeSeriesFramework.IFrame"/> implementations, in our case this will be a BPA PDCstream data frame.
             </remarks>
         </member>
         <member name="P:TVA.PhasorProtocols.BpaPdcStream.Concentrator.IniFileName">
@@ -8971,7 +9006,7 @@
         </member>
         <member name="T:TVA.PhasorProtocols.ChannelValueMeasurement`1">
             <summary>
-            Represents a <see cref="T:TVA.Measurements.IMeasurement"/> implementation for composite values of a given <see cref="T:TVA.PhasorProtocols.IChannelValue`1"/>.
+            Represents a <see cref="T:TimeSeriesFramework.IMeasurement"/> implementation for composite values of a given <see cref="T:TVA.PhasorProtocols.IChannelValue`1"/>.
             </summary>
             <typeparam name="T">Generic type T.</typeparam>
         </member>
@@ -8988,13 +9023,13 @@
             </summary>
             <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.</returns>
         </member>
-        <member name="M:TVA.PhasorProtocols.ChannelValueMeasurement`1.Equals(TVA.Measurements.IMeasurement)">
+        <member name="M:TVA.PhasorProtocols.ChannelValueMeasurement`1.Equals(TimeSeriesFramework.IMeasurement)">
             <summary>
-            Determines whether the specified <see cref="T:TVA.Measurements.IMeasurement"/> is equal to the current <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.
+            Determines whether the specified <see cref="T:TimeSeriesFramework.IMeasurement"/> is equal to the current <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.
             </summary>
-            <param name="other">The <see cref="T:TVA.Measurements.IMeasurement"/> to compare with the current <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.</param>
+            <param name="other">The <see cref="T:TimeSeriesFramework.IMeasurement"/> to compare with the current <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.</param>
             <returns>
-            true if the specified <see cref="T:TVA.Measurements.IMeasurement"/> is equal to the current <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>;
+            true if the specified <see cref="T:TimeSeriesFramework.IMeasurement"/> is equal to the current <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>;
             otherwise, false.
             </returns>
         </member>
@@ -9007,13 +9042,13 @@
             true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>;
             otherwise, false.
             </returns>
-            <exception cref="T:System.ArgumentException"><paramref name="obj"/> is not an <see cref="T:TVA.Measurements.IMeasurement"/>.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="obj"/> is not an <see cref="T:TimeSeriesFramework.IMeasurement"/>.</exception>
         </member>
-        <member name="M:TVA.PhasorProtocols.ChannelValueMeasurement`1.CompareTo(TVA.Measurements.IMeasurement)">
+        <member name="M:TVA.PhasorProtocols.ChannelValueMeasurement`1.CompareTo(TimeSeriesFramework.IMeasurement)">
             <summary>
-            Compares the <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/> with an <see cref="T:TVA.Measurements.IMeasurement"/>.
+            Compares the <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/> with an <see cref="T:TimeSeriesFramework.IMeasurement"/>.
             </summary>
-            <param name="other">The <see cref="T:TVA.Measurements.IMeasurement"/> to compare with the current <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.</param>
+            <param name="other">The <see cref="T:TimeSeriesFramework.IMeasurement"/> to compare with the current <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.</param>
             <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
             <remarks>Measurement implementations should compare by hash code.</remarks>
         </member>
@@ -9023,14 +9058,14 @@
             </summary>
             <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.</param>
             <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-            <exception cref="T:System.ArgumentException"><paramref name="obj"/> is not an <see cref="T:TVA.Measurements.IMeasurement"/>.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="obj"/> is not an <see cref="T:TimeSeriesFramework.IMeasurement"/>.</exception>
             <remarks>Measurement implementations should compare by hash code.</remarks>
         </member>
         <member name="M:TVA.PhasorProtocols.ChannelValueMeasurement`1.GetHashCode">
             <summary>
-            Get the hash code for the <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.<see cref="T:TVA.Measurements.MeasurementKey"/>.
+            Get the hash code for the <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.<see cref="T:TimeSeriesFramework.MeasurementKey"/>.
             </summary>
-            <returns>Hash code for the <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.<see cref="T:TVA.Measurements.MeasurementKey"/>.</returns>
+            <returns>Hash code for the <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.<see cref="T:TimeSeriesFramework.MeasurementKey"/>.</returns>
         </member>
         <member name="P:TVA.PhasorProtocols.ChannelValueMeasurement`1.Parent">
             <summary>
@@ -9058,7 +9093,7 @@
         </member>
         <member name="P:TVA.PhasorProtocols.ChannelValueMeasurement`1.Key">
             <summary>
-            Gets the primary key (a <see cref="T:TVA.Measurements.MeasurementKey"/>, of this <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.
+            Gets the primary key (a <see cref="T:TimeSeriesFramework.MeasurementKey"/>, of this <see cref="T:TVA.PhasorProtocols.ChannelValueMeasurement`1"/>.
             </summary>
         </member>
         <member name="P:TVA.PhasorProtocols.ChannelValueMeasurement`1.SignalID">
@@ -9129,19 +9164,19 @@
         </member>
         <member name="P:TVA.PhasorProtocols.ChannelValueMeasurement`1.MeasurementValueFilter">
             <summary>
-            Gets or sets function used to apply a downsampling filter over a sequence of <see cref="T:TVA.Measurements.IMeasurement"/> values.
+            Gets or sets function used to apply a downsampling filter over a sequence of <see cref="T:TimeSeriesFramework.IMeasurement"/> values.
             </summary>
         </member>
         <member name="T:TVA.PhasorProtocols.SignalReferenceMeasurement">
             <summary>
-            Represents a basic <see cref="T:TVA.Measurements.IMeasurement"/> value that is associated with a given <see cref="P:TVA.PhasorProtocols.SignalReferenceMeasurement.SignalReference"/>.
+            Represents a basic <see cref="T:TimeSeriesFramework.IMeasurement"/> value that is associated with a given <see cref="P:TVA.PhasorProtocols.SignalReferenceMeasurement.SignalReference"/>.
             </summary>
         </member>
-        <member name="M:TVA.PhasorProtocols.SignalReferenceMeasurement.#ctor(TVA.Measurements.IMeasurement,TVA.PhasorProtocols.SignalReference)">
+        <member name="M:TVA.PhasorProtocols.SignalReferenceMeasurement.#ctor(TimeSeriesFramework.IMeasurement,TVA.PhasorProtocols.SignalReference)">
             <summary>
             Constructs a new <see cref="T:TVA.PhasorProtocols.SignalReferenceMeasurement"/> from the specified parameters.
             </summary>
-            <param name="measurement">Source <see cref="T:TVA.Measurements.IMeasurement"/> value.</param>
+            <param name="measurement">Source <see cref="T:TimeSeriesFramework.IMeasurement"/> value.</param>
             <param name="signalReference">Associated <see cref="P:TVA.PhasorProtocols.SignalReferenceMeasurement.SignalReference"/>.</param>
         </member>
         <member name="P:TVA.PhasorProtocols.SignalReferenceMeasurement.SignalReference">
@@ -9156,7 +9191,7 @@
             </summary>
             <remarks>
             Unlike other properties in the <see cref="T:TVA.PhasorProtocols.SignalReferenceMeasurement"/>, updates to this property apply
-            to the source <see cref="T:TVA.Measurements.IMeasurement"/> reference - updates to other properties will only apply to this
+            to the source <see cref="T:TimeSeriesFramework.IMeasurement"/> reference - updates to other properties will only apply to this
             <see cref="T:TVA.PhasorProtocols.SignalReferenceMeasurement"/> instance. Since all measurement operations coming in from the
             input adapters occur on the same thread (typically the communications thread), the source measurement
             can be marked as discarded before it hits the archive queue. This way the archived measurement quality
@@ -11373,13 +11408,13 @@
             </summary>
             <param name="command"><see cref="T:TVA.PhasorProtocols.DeviceCommand"/> to send to connected device.</param>
         </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.QueueMeasurementForProcessing(TVA.Measurements.IMeasurement)">
+        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.QueueMeasurementForProcessing(TimeSeriesFramework.IMeasurement)">
             <summary>
             Queues a single measurement for processing.
             </summary>
             <param name="measurement">Measurement to queue for processing.</param>
         </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{TVA.Measurements.IMeasurement})">
+        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{TimeSeriesFramework.IMeasurement})">
             <summary>
             Queues a collection of measurements for processing.
             </summary>
@@ -11407,7 +11442,7 @@
             </summary>
             <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
         </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.OnNewMeasurements(System.Collections.Generic.ICollection{TVA.Measurements.IMeasurement})">
+        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.OnNewMeasurements(System.Collections.Generic.ICollection{TimeSeriesFramework.IMeasurement})">
             <summary>
             Raises the <see cref="E:TVA.PhasorProtocols.CommonPhasorServices.NewMeasurements"/> event.
             </summary>
@@ -11418,11 +11453,11 @@
             </summary>
             <param name="seconds">Total number of unpublished seconds of data.</param>
         </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.OnDiscardingMeasurements(System.Collections.Generic.IEnumerable{TVA.Measurements.IMeasurement})">
+        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.OnDiscardingMeasurements(System.Collections.Generic.IEnumerable{TimeSeriesFramework.IMeasurement})">
             <summary>
             Raises the <see cref="E:TVA.PhasorProtocols.CommonPhasorServices.DiscardingMeasurements"/> event.
             </summary>
-            <param name="measurements">Enumeration of <see cref="T:TVA.Measurements.IMeasurement"/> values being discarded.</param>
+            <param name="measurements">Enumeration of <see cref="T:TimeSeriesFramework.IMeasurement"/> values being discarded.</param>
         </member>
         <member name="M:TVA.PhasorProtocols.CommonPhasorServices.IncrementProcessedMeasurements(System.Int64)">
             <summary>
@@ -11435,13 +11470,13 @@
             Loads or reloads system statistics.
             </summary>
         </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.MapMeasurementAttributes(System.Collections.Generic.ICollection{TVA.Measurements.IMeasurement},System.String,TVA.Measurements.IMeasurement)">
+        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.MapMeasurementAttributes(System.Collections.Generic.ICollection{TimeSeriesFramework.IMeasurement},System.String,TimeSeriesFramework.IMeasurement)">
             <summary>
             Map parsed measurement value to defined measurement attributes (i.e., assign meta-data to parsed measured value).
             </summary>
             <param name="mappedMeasurements">Destination collection for the mapped measurement values.</param>
             <param name="signalReference">Derived <see cref="T:TVA.PhasorProtocols.SignalReference"/> string for the parsed measurement value.</param>
-            <param name="parsedMeasurement">The parsed <see cref="T:TVA.Measurements.IMeasurement"/> value.</param>
+            <param name="parsedMeasurement">The parsed <see cref="T:TimeSeriesFramework.IMeasurement"/> value.</param>
             <remarks>
             This procedure is used to identify a parsed measurement value by its derived signal reference and apply the
             additional needed measurement meta-data attributes (i.e., ID, Source, Adder and Multiplier).
@@ -11537,6 +11572,9 @@
             </summary>
             <param name="source">Source InputStream.</param>
             <param name="arguments">Any needed arguments for statistic calculation.</param>
+            <remarks>
+            This statistic also calculates the other frame count statistics so its load order must occur first.
+            </remarks>
             <returns>Total Frames Statistic.</returns>
         </member>
         <member name="M:TVA.PhasorProtocols.CommonPhasorServices.GetInputStreamStatistic_LastReportTime(System.Object,System.String)">
@@ -11798,7 +11836,7 @@
             This event is raised if there are any measurements being discarded during the sorting process.
             </summary>
             <remarks>
-            <see cref="F:TVA.EventArgs`1.Argument"/> is the enumeration of <see cref="T:TVA.Measurements.IMeasurement"/> values that are being discarded during the sorting process.
+            <see cref="F:TVA.EventArgs`1.Argument"/> is the enumeration of <see cref="T:TimeSeriesFramework.IMeasurement"/> values that are being discarded during the sorting process.
             </remarks>
         </member>
         <member name="E:TVA.PhasorProtocols.CommonPhasorServices.Disposed">
@@ -12739,13 +12777,13 @@
             <summary>
             Creates a new IEEE C37.118 specific <see cref="T:TVA.PhasorProtocols.IeeeC37_118.DataFrame"/> for the given <paramref name="timestamp"/>.
             </summary>
-            <param name="timestamp">Timestamp for new <see cref="T:TVA.Measurements.IFrame"/> in <see cref="T:TVA.Ticks"/>.</param>
+            <param name="timestamp">Timestamp for new <see cref="T:TimeSeriesFramework.IFrame"/> in <see cref="T:TVA.Ticks"/>.</param>
             <returns>New IEEE C37.118 <see cref="T:TVA.PhasorProtocols.IeeeC37_118.DataFrame"/> at given <paramref name="timestamp"/>.</returns>
             <remarks>
-            Note that the <see cref="T:TVA.Measurements.ConcentratorBase"/> class (which the <see cref="T:TVA.Measurements.Routing.ActionAdapterBase"/> is derived from)
-            is designed to sort <see cref="T:TVA.Measurements.IMeasurement"/> implementations into an <see cref="T:TVA.Measurements.IFrame"/> which represents
+            Note that the <see cref="T:TimeSeriesFramework.ConcentratorBase"/> class (which the <see cref="T:TimeSeriesFramework.Adapters.ActionAdapterBase"/> is derived from)
+            is designed to sort <see cref="T:TimeSeriesFramework.IMeasurement"/> implementations into an <see cref="T:TimeSeriesFramework.IFrame"/> which represents
             a collection of measurements at a given timestamp. The <c>CreateNewFrame</c> method allows consumers to create
-            their own <see cref="T:TVA.Measurements.IFrame"/> implementations, in our case this will be an IEEE C37.118 data frame.
+            their own <see cref="T:TimeSeriesFramework.IFrame"/> implementations, in our case this will be an IEEE C37.118 data frame.
             </remarks>
         </member>
         <member name="M:TVA.PhasorProtocols.IeeeC37_118.Concentrator.DeviceCommandHandler(System.Guid,System.Byte[],System.Int32)">
@@ -16386,8 +16424,8 @@
         </member>
         <member name="T:TVA.PhasorProtocols.PhasorMeasurementMapper">
             <summary>
-            Represents an <see cref="T:TVA.Measurements.Routing.IInputAdapter"/> used to map measured values from a connection
-            to a phasor measurement device to new <see cref="T:TVA.Measurements.IMeasurement"/> values.
+            Represents an <see cref="T:TimeSeriesFramework.Adapters.IInputAdapter"/> used to map measured values from a connection
+            to a phasor measurement device to new <see cref="T:TimeSeriesFramework.IMeasurement"/> values.
             </summary>
         </member>
         <member name="M:TVA.PhasorProtocols.PhasorMeasurementMapper.#ctor">
@@ -16456,13 +16494,13 @@
             Attempts to disconnect from data input source.
             </summary>
         </member>
-        <member name="M:TVA.PhasorProtocols.PhasorMeasurementMapper.MapMeasurementAttributes(System.Collections.Generic.ICollection{TVA.Measurements.IMeasurement},System.String,TVA.Measurements.IMeasurement)">
+        <member name="M:TVA.PhasorProtocols.PhasorMeasurementMapper.MapMeasurementAttributes(System.Collections.Generic.ICollection{TimeSeriesFramework.IMeasurement},System.String,TimeSeriesFramework.IMeasurement)">
             <summary>
             Map parsed measurement value to defined measurement attributes (i.e., assign meta-data to parsed measured value).
             </summary>
             <param name="mappedMeasurements">Destination collection for the mapped measurement values.</param>
             <param name="signalReference">Derived <see cref="T:TVA.PhasorProtocols.SignalReference"/> string for the parsed measurement value.</param>
-            <param name="parsedMeasurement">The parsed <see cref="T:TVA.Measurements.IMeasurement"/> value.</param>
+            <param name="parsedMeasurement">The parsed <see cref="T:TimeSeriesFramework.IMeasurement"/> value.</param>
             <remarks>
             This procedure is used to identify a parsed measurement value by its derived signal reference and apply the
             additional needed measurement meta-data attributes (i.e., ID, Source, Adder and Multiplier).
@@ -16470,7 +16508,7 @@
         </member>
         <member name="M:TVA.PhasorProtocols.PhasorMeasurementMapper.ExtractFrameMeasurements(TVA.PhasorProtocols.IDataFrame)">
             <summary>
-            Extract frame measurements and add expose them via the <see cref="E:TVA.Measurements.Routing.IInputAdapter.NewMeasurements"/> event.
+            Extract frame measurements and add expose them via the <see cref="E:TimeSeriesFramework.Adapters.IInputAdapter.NewMeasurements"/> event.
             </summary>
             <param name="frame">Phasor data frame to extract measurements from.</param>
         </member>
@@ -16701,6 +16739,20 @@
             <remarks>
             This function automatically advances index for convenience.
             </remarks>
+        </member>
+        <member name="M:TVA.PhasorProtocols.Common.DeserializeConfigurationFrame(System.String)">
+            <summary>
+            Deserializes a configuration frame from an XML file.
+            </summary>
+            <param name="configFileName">Path and file name of XML configuration file.</param>
+            <returns>Deserialized <see cref="T:TVA.PhasorProtocols.IConfigurationFrame"/>.</returns>
+        </member>
+        <member name="M:TVA.PhasorProtocols.Common.DeserializeConfigurationFrame(System.IO.Stream)">
+            <summary>
+            Deserializes a configuration frame from an XML stream.
+            </summary>
+            <param name="configStream"><see cref="T:System.IO.Stream"/> that contains an XML serialized configuration frame.</param>
+            <returns>Deserialized <see cref="T:TVA.PhasorProtocols.IConfigurationFrame"/>.</returns>
         </member>
         <member name="M:TVA.PhasorProtocols.Common.GetValidLabel(System.String)">
             <summary>

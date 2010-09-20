@@ -75,6 +75,8 @@ Public Class PMUConnectionTester
     ' Phasor parsing variables
     Private WithEvents m_frameParser As MultiProtocolFrameParser
     Private m_configurationFrame As IConfigurationFrame
+    Private m_configChangeDetected As Boolean
+    Private m_configChangeTime As Long
     Private m_selectedCell As IConfigurationCell
     Private m_lastFrameType As FundamentalFrameType
     Private m_byteEncoding As ByteEncoding
@@ -1470,13 +1472,18 @@ Public Class PMUConnectionTester
 
     Private Sub ConfigurationChanged()
 
-        AppendStatusMessage("NOTE: Data stream indicates that configuration in source device has changed")
+        If Not m_configChangeDetected Or (New Ticks(DateTime.UtcNow.Ticks - m_configChangeTime)).ToSeconds() >= 60.0 Then
+            m_configChangeDetected = True
+            m_configChangeTime = DateTime.UtcNow.Ticks
 
-        If m_frameParser.DeviceSupportsCommands AndAlso _
-            MsgBox("Data stream indicates that configuration in source device has changed." & vbCrLf & vbCrLf & _
-                  "Do you want to request a new configuration frame?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, _
-                  "Device Configuration Changed") = MsgBoxResult.Yes Then
-            SendDeviceCommand(DeviceCommand.SendConfigurationFrame2)
+            AppendStatusMessage("NOTE: Data stream indicates that configuration in source device has changed")
+
+            If m_frameParser.DeviceSupportsCommands AndAlso _
+                MsgBox("Data stream indicates that configuration in source device has changed." & vbCrLf & vbCrLf & _
+                      "Do you want to request a new configuration frame?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, _
+                      "Device Configuration Changed") = MsgBoxResult.Yes Then
+                SendDeviceCommand(DeviceCommand.SendConfigurationFrame2)
+            End If
         End If
 
     End Sub
@@ -1957,6 +1964,8 @@ Public Class PMUConnectionTester
         m_frameParser.Stop()
         m_configurationFrame = Nothing
         m_selectedCell = Nothing
+        m_configChangeDetected = False
+        m_configChangeTime = 0
         m_frequencyData.Rows.Clear()
         m_phasorData.Rows.Clear()
         m_lastRefresh = 0
