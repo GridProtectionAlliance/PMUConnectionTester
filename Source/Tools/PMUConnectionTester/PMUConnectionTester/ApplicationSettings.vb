@@ -18,7 +18,9 @@
 '  ----------------------------------------------------------------------------------------------------
 '  02/13/2007 - J. Ritchie Carroll
 '       Initial version of source generated.
-'
+'  01/21/2011 - AJ Stadlin
+'       Added General Chart Setting to Show Messages Tab on Data Exception
+'       Added Application Setting to not Show Config XML in Explorer after saving
 '******************************************************************************************************
 
 Imports System.Text
@@ -40,6 +42,7 @@ Public Class ApplicationSettings
     Private Const DefaultForceIPv4 As Boolean = False
     Private Const DefaultAllowedParsingExceptions As Integer = 10
     Private Const DefaultParsingExceptionWindow As Double = 5.0R
+    Private Const DefaultShowConfigXmlExplorerAfterSave As Boolean = False
 
     ' Default attribute tree settings
     Private Const DefaultChannelNodeBackgroundColor As String = "Yellow"
@@ -53,6 +56,7 @@ Public Class ApplicationSettings
     Private Const DefaultForegroundColor As String = "Navy"
     Private Const DefaultTrendLineWidth As Integer = 4
     Private Const DefaultShowDataPointsOnGraphs As Boolean = False
+    Private Const DefaultShowMessagesTabOnDataException As Boolean = True
 
     ' Default connection settings
     Private Const DefaultMaximumConnectionAttempts As Integer = 1
@@ -187,6 +191,7 @@ Public Class ApplicationSettings
     Private m_forceIPv4 As Boolean
     Private m_allowedParsingExceptions As Integer
     Private m_parsingExceptionWindow As Double
+    Private m_showConfigXmlExplorerAfterSave As Boolean
 
     ' Attribute tree settings
     Private m_channelNodeBackgroundColor As Color
@@ -200,6 +205,7 @@ Public Class ApplicationSettings
     Private m_foregroundColor As Color
     Private m_trendLineWidth As Integer
     Private m_showDataPointsOnGraphs As Boolean
+    Private m_showMessagesTabOnDataException As Boolean
 
     ' Connection settings
     Private m_maximumConnectionAttempts As Integer
@@ -313,6 +319,19 @@ Public Class ApplicationSettings
         End Get
         Set(ByVal value As Double)
             m_parsingExceptionWindow = value
+        End Set
+    End Property
+
+    <Category(ApplicationSettingsCategory), _
+    Description("Show the Configuration XML File in Explorer After Saving."), _
+    DefaultValue(DefaultShowConfigXmlExplorerAfterSave), _
+    UserScopedSetting()> _
+    Public Property ShowConfigXmlExplorerAfterSave() As Boolean
+        Get
+            Return m_showConfigXmlExplorerAfterSave
+        End Get
+        Set(ByVal value As Boolean)
+            m_showConfigXmlExplorerAfterSave = value
         End Set
     End Property
 
@@ -446,6 +465,19 @@ Public Class ApplicationSettings
         End Get
         Set(ByVal value As Boolean)
             m_showDataPointsOnGraphs = value
+        End Set
+    End Property
+
+    <Category(ChartSettingsCategory), _
+    Description("Set to True to change to the Messages tab on Data Exception."), _
+    DefaultValue(DefaultShowMessagesTabOnDataException), _
+    UserScopedSetting()> _
+    Public Property ShowMessagesTabOnDataException() As Boolean
+        Get
+            Return m_showMessagesTabOnDataException
+        End Get
+        Set(ByVal value As Boolean)
+            m_showMessagesTabOnDataException = value
         End Set
     End Property
 

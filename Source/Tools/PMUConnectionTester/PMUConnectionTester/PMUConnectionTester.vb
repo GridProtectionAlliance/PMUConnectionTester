@@ -18,7 +18,8 @@
 '  ----------------------------------------------------------------------------------------------------
 '  03/16/2006 - J. Ritchie Carroll
 '       Initial version of source generated.
-'
+'  01/21/2011 - AJ Stadlin
+'       ShowMessagesTabOnDataException Option added to DataStreamException
 '******************************************************************************************************
 
 Imports Infragistics.Win
@@ -768,8 +769,10 @@ Public Class PMUConnectionTester
 
                     configFile.Close()
 
-                    ' Open captured XML sample file in explorer...
-                    Process.Start("explorer.exe", .FileName)
+                    If m_applicationSettings.ShowConfigXmlExplorerAfterSave Then
+                        ' Open captured XML sample file in explorer...
+                        Process.Start("explorer.exe", .FileName)
+                    End If
                 End If
             End With
         End If
@@ -1466,7 +1469,9 @@ Public Class PMUConnectionTester
     Private Sub DataStreamException(ByVal ex As System.Exception)
 
         AppendStatusMessage("Exception: " & ex.Message)
-        TabControlChart.Tabs(ChartTabs.Messages).Selected = True
+        If m_applicationSettings.ShowMessagesTabOnDataException Then
+            TabControlChart.Tabs(ChartTabs.Messages).Selected = True
+        End If
 
     End Sub
 
