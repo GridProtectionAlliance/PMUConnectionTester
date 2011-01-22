@@ -12,8 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{34207C22
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TVA", "TVA", "{9F66F141-5F50-4EDC-81AD-8CE261D7AC9D}"
 	ProjectSection(SolutionItems) = preProject
-		Dependencies\TVA\TimeSeriesFramework.dll = Dependencies\TVA\TimeSeriesFramework.dll
-		Dependencies\TVA\TimeSeriesFramework.XML = Dependencies\TVA\TimeSeriesFramework.XML
 		Dependencies\TVA\TVA.Communication.dll = Dependencies\TVA\TVA.Communication.dll
 		Dependencies\TVA\TVA.Communication.XML = Dependencies\TVA\TVA.Communication.XML
 		Dependencies\TVA\TVA.Core.dll = Dependencies\TVA\TVA.Core.dll
@@ -60,6 +58,12 @@ EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PMUConnectionTesterSetup64", "Tools\PMUConnectionTester\PMUConnectionTesterSetup\PMUConnectionTesterSetup64.vdproj", "{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PMUConnectionTesterSetup", "Tools\PMUConnectionTester\PMUConnectionTesterSetup\PMUConnectionTesterSetup.vdproj", "{FBA54FB9-9F80-4E2F-8AFE-83F443BD9A1D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TimeSeriesFramework", "TimeSeriesFramework", "{8BEC6F2E-2EFF-421A-95EE-D27B271E6C55}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies\TimeSeriesFramework\TimeSeriesFramework.dll = Dependencies\TimeSeriesFramework\TimeSeriesFramework.dll
+		Dependencies\TimeSeriesFramework\TimeSeriesFramework.xml = Dependencies\TimeSeriesFramework\TimeSeriesFramework.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -118,6 +122,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9F66F141-5F50-4EDC-81AD-8CE261D7AC9D} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
 		{C4DB0733-6C94-4FFA-99D1-EB8828C1E1D9} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
+		{8BEC6F2E-2EFF-421A-95EE-D27B271E6C55} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
 		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
 		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
 		{FBA54FB9-9F80-4E2F-8AFE-83F443BD9A1D} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}

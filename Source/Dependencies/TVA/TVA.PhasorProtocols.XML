@@ -1474,21 +1474,21 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
-        <member name="M:TVA.PhasorProtocols.Anonymous.ConfigurationCell.GetSignalReference(TVA.PhasorProtocols.FundamentalSignalType)">
+        <member name="M:TVA.PhasorProtocols.Anonymous.ConfigurationCell.GetSignalReference(TVA.PhasorProtocols.SignalKind)">
             <summary>
-            Get signal reference for specified <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.
+            Get signal reference for specified <see cref="T:TVA.PhasorProtocols.SignalKind"/>.
             </summary>
-            <param name="type"><see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> to request signal reference for.</param>
-            <returns>Signal reference of given <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.</returns>
+            <param name="type"><see cref="T:TVA.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
+            <returns>Signal reference of given <see cref="T:TVA.PhasorProtocols.SignalKind"/>.</returns>
         </member>
-        <member name="M:TVA.PhasorProtocols.Anonymous.ConfigurationCell.GetSignalReference(TVA.PhasorProtocols.FundamentalSignalType,System.Int32,System.Int32)">
+        <member name="M:TVA.PhasorProtocols.Anonymous.ConfigurationCell.GetSignalReference(TVA.PhasorProtocols.SignalKind,System.Int32,System.Int32)">
             <summary>
-            Get signal reference for specified <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> and <paramref name="index"/>.
+            Get signal reference for specified <see cref="T:TVA.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.
             </summary>
-            <param name="type"><see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> to request signal reference for.</param>
-            <param name="index">Index <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> to request signal reference for.</param>
-            <param name="count">Number of signals defined for this <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.</param>
-            <returns>Signal reference of given <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> and <paramref name="index"/>.</returns>
+            <param name="type"><see cref="T:TVA.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
+            <param name="index">Index <see cref="T:TVA.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
+            <param name="count">Number of signals defined for this <see cref="T:TVA.PhasorProtocols.SignalKind"/>.</param>
+            <returns>Signal reference of given <see cref="T:TVA.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.</returns>
         </member>
         <member name="M:TVA.PhasorProtocols.Anonymous.ConfigurationCell.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -1644,13 +1644,24 @@
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
             <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
         </member>
+        <member name="M:TVA.PhasorProtocols.ConfigurationCellCollection.TryGetByStationName(System.String,TVA.PhasorProtocols.IConfigurationCell@)">
+            <summary>
+            Attempts to get <see cref="T:TVA.PhasorProtocols.IConfigurationCell"/> with the specified station name.
+            </summary>
+            <param name="stationName">The <see cref="P:TVA.PhasorProtocols.IConfigurationCell.StationName"/> to find.</param>
+            <param name="configurationCell">
+            When this method returns, contains the <see cref="T:TVA.PhasorProtocols.IConfigurationCell"/> with the specified <paramref name="stationName"/>, if found;
+            otherwise, null is returned.
+            </param>
+            <returns><c>true</c> if the <see cref="T:TVA.PhasorProtocols.ConfigurationCellCollection"/> contains an element with the specified <paramref name="stationName"/>; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="M:TVA.PhasorProtocols.ConfigurationCellCollection.TryGetByIDLabel(System.String,TVA.PhasorProtocols.IConfigurationCell@)">
             <summary>
             Attempts to get <see cref="T:TVA.PhasorProtocols.IConfigurationCell"/> with the specified label.
             </summary>
             <param name="label">The <see cref="P:TVA.PhasorProtocols.IConfigurationCell.IDLabel"/> to find.</param>
             <param name="configurationCell">
-            When this method returns, contians the <see cref="T:TVA.PhasorProtocols.IConfigurationCell"/> with the specified <paramref name="label"/>, if found;
+            When this method returns, contains the <see cref="T:TVA.PhasorProtocols.IConfigurationCell"/> with the specified <paramref name="label"/>, if found;
             otherwise, null is returned.
             </param>
             <returns><c>true</c> if the <see cref="T:TVA.PhasorProtocols.ConfigurationCellCollection"/> contains an element with the specified <paramref name="label"/>; otherwise, <c>false</c>.</returns>
@@ -1661,7 +1672,7 @@
             </summary>
             <param name="idCode">The <see cref="P:TVA.PhasorProtocols.IChannelCell.IDCode"/> to find.</param>
             <param name="configurationCell">
-            When this method returns, contians the <see cref="T:TVA.PhasorProtocols.IConfigurationCell"/> with the specified <paramref name="idCode"/>, if found;
+            When this method returns, contains the <see cref="T:TVA.PhasorProtocols.IConfigurationCell"/> with the specified <paramref name="idCode"/>, if found;
             otherwise, null is returned.
             </param>
             <returns><c>true</c> if the <see cref="T:TVA.PhasorProtocols.ConfigurationCellCollection"/> contains an element with the specified <paramref name="idCode"/>; otherwise, <c>false</c>.</returns>
@@ -2712,21 +2723,21 @@
             this method will be call automatically.
             </remarks>
         </member>
-        <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.GetSignalReference(TVA.PhasorProtocols.FundamentalSignalType)">
+        <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.GetSignalReference(TVA.PhasorProtocols.SignalKind)">
             <summary>
-            Get signal reference for specified <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.
+            Get signal reference for specified <see cref="T:TVA.PhasorProtocols.SignalKind"/>.
             </summary>
-            <param name="type"><see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> to request signal reference for.</param>
-            <returns>Signal reference of given <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.</returns>
+            <param name="type"><see cref="T:TVA.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
+            <returns>Signal reference of given <see cref="T:TVA.PhasorProtocols.SignalKind"/>.</returns>
         </member>
-        <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.GetSignalReference(TVA.PhasorProtocols.FundamentalSignalType,System.Int32,System.Int32)">
+        <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.GetSignalReference(TVA.PhasorProtocols.SignalKind,System.Int32,System.Int32)">
             <summary>
-            Get signal reference for specified <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> and <paramref name="index"/>.
+            Get signal reference for specified <see cref="T:TVA.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.
             </summary>
-            <param name="type"><see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> to request signal reference for.</param>
-            <param name="index">Index <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> to request signal reference for.</param>
-            <param name="count">Number of signals defined for this <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.</param>
-            <returns>Signal reference of given <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> and <paramref name="index"/>.</returns>
+            <param name="type"><see cref="T:TVA.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
+            <param name="index">Index <see cref="T:TVA.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
+            <param name="count">Number of signals defined for this <see cref="T:TVA.PhasorProtocols.SignalKind"/>.</param>
+            <returns>Signal reference of given <see cref="T:TVA.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.</returns>
         </member>
         <member name="M:TVA.PhasorProtocols.PhasorDataConcentratorBase.GetHashCode">
             <summary>
@@ -2749,9 +2760,9 @@
             is defined the flag will be <c>false</c>.
             </remarks>
         </member>
-        <member name="P:TVA.PhasorProtocols.PhasorDataConcentratorBase.ConnectionAttempts">
+        <member name="P:TVA.PhasorProtocols.PhasorDataConcentratorBase.ActiveConnections">
             <summary>
-            Gets the total number of connection attempts.
+            Gets the total number of active socket connections.
             </summary>
         </member>
         <member name="P:TVA.PhasorProtocols.PhasorDataConcentratorBase.AutoStartDataChannel">
@@ -2904,7 +2915,13 @@
             Signal type enumeration.
             </summary>
             <remarks>
-            The signal type represents the explicit fundamental type of a signal that a value represents.
+            <para>
+            The signal type represents the explicit type of a signal that a value represents.
+            </para>
+            <para>
+            Contrast the <see cref="T:TVA.PhasorProtocols.SignalType"/> enumeration with the <see cref="T:TVA.PhasorProtocols.SignalKind"/>
+            enumeration which defines an abstract type for a signal (e.g., simply phase or angle).
+            </para>
             </remarks>
         </member>
         <member name="F:TVA.PhasorProtocols.SignalType.IPHM">
@@ -3637,16 +3654,6 @@
             Creates a new <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/>.
             </summary>
         </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.Finalize">
-            <summary>
-            Releases the unmanaged resources before the <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/> object is reclaimed by <see cref="T:System.GC"/>.
-            </summary>
-        </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/> object.
-            </summary>
-        </member>
         <member name="M:TVA.PhasorProtocols.CommonPhasorServices.Dispose(System.Boolean)">
             <summary>
             Releases the unmanaged resources used by the <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/> object and optionally releases the managed resources.
@@ -3668,11 +3675,11 @@
             Stops the <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/>.
             </summary>		
         </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.SetInitializedState(System.Boolean)">
+        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.AssignParentCollection(TimeSeriesFramework.Adapters.IAdapterCollection)">
             <summary>
-            Manually sets the intialized state of the <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/>.
+            Assigns the reference to the parent <see cref="T:TimeSeriesFramework.Adapters.IAdapterCollection"/> that will contain this <see cref="T:TimeSeriesFramework.Adapters.AdapterBase"/>.
             </summary>
-            <param name="initialized">Desired initialized state.</param>
+            <param name="parent">Parent adapter collection.</param>
         </member>
         <member name="M:TVA.PhasorProtocols.CommonPhasorServices.GetShortStatus(System.Int32)">
             <summary>
@@ -3680,13 +3687,6 @@
             </summary>
             <param name="maxLength">Maximum number of available characters for display.</param>
             <returns>A short one-line summary of the current status of the <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/>.</returns>
-        </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.WaitForInitialize(System.Int32)">
-            <summary>
-            Blocks the <see cref="P:System.Threading.Thread.CurrentThread"/> until the adapter is <see cref="P:TVA.PhasorProtocols.CommonPhasorServices.Initialized"/>.
-            </summary>
-            <param name="timeout">The number of milliseconds to wait.</param>
-            <returns><c>true</c> if the initialization succeeds; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:TVA.PhasorProtocols.CommonPhasorServices.RequestDeviceConfiguration(System.String)">
             <summary>
@@ -3701,62 +3701,11 @@
             </summary>
             <param name="command"><see cref="T:TVA.PhasorProtocols.DeviceCommand"/> to send to connected device.</param>
         </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.QueueMeasurementForProcessing(TimeSeriesFramework.IMeasurement)">
-            <summary>
-            Queues a single measurement for processing.
-            </summary>
-            <param name="measurement">Measurement to queue for processing.</param>
-        </member>
         <member name="M:TVA.PhasorProtocols.CommonPhasorServices.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{TimeSeriesFramework.IMeasurement})">
             <summary>
             Queues a collection of measurements for processing.
             </summary>
             <param name="measurements">Collection of measurements to queue for processing.</param>
-        </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.OnStatusMessage(System.String)">
-            <summary>
-            Raises the <see cref="E:TVA.PhasorProtocols.CommonPhasorServices.StatusMessage"/> event.
-            </summary>
-            <param name="status">New status message.</param>
-        </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.OnStatusMessage(System.String,System.Object[])">
-            <summary>
-            Raises the <see cref="E:TVA.PhasorProtocols.CommonPhasorServices.StatusMessage"/> event with a formatted status message.
-            </summary>
-            <param name="formattedStatus">Formatted status message.</param>
-            <param name="args">Arguments for <paramref name="formattedStatus"/>.</param>
-            <remarks>
-            This overload combines string.Format and OnStatusMessage for convienence.
-            </remarks>
-        </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.OnProcessException(System.Exception)">
-            <summary>
-            Raises <see cref="E:TVA.PhasorProtocols.CommonPhasorServices.ProcessException"/> event.
-            </summary>
-            <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
-        </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.OnNewMeasurements(System.Collections.Generic.ICollection{TimeSeriesFramework.IMeasurement})">
-            <summary>
-            Raises the <see cref="E:TVA.PhasorProtocols.CommonPhasorServices.NewMeasurements"/> event.
-            </summary>
-        </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.OnUnpublishedSamples(System.Int32)">
-            <summary>
-            Raises the <see cref="E:TVA.PhasorProtocols.CommonPhasorServices.UnpublishedSamples"/> event.
-            </summary>
-            <param name="seconds">Total number of unpublished seconds of data.</param>
-        </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.OnDiscardingMeasurements(System.Collections.Generic.IEnumerable{TimeSeriesFramework.IMeasurement})">
-            <summary>
-            Raises the <see cref="E:TVA.PhasorProtocols.CommonPhasorServices.DiscardingMeasurements"/> event.
-            </summary>
-            <param name="measurements">Enumeration of <see cref="T:TimeSeriesFramework.IMeasurement"/> values being discarded.</param>
-        </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.IncrementProcessedMeasurements(System.Int64)">
-            <summary>
-            Safely increments the total processed measurements.
-            </summary>
-            <param name="totalAdded"></param>
         </member>
         <member name="M:TVA.PhasorProtocols.CommonPhasorServices.ReloadStatistics">
             <summary>
@@ -3774,17 +3723,6 @@
             This procedure is used to identify a parsed measurement value by its derived signal reference and apply the
             additional needed measurement meta-data attributes (i.e., ID, Source, Adder and Multiplier).
             </remarks>
-        </member>
-        <member name="M:TVA.PhasorProtocols.CommonPhasorServices.CreateParameterizedCommand(System.Data.IDbConnection,System.String,System.Object[])">
-            <summary>
-            Creates and returns a parameterized SQL command. Parameter names are embedded in the SQL statement
-            passed as a parameter to this method. This method does very rudimentary parsing of the SQL statement so parameter
-            names should start with the '@' character and should be surrounded by either spaces, parentheses, or commas.
-            </summary>
-            <param name="connection">The database connection.</param>
-            <param name="sql">The SQL statement.</param>
-            <param name="args">The parameters for the command in the order that they appear in the SQL statement.</param>
-            <returns>The parameterized command.</returns>
         </member>
         <member name="M:TVA.PhasorProtocols.CommonPhasorServices.CreateDefaultNode(System.Data.IDbConnection,System.String,System.Action{System.Object,TVA.EventArgs{System.String}},System.Action{System.Object,TVA.EventArgs{System.Exception}})">
             <summary>
@@ -4094,141 +4032,6 @@
             <param name="source">Source OutputStream.</param>
             <param name="arguments">Any needed arguments for statistic calculation.</param>
             <returns>Output Stream Connected Statistic.</returns>
-        </member>
-        <member name="E:TVA.PhasorProtocols.CommonPhasorServices.StatusMessage">
-            <summary>
-            Provides status messages to consumer.
-            </summary>
-            <remarks>
-            <see cref="F:TVA.EventArgs`1.Argument"/> is new status message.
-            </remarks>
-        </member>
-        <member name="E:TVA.PhasorProtocols.CommonPhasorServices.ProcessException">
-            <summary>
-            Event is raised when there is an exception encountered while processing.
-            </summary>
-            <remarks>
-            <see cref="F:TVA.EventArgs`1.Argument"/> is the exception that was thrown.
-            </remarks>
-        </member>
-        <member name="E:TVA.PhasorProtocols.CommonPhasorServices.NewMeasurements">
-            <summary>
-            Provides new measurements from action adapter.
-            </summary>
-            <remarks>
-            <see cref="F:TVA.EventArgs`1.Argument"/> is a collection of new measurements for host to process.
-            </remarks>
-        </member>
-        <member name="E:TVA.PhasorProtocols.CommonPhasorServices.UnpublishedSamples">
-            <summary>
-            This event is raised, if needed, to track current number of unpublished seconds of data in the queue.
-            </summary>
-            <remarks>
-            <see cref="F:TVA.EventArgs`1.Argument"/> is the total number of unpublished seconds of data.
-            </remarks>
-        </member>
-        <member name="E:TVA.PhasorProtocols.CommonPhasorServices.DiscardingMeasurements">
-            <summary>
-            This event is raised if there are any measurements being discarded during the sorting process.
-            </summary>
-            <remarks>
-            <see cref="F:TVA.EventArgs`1.Argument"/> is the enumeration of <see cref="T:TimeSeriesFramework.IMeasurement"/> values that are being discarded during the sorting process.
-            </remarks>
-        </member>
-        <member name="E:TVA.PhasorProtocols.CommonPhasorServices.Disposed">
-            <summary>
-            Event is raised when <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/> is disposed.
-            </summary>
-            <remarks>
-            If an adapter references another adapter by enumerating the <see cref="P:TVA.PhasorProtocols.CommonPhasorServices.Parent"/> collection, this
-            event should be monitored to release the reference.
-            </remarks>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.Name">
-            <summary>
-            Gets or sets the name of this <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/> instance.
-            </summary>
-            <remarks>
-            Derived classes should provide a name for the adapter.
-            </remarks>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.ID">
-            <summary>
-            Gets or sets numeric ID associated with this <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/> instance.
-            </summary>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.ConnectionString">
-            <summary>
-            Gets or sets key/value pair connection information specific to this <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/> instance.
-            </summary>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.Parent">
-            <summary>
-            Gets a read-only reference to the collection that contains this <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/> instance.
-            </summary>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.DataSource">
-            <summary>
-            Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/> instance.
-            </summary>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.InitializationTimeout">
-            <summary>
-            Gets or sets maximum time system will wait during <see cref="M:TVA.PhasorProtocols.CommonPhasorServices.Start"/> for initialization.
-            </summary>
-            <remarks>
-            Set to <see cref="F:System.Threading.Timeout.Infinite"/> to wait indefinitely.
-            </remarks>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.OutputMeasurements">
-            <summary>
-            Gets or sets output measurements that the <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/> will produce, if any.
-            </summary>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.InputMeasurementKeys">
-            <summary>
-            Gets or sets primary keys of input measurements the <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/> expects, if any.
-            </summary>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.ProcessedMeasurements">
-            <summary>
-            Gets the total number of measurements handled thus far by the <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/>.
-            </summary>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.MeasurementReportingInterval">
-            <summary>
-            Gets or sets the measurement reporting interval.
-            </summary>
-            <remarks>
-            This is used to determined how many measurements should be processed before reporting status.
-            </remarks>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.Initialized">
-            <summary>
-            Gets or sets flag indicating if the adapter has been initialized successfully.
-            </summary>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.Enabled">
-            <summary>
-            Gets or sets enabled state of this <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/> instance.
-            </summary>
-            <remarks>
-            Base class simply starts or stops <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/> based on flag value. Derived classes should
-            extend this if needed to enable or disable operational state of the adapter based on flag value.
-            </remarks>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.Settings">
-            <summary>
-            Gets settings <see cref="T:System.Collections.Generic.Dictionary`2"/> parsed when <see cref="P:TVA.PhasorProtocols.CommonPhasorServices.ConnectionString"/> was assigned.
-            </summary>
-        </member>
-        <member name="P:TVA.PhasorProtocols.CommonPhasorServices.FramesPerSecond">
-            <summary>
-            Gets or sets the frames per second to be used by the <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/>.
-            </summary>
-            <remarks>
-            This value is only tracked in the <see cref="T:TVA.PhasorProtocols.CommonPhasorServices"/>.
-            </remarks>
         </member>
         <member name="P:TVA.PhasorProtocols.CommonPhasorServices.Status">
             <summary>
@@ -7073,21 +6876,21 @@
             </summary>
             <param name="frame">Phasor data frame to extract measurements from.</param>
         </member>
-        <member name="M:TVA.PhasorProtocols.PhasorMeasurementMapper.GetSignalReference(TVA.PhasorProtocols.FundamentalSignalType)">
+        <member name="M:TVA.PhasorProtocols.PhasorMeasurementMapper.GetSignalReference(TVA.PhasorProtocols.SignalKind)">
             <summary>
-            Get signal reference for specified <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.
+            Get signal reference for specified <see cref="T:TVA.PhasorProtocols.SignalKind"/>.
             </summary>
-            <param name="type"><see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> to request signal reference for.</param>
-            <returns>Signal reference of given <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.</returns>
+            <param name="type"><see cref="T:TVA.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
+            <returns>Signal reference of given <see cref="T:TVA.PhasorProtocols.SignalKind"/>.</returns>
         </member>
-        <member name="M:TVA.PhasorProtocols.PhasorMeasurementMapper.GetSignalReference(TVA.PhasorProtocols.FundamentalSignalType,System.Int32,System.Int32)">
+        <member name="M:TVA.PhasorProtocols.PhasorMeasurementMapper.GetSignalReference(TVA.PhasorProtocols.SignalKind,System.Int32,System.Int32)">
             <summary>
-            Get signal reference for specified <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> and <paramref name="index"/>.
+            Get signal reference for specified <see cref="T:TVA.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.
             </summary>
-            <param name="type"><see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> to request signal reference for.</param>
-            <param name="index">Index <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> to request signal reference for.</param>
-            <param name="count">Number of signals defined for this <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.</param>
-            <returns>Signal reference of given <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> and <paramref name="index"/>.</returns>
+            <param name="type"><see cref="T:TVA.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
+            <param name="index">Index <see cref="T:TVA.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
+            <param name="count">Number of signals defined for this <see cref="T:TVA.PhasorProtocols.SignalKind"/>.</param>
+            <returns>Signal reference of given <see cref="T:TVA.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.</returns>
         </member>
         <member name="M:TVA.PhasorProtocols.PhasorMeasurementMapper.GetHashCode">
             <summary>
@@ -7217,6 +7020,19 @@
         <member name="P:TVA.PhasorProtocols.PhasorMeasurementMapper.ActualDataRate">
             <summary>
             Gets the actual data rate.
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.PhasorMeasurementMapper.SharedMapping">
+            <summary>
+            Gets or sets acronym of other device for which to assume a shared mapping.
+            </summary>
+            <remarks>
+            Assigning acronym to this property automatically looks up ID of associated device.
+            </remarks>
+        </member>
+        <member name="P:TVA.PhasorProtocols.PhasorMeasurementMapper.SharedMappingID">
+            <summary>
+            Returns ID of associated device with shared mapping or <see cref="P:TimeSeriesFramework.Adapters.AdapterBase.ID"/> of this <see cref="T:TVA.PhasorProtocols.PhasorMeasurementMapper"/> if no shared mapping is defined.
             </summary>
         </member>
         <member name="P:TVA.PhasorProtocols.PhasorMeasurementMapper.UseAsyncConnect">
@@ -9212,6 +9028,11 @@
         <member name="F:TVA.PhasorProtocols.FNet.Common.EndByte">
             <summary>
             F-NET data frame start byte.
+            </summary>
+        </member>
+        <member name="F:TVA.PhasorProtocols.FNet.Common.MaximumPracticalFrameSize">
+            <summary>
+            The maximum practical limit for an F-NET data frame.        
             </summary>
         </member>
         <member name="F:TVA.PhasorProtocols.FNet.Common.MaximumPhasorValues">
@@ -16609,62 +16430,68 @@
             Gets the binary body image of the <see cref="T:TVA.PhasorProtocols.PhasorValueBase"/> object.
             </summary>
         </member>
-        <member name="T:TVA.PhasorProtocols.FundamentalSignalType">
+        <member name="T:TVA.PhasorProtocols.SignalKind">
             <summary>
             Fundamental signal types enumeration.
             </summary>
             <remarks>
-            The signal type represents the basic type of a signal used to suffix a formatted signal reference. When
+            <para>
+            This signal type represents the basic type of a signal used to suffix a formatted signal reference. When
             used in context along with an optional index the fundamental signal type will identify a signal's location
             within a frame of data (see <see cref="T:TVA.PhasorProtocols.SignalReference"/>).
+            </para>
+            <para>
+            Contrast the <see cref="T:TVA.PhasorProtocols.SignalKind"/> enumeration with the <see cref="T:TVA.PhasorProtocols.SignalType"/>
+            enumeration which defines an explicit type for a signal (e.g., a voltage or current phasor).
+            </para>
             </remarks>
         </member>
-        <member name="F:TVA.PhasorProtocols.FundamentalSignalType.Angle">
+        <member name="F:TVA.PhasorProtocols.SignalKind.Angle">
             <summary>
             Phase angle.
             </summary>
         </member>
-        <member name="F:TVA.PhasorProtocols.FundamentalSignalType.Magnitude">
+        <member name="F:TVA.PhasorProtocols.SignalKind.Magnitude">
             <summary>
             Phase magnitude.
             </summary>
         </member>
-        <member name="F:TVA.PhasorProtocols.FundamentalSignalType.Frequency">
+        <member name="F:TVA.PhasorProtocols.SignalKind.Frequency">
             <summary>
             Line frequency.
             </summary>
         </member>
-        <member name="F:TVA.PhasorProtocols.FundamentalSignalType.DfDt">
+        <member name="F:TVA.PhasorProtocols.SignalKind.DfDt">
             <summary>
             Frequency delta over time (dF/dt).
             </summary>
         </member>
-        <member name="F:TVA.PhasorProtocols.FundamentalSignalType.Status">
+        <member name="F:TVA.PhasorProtocols.SignalKind.Status">
             <summary>
             Status flags.
             </summary>
         </member>
-        <member name="F:TVA.PhasorProtocols.FundamentalSignalType.Digital">
+        <member name="F:TVA.PhasorProtocols.SignalKind.Digital">
             <summary>
             Digital value.
             </summary>
         </member>
-        <member name="F:TVA.PhasorProtocols.FundamentalSignalType.Analog">
+        <member name="F:TVA.PhasorProtocols.SignalKind.Analog">
             <summary>
             Analog value.
             </summary>
         </member>
-        <member name="F:TVA.PhasorProtocols.FundamentalSignalType.Calculation">
+        <member name="F:TVA.PhasorProtocols.SignalKind.Calculation">
             <summary>
             Calculated value.
             </summary>
         </member>
-        <member name="F:TVA.PhasorProtocols.FundamentalSignalType.Statistic">
+        <member name="F:TVA.PhasorProtocols.SignalKind.Statistic">
             <summary>
             Statistical value.
             </summary>
         </member>
-        <member name="F:TVA.PhasorProtocols.FundamentalSignalType.Unknown">
+        <member name="F:TVA.PhasorProtocols.SignalKind.Unknown">
             <summary>
             Undetermined signal type.
             </summary>
@@ -16684,9 +16511,9 @@
             Gets or sets the signal index of this <see cref="T:TVA.PhasorProtocols.SignalReference"/>.
             </summary>
         </member>
-        <member name="F:TVA.PhasorProtocols.SignalReference.Type">
+        <member name="F:TVA.PhasorProtocols.SignalReference.Kind">
             <summary>
-            Gets or sets the <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> of this <see cref="T:TVA.PhasorProtocols.SignalReference"/>.
+            Gets or sets the <see cref="T:TVA.PhasorProtocols.SignalKind"/> of this <see cref="T:TVA.PhasorProtocols.SignalReference"/>.
             </summary>
         </member>
         <member name="F:TVA.PhasorProtocols.SignalReference.CellIndex">
@@ -16790,36 +16617,36 @@
             <param name="signal2">A <see cref="T:TVA.PhasorProtocols.SignalReference"/> right hand operand.</param>
             <returns>A boolean representing the result.</returns>
         </member>
-        <member name="M:TVA.PhasorProtocols.SignalReference.GetTypeFromAcronym(System.String)">
+        <member name="M:TVA.PhasorProtocols.SignalReference.ParseSignalKind(System.String)">
             <summary>
-            Gets the <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> for the specified <paramref name="acronym"/>.
+            Gets the <see cref="T:TVA.PhasorProtocols.SignalKind"/> for the specified <paramref name="acronym"/>.
             </summary>
-            <param name="acronym">Acronym of the desired <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.</param>
-            <returns>The <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> for the specified <paramref name="acronym"/>.</returns>
+            <param name="acronym">Acronym of the desired <see cref="T:TVA.PhasorProtocols.SignalKind"/>.</param>
+            <returns>The <see cref="T:TVA.PhasorProtocols.SignalKind"/> for the specified <paramref name="acronym"/>.</returns>
         </member>
-        <member name="M:TVA.PhasorProtocols.SignalReference.GetAcronymFromType(TVA.PhasorProtocols.FundamentalSignalType)">
+        <member name="M:TVA.PhasorProtocols.SignalReference.GetSignalKindAcronym(TVA.PhasorProtocols.SignalKind)">
             <summary>
-            Gets the acronym for the specified <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.
+            Gets the acronym for the specified <see cref="T:TVA.PhasorProtocols.SignalKind"/>.
             </summary>
-            <param name="signal"><see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> to convert to an acronym.</param>
-            <returns>The acronym for the specified <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.</returns>
+            <param name="signal"><see cref="T:TVA.PhasorProtocols.SignalKind"/> to convert to an acronym.</param>
+            <returns>The acronym for the specified <see cref="T:TVA.PhasorProtocols.SignalKind"/>.</returns>
         </member>
-        <member name="M:TVA.PhasorProtocols.SignalReference.ToString(System.String,TVA.PhasorProtocols.FundamentalSignalType)">
+        <member name="M:TVA.PhasorProtocols.SignalReference.ToString(System.String,TVA.PhasorProtocols.SignalKind)">
             <summary>
-            Returns a <see cref="T:System.String"/> that represents the specified <paramref name="acronym"/> and <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.
+            Returns a <see cref="T:System.String"/> that represents the specified <paramref name="acronym"/> and <see cref="T:TVA.PhasorProtocols.SignalKind"/>.
             </summary>
             <param name="acronym">Acronym portion of the desired <see cref="T:System.String"/> representation.</param>
-            <param name="type"><see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> portion of the desired <see cref="T:System.String"/> representation.</param>
-            <returns>A <see cref="T:System.String"/> that represents the specified <paramref name="acronym"/> and <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/>.</returns>
+            <param name="type"><see cref="T:TVA.PhasorProtocols.SignalKind"/> portion of the desired <see cref="T:System.String"/> representation.</param>
+            <returns>A <see cref="T:System.String"/> that represents the specified <paramref name="acronym"/> and <see cref="T:TVA.PhasorProtocols.SignalKind"/>.</returns>
         </member>
-        <member name="M:TVA.PhasorProtocols.SignalReference.ToString(System.String,TVA.PhasorProtocols.FundamentalSignalType,System.Int32)">
+        <member name="M:TVA.PhasorProtocols.SignalReference.ToString(System.String,TVA.PhasorProtocols.SignalKind,System.Int32)">
             <summary>
-            Returns a <see cref="T:System.String"/> that represents the specified <paramref name="acronym"/>, <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> and <paramref name="index"/>.
+            Returns a <see cref="T:System.String"/> that represents the specified <paramref name="acronym"/>, <see cref="T:TVA.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.
             </summary>
             <param name="acronym">Acronym portion of the desired <see cref="T:System.String"/> representation.</param>
-            <param name="type"><see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> portion of the desired <see cref="T:System.String"/> representation.</param>
-            <param name="index">Index of <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> portion of the desired <see cref="T:System.String"/> representation.</param>
-            <returns>A <see cref="T:System.String"/> that represents the specified <paramref name="acronym"/>, <see cref="T:TVA.PhasorProtocols.FundamentalSignalType"/> and <paramref name="index"/>.</returns>
+            <param name="type"><see cref="T:TVA.PhasorProtocols.SignalKind"/> portion of the desired <see cref="T:System.String"/> representation.</param>
+            <param name="index">Index of <see cref="T:TVA.PhasorProtocols.SignalKind"/> portion of the desired <see cref="T:System.String"/> representation.</param>
+            <returns>A <see cref="T:System.String"/> that represents the specified <paramref name="acronym"/>, <see cref="T:TVA.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.</returns>
         </member>
         <member name="T:TVA.PhasorProtocols.SignalReferenceMeasurement">
             <summary>
@@ -16851,6 +16678,116 @@
             can be marked as discarded before it hits the archive queue. This way the archived measurement quality
             flags can be marked to note that the measurement never made it into the real-time processing stream.
             </remarks>
+        </member>
+        <member name="T:TVA.PhasorProtocols.StatisticsReader">
+            <summary>
+            Reads certain device and input stream statistics from the statistics archive.
+            The statistics that are read are the total frame count, the missing frame count,
+            connectivity, average latency, the actual data rate, data quality errors, and
+            time quality errors.
+            </summary>
+        </member>
+        <member name="M:TVA.PhasorProtocols.StatisticsReader.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:TVA.PhasorProtocols.StatisticsReader"/> class.
+            All parameters--<see cref="P:TVA.PhasorProtocols.StatisticsReader.ArchiveFilePath"/>, <see cref="P:TVA.PhasorProtocols.StatisticsReader.StateFilePath"/>,
+            <see cref="P:TVA.PhasorProtocols.StatisticsReader.IntercomFilePath"/>, <see cref="P:TVA.PhasorProtocols.StatisticsReader.MetadataFilePath"/>,
+            <see cref="P:TVA.PhasorProtocols.StatisticsReader.StartTime"/>, and <see cref="P:TVA.PhasorProtocols.StatisticsReader.EndTime"/>--must be set manually
+            before attempting to read statistics from the archive.
+            </summary>
+        </member>
+        <member name="M:TVA.PhasorProtocols.StatisticsReader.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:TVA.PhasorProtocols.StatisticsReader"/> class.
+            The configuration file specified in the parameter must contain the statistics
+            historian records in order to automatically locate the archive files.
+            Otherwise, the other constructor should be used. The <see cref="P:TVA.PhasorProtocols.StatisticsReader.StartTime"/> and
+            <see cref="P:TVA.PhasorProtocols.StatisticsReader.EndTime"/> parameters are not set when using this constructor and must
+            be set manually before attempting to read statistics from the archive.
+            </summary>
+            <param name="openPdcConfigPath">Path to the openPDC configuration file.</param>
+        </member>
+        <member name="M:TVA.PhasorProtocols.StatisticsReader.Open">
+            <summary>
+            Causes the <see cref="T:TVA.PhasorProtocols.StatisticsReader"/> to open the archive file and retrieve the statistics.
+            </summary>
+        </member>
+        <member name="M:TVA.PhasorProtocols.StatisticsReader.Close">
+            <summary>
+            Closes the archive file once the statistics are no longer needed.
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.StatisticsReader.ArchiveFilePath">
+            <summary>
+            Path to the archive file (*_archive.d).
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.StatisticsReader.StateFilePath">
+            <summary>
+            Path to the state file (*_startup.dat).
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.StatisticsReader.IntercomFilePath">
+            <summary>
+            Path to the intercom file (scratch.dat).
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.StatisticsReader.MetadataFilePath">
+            <summary>
+            Path to the metadata file (*_dbase.dat).
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.StatisticsReader.StartTime">
+            <summary>
+            The timestamp at which to start gathering statistics from the archive.
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.StatisticsReader.EndTime">
+            <summary>
+            The timestamp at which to stop gathering statistics from the archive.
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.StatisticsReader.TotalFrames">
+            <summary>
+            After the <see cref="T:TVA.PhasorProtocols.StatisticsReader"/> has read statistics from the archive file,
+            this will contain the statistics on the total number of frames.
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.StatisticsReader.MissingFrames">
+            <summary>
+            After the <see cref="T:TVA.PhasorProtocols.StatisticsReader"/> has read statistics from the archive file,
+            this will contain the statistics on missing frames.
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.StatisticsReader.ConnectedStats">
+            <summary>
+            After the <see cref="T:TVA.PhasorProtocols.StatisticsReader"/> has read statistics from the archive file,
+            this will contain the statistics on input stream connectivity.
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.StatisticsReader.AverageLatency">
+            <summary>
+            After the <see cref="T:TVA.PhasorProtocols.StatisticsReader"/> has read statistics from the archive file,
+            this will contain the statistics on the average latency.
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.StatisticsReader.ActualDataRate">
+            <summary>
+            After the <see cref="T:TVA.PhasorProtocols.StatisticsReader"/> has read statistics from the archive file,
+            this will contain the statistics on the actual data rate.
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.StatisticsReader.DataQualityErrors">
+            <summary>
+            After the <see cref="T:TVA.PhasorProtocols.StatisticsReader"/> has read statistics from the archive file,
+            this will contain the statistics on data quality errors.
+            </summary>
+        </member>
+        <member name="P:TVA.PhasorProtocols.StatisticsReader.TimeQualityErrors">
+            <summary>
+            After the <see cref="T:TVA.PhasorProtocols.StatisticsReader"/> has read statistics from the archive file,
+            this will contain the statistics on time quality errors.
+            </summary>
         </member>
     </members>
 </doc>
