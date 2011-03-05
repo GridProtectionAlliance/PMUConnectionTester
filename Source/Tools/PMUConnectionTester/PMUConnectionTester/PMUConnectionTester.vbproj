@@ -140,21 +140,38 @@
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="TimeSeriesFramework">
+    <Reference Include="TimeSeriesFramework, Version=1.0.27.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TimeSeriesFramework\TimeSeriesFramework.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.Communication, Version=1.0.13.31178, Culture=neutral, PublicKeyToken=0912cfbda5dae2d1, processorArchitecture=MSIL">
+    <Reference Include="TVA.Communication, Version=4.0.2.14, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TVA\TVA.Communication.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.Core, Version=1.0.13.31178, Culture=neutral, PublicKeyToken=0912cfbda5dae2d1, processorArchitecture=MSIL">
+    <Reference Include="TVA.Core, Version=4.0.2.14, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TVA\TVA.Core.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.PhasorProtocols">
+    <Reference Include="TVA.Historian, Version=1.1.45.64154, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\TVA\TVA.Historian.dll</HintPath>
+    </Reference>
+    <Reference Include="TVA.PhasorProtocols, Version=1.4.77.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TVA\TVA.PhasorProtocols.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.Windows, Version=1.0.13.31178, Culture=neutral, PublicKeyToken=0912cfbda5dae2d1, processorArchitecture=MSIL">
+    <Reference Include="TVA.Security, Version=4.0.2.14, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\TVA\TVA.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="TVA.Services, Version=4.0.2.14, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\TVA\TVA.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="TVA.Web">
+      <HintPath>..\..\..\Dependencies\TVA\TVA.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="TVA.Windows, Version=4.0.2.14, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TVA\TVA.Windows.dll</HintPath>
     </Reference>
