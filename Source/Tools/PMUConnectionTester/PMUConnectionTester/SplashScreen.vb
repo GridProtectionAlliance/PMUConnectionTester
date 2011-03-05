@@ -37,7 +37,7 @@ Public NotInheritable Class SplashScreen
             ApplicationTitle.Text = .Title
 
             With .Version
-                Version.Text = "Version " & .Major & "." & .Minor & "." & .Build & "." & .Revision
+                Version.Text = "Version " & .Major & "." & .Minor & "." & .Build ' & "." & .Revision
             End With
 
             Copyright.Text = .Copyright

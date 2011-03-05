@@ -2551,39 +2551,6 @@
             Gets or sets the <see cref="T:TVA.PhasorProtocols.Anonymous.ConfigurationCell"/> parent of this <see cref="T:TVA.PhasorProtocols.Anonymous.PhasorDefinition"/>.
             </summary>
         </member>
-        <member name="T:TVA.PhasorProtocols.InstallerBase">
-            <summary>
-            Defines a common installer class for the openPDC.
-            </summary>
-            <remarks>
-            Users may choose to only install openPDC or openPDC Manager, in either case common installation steps
-            need to occur so these steps are managed in this one common base class.
-            </remarks>
-        </member>
-        <member name="M:TVA.PhasorProtocols.InstallerBase.OnSystemSettingsLoaded(System.Xml.XmlDocument,System.Xml.XmlNode)">
-            <summary>
-            Called when system settings are loaded.
-            </summary>
-            <param name="configurationFile">Open xml document containing configuration settings.</param>
-            <param name="systemSettingsNode">Xml node containing system settings.</param>
-        </member>
-        <member name="M:TVA.PhasorProtocols.InstallerBase.Install(System.Collections.IDictionary)">
-            <summary>
-            Installs the class.
-            </summary>
-            <param name="stateSaver">Current state information.</param>
-        </member>
-        <member name="M:TVA.PhasorProtocols.InstallerBase.OnBeforeUninstall(System.Collections.IDictionary)">
-            <summary>
-            Called before uninstall of the class.
-            </summary>
-            <param name="savedState">Saved state information.</param>
-        </member>
-        <member name="P:TVA.PhasorProtocols.InstallerBase.ConfigurationName">
-            <summary>
-            Gets associated configuration name.
-            </summary>
-        </member>
         <member name="T:TVA.PhasorProtocols.BpaPdcStream.Concentrator">
             <summary>
             Represents a BPA PDCstream phasor data concentrator.
@@ -5206,6 +5173,12 @@
             Casts the parsed <see cref="T:TVA.PhasorProtocols.IChannelFrame"/> to its specific implementation (i.e., <see cref="T:TVA.PhasorProtocols.IDataFrame"/>, <see cref="T:TVA.PhasorProtocols.IConfigurationFrame"/>, <see cref="T:TVA.PhasorProtocols.ICommandFrame"/> or <see cref="T:TVA.PhasorProtocols.IHeaderFrame"/>).
             </summary>
             <param name="frame"><see cref="T:TVA.PhasorProtocols.IChannelFrame"/> that was parsed by <see cref="T:TVA.Parsing.FrameImageParserBase`2"/> that implements protocol specific common frame header interface.</param>
+        </member>
+        <member name="M:TVA.PhasorProtocols.FrameParserBase`1.OnUnknownFrameTypeEncountered(`0)">
+            <summary>
+            Handles unknown frame types.
+            </summary>
+            <param name="frameType">Unknown frame ID.</param>
         </member>
         <member name="M:TVA.PhasorProtocols.FrameParserBase`1.CreateBufferQueue">
             <summary>
@@ -12889,6 +12862,12 @@
             Casts the parsed <see cref="T:TVA.PhasorProtocols.IChannelFrame"/> to its specific implementation (i.e., <see cref="T:TVA.PhasorProtocols.IeeeC37_118.DataFrame"/>, <see cref="P:TVA.PhasorProtocols.IeeeC37_118.FrameParser.ConfigurationFrame"/>, <see cref="T:TVA.PhasorProtocols.IeeeC37_118.CommandFrame"/> or <see cref="T:TVA.PhasorProtocols.IeeeC37_118.HeaderFrame"/>).
             </summary>
             <param name="frame"><see cref="T:TVA.PhasorProtocols.IChannelFrame"/> that was parsed by <see cref="T:TVA.Parsing.FrameImageParserBase`2"/> that implements protocol specific common frame header interface.</param>
+        </member>
+        <member name="M:TVA.PhasorProtocols.IeeeC37_118.FrameParser.OnUnknownFrameTypeEncountered(TVA.PhasorProtocols.IeeeC37_118.FrameType)">
+            <summary>
+            Handles unknown frame types.
+            </summary>
+            <param name="frameType">Unknown frame ID.</param>
         </member>
         <member name="E:TVA.PhasorProtocols.IeeeC37_118.FrameParser.ReceivedConfigurationFrame1">
             <summary>

@@ -20,6 +20,7 @@
 '       Initial version of source generated.
 '  01/21/2011 - AJ Stadlin
 '       ShowMessagesTabOnDataException Option added to DataStreamException
+'
 '******************************************************************************************************
 
 Imports Infragistics.Win
@@ -148,7 +149,7 @@ Public Class PMUConnectionTester
         End If
 
         With EntryAssembly.Version
-            LabelVersion.Text = "Version " & .Major & "." & .Minor & "." & .Build & "." & .Revision
+            LabelVersion.Text = "Version " & .Major & "." & .Minor & "." & .Build ' & "." & .Revision
         End With
 
         ' Initialize phasor protocol selection list
@@ -274,7 +275,7 @@ Public Class PMUConnectionTester
     Private Sub TimerDelay_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerDelay.Tick
 
         ' We show the default IP stack label on startup only after a momentary pause - this prevents the visual side effect
-        ' of having the label's grey backgound stand out over a temporary white background
+        ' of having the label's grey background stand out over a temporary white background
         LabelDefaultIPStack.Visible = GroupBoxConnection.Expanded
         TimerDelay.Stop()
 
@@ -1976,6 +1977,10 @@ Public Class PMUConnectionTester
         m_lastRefresh = 0
         m_lastFrameType = FundamentalFrameType.Undetermined
         m_attributeFrames.Clear()
+
+        ' Restore window state to normal if it is minimized since disconnect may happen by source,
+        ' that is, not initiated by user - so user will need to know about the change in state
+        If WindowState = FormWindowState.Minimized Then WindowState = FormWindowState.Normal
 
         ' Restore all visual elements to their default state
         ButtonListen.Text = "&Connect"
