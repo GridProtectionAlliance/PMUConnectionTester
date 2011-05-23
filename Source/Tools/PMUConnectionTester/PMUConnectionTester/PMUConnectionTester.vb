@@ -20,6 +20,8 @@
 '       Initial version of source generated.
 '  01/21/2011 - AJ Stadlin
 '       ShowMessagesTabOnDataException Option added to DataStreamException
+'  05/19/2011 - Ritchie
+'       Added DST file support.
 '
 '******************************************************************************************************
 
@@ -453,6 +455,11 @@ Public Class PMUConnectionTester
                 CheckBoxEstablishTcpServer.Checked = True
             End If
             ComboBoxByteEncodingDisplayFormats.SelectedIndex = 5
+        ElseIf ComboBoxProtocols.SelectedIndex = PhasorProtocol.BpaPdcStream Then
+            ' If user selects the BPA protocol when a DST file is selected for input, make sure to automatically set the UsePhasorDataFileFormat to true
+            If TabControlCommunications.SelectedTab.Index = TransportProtocol.File And GetExtension(TextBoxFileCaptureName.Text).ToLower() = ".dst" Then
+                CType(m_frameParser.ConnectionParameters, BpaPdcStream.ConnectionParameters).UsePhasorDataFileFormat = True
+            End If
         End If
 
     End Sub
@@ -539,7 +546,7 @@ Public Class PMUConnectionTester
 
         With OpenFileDialog
             .Title = "Open Capture File"
-            .Filter = "Captured Files (*.PmuCapture)|*.PmuCapture|All Files|*.*"
+            .Filter = "Captured Files (*.PmuCapture)|*.PmuCapture|BPA Phasor Data Files (*.dst)|*.dst|All Files|*.*"
             .FileName = ""
             .CheckFileExists = True
             If .ShowDialog(Me) = OK Then
@@ -642,6 +649,17 @@ Public Class PMUConnectionTester
         TextBoxUdpHostIP.MouseClick, TextBoxUdpLocalPort.MouseClick, TextBoxUdpRemotePort.MouseClick
 
         TextBox_GotFocus(sender, e)
+
+    End Sub
+
+    Private Sub TextBoxFileCaptureName_TextChanged(sender As Object, e As System.EventArgs) Handles TextBoxFileCaptureName.TextChanged
+
+        If Not String.IsNullOrEmpty(TextBoxFileCaptureName.Text) Then
+            If GetExtension(TextBoxFileCaptureName.Text).ToLower() = ".dst" Then
+                ComboBoxProtocols.SelectedIndex = CType(PhasorProtocol.BpaPdcStream, Integer)
+                CType(m_frameParser.ConnectionParameters, BpaPdcStream.ConnectionParameters).UsePhasorDataFileFormat = True
+            End If
+        End If
 
     End Sub
 

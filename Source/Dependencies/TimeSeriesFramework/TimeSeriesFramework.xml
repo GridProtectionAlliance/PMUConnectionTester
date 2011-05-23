@@ -194,33 +194,10 @@
             <summary>
             Assigns <see cref="T:TimeSeriesFramework.IMeasurement"/> to its associated <see cref="T:TimeSeriesFramework.IFrame"/>.
             </summary>
-            <returns>True if <see cref="T:TimeSeriesFramework.IMeasurement"/> was successfully assigned to its <see cref="T:TimeSeriesFramework.IFrame"/>.</returns>
             <remarks>
-            <para>
             Derived classes can choose to override this method to handle custom assignment of a <see cref="T:TimeSeriesFramework.IMeasurement"/> to
-            its <see cref="T:TimeSeriesFramework.IFrame"/>. Default behavior simply assigns measurement to frame's keyed measurement dictionary.
-            </para>
-            <example>
-            If overridden user must perform their own synchronization as needed, for example:
-            <code>
-            lock (frame.Measurements)
-            {
-                if (!frame.Published)
-                {
-                    frame.Measurements[measurement.Key] = measurement;
-                    return true;
-                }
-                
-                return false;
-            }
-            </code>
-            </example>
-            <para>
-            Note that the <see cref="P:TimeSeriesFramework.IFrame.Measurements"/> dictionary is used internally to synchrnonize assignment
-            of the <see cref="P:TimeSeriesFramework.IFrame.Published"/> flag. If your custom <see cref="T:TimeSeriesFramework.IFrame"/> makes use of the
-            <see cref="P:TimeSeriesFramework.IFrame.Measurements"/> dictionary you must implement a locking scheme similar to the sample
-            code to prevent changes to the measurement dictionary during frame publication.
-            </para>
+            its <see cref="T:TimeSeriesFramework.IFrame"/>. Default behavior simply assigns measurement to frame's keyed measurement dictionary:
+            <code>frame.Measurements[measurement.Key] = measurement;</code>
             </remarks>
             <param name="frame">The <see cref="T:TimeSeriesFramework.IFrame"/> that is used.</param>
             <param name="measurement">The type of <see cref="T:TimeSeriesFramework.IMeasurement"/> to use."/&gt;</param>
@@ -347,6 +324,22 @@
             Valid frame rates for a <see cref="T:TimeSeriesFramework.ConcentratorBase"/> are greater than 0 frames per second.
             </remarks>
         </member>
+        <member name="P:TimeSeriesFramework.ConcentratorBase.MaximumPublicationTimeout">
+            <summary>
+            Gets or sets the maximum frame publication timeout in milliseconds, set to <see cref="F:System.Threading.Timeout.Infinite"/>(-1) to wait indefinitely.
+            </summary>
+            <remarks>
+            <para>
+            The concentrator automatically defines a precision timer to provide the heatbeat for frame publication, however if the system
+            gets busy the heartbeat signals can be missed. This property defines a maximum wait timeout before reception of the heartbeat
+            signal to make sure frame publications continue to occur in a timely fashion even when a system is under stress.
+            </para>
+            <para>
+            This property is automatically defined as 2% more than the number of milliseconds per frame when the <see cref="P:TimeSeriesFramework.ConcentratorBase.FramesPerSecond"/>
+            property is set. Users can override this default value to provide custom behavior for this timeout.
+            </para>
+            </remarks>
+        </member>
         <member name="P:TimeSeriesFramework.ConcentratorBase.TimeResolution">
             <summary>
             Gets or sets the maximum time resolution, in ticks, to use when sorting measurements by timestamps into their proper destination frame.
@@ -412,10 +405,38 @@
             <see cref="P:TimeSeriesFramework.ConcentratorBase.LeadTime"/> tolerance).
             </summary>
             <remarks>
-            Setting this value to false will make the concentrator use the latest value received as "real-time"
+            Setting this value to <c>false</c> will make the concentrator use the latest value received as "real-time"
             without validation; this is not recommended in production since time reported by source devices may
             be grossly incorrect. For non-production configurations, setting this value to false will allow
             concentration of historical data.
+            </remarks>
+        </member>
+        <member name="P:TimeSeriesFramework.ConcentratorBase.ProcessByReceivedTimestamp">
+            <summary>
+            Gets or sets flag that determines if concentrator should sort measurements by received time.
+            </summary>
+            <remarks>
+            <para>
+            Setting this value to <c>true</c> will make concentrator use the timestamp of measurement
+            reception, which is typically the <see cref="T:TimeSeriesFramework.IMeasurement"/> creation time, for sorting and
+            publication. This is useful in scenarios where the concentrator will be receiving very large
+            volumes of data but not necessarily in real-time, such as, reading values from a file where
+            you want data to be sorted and processed as fast as possible.
+            </para>
+            <para>
+            Setting this value to <c>true</c> will force <see cref="P:TimeSeriesFramework.ConcentratorBase.UseLocalClockAsRealTime"/> to be <c>true</c>.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:TimeSeriesFramework.ConcentratorBase.TrackPublishedTimestamp">
+            <summary>
+            Gets or sets flag that determines if system should track timestamp of publication for all frames and measurements.
+            </summary>
+            <remarks>
+            Setting this value to <c>true</c> will cause the concentrator to mark the timestamp of publication in each
+            <see cref="P:TimeSeriesFramework.IFrame.PublishedTimestamp"/> and its measurement's <see cref="P:TimeSeriesFramework.IMeasurement.PublishedTimestamp"/>.
+            Since this is extra processing time that may not be needed except in cases of calculating statistics for
+            system performance, this must be explicitly enabled.
             </remarks>
         </member>
         <member name="P:TimeSeriesFramework.ConcentratorBase.Enabled">
@@ -467,11 +488,17 @@
         </member>
         <member name="P:TimeSeriesFramework.ConcentratorBase.UseLocalClockAsRealTime">
             <summary>
-            Gets or sets flag that determines whether or not to use the local clock time as real time.
+            Gets or sets flag that determines whether or not to use the local clock time as real-time.
             </summary>
             <remarks>
-            Use your local system clock as real time only if the time is locally GPS-synchronized,
+            <para>
+            Use your local system clock as real-time only if the time is locally GPS-synchronized,
             or if the measurement values being sorted were not measured relative to a GPS-synchronized clock.
+            </para>
+            <para>
+            If <see cref="P:TimeSeriesFramework.ConcentratorBase.ProcessByReceivedTimestamp"/> is <c>true</c>, <see cref="P:TimeSeriesFramework.ConcentratorBase.UseLocalClockAsRealTime"/> will
+            always be set to <c>true</c>, even if you try to set it to <c>false</c>.
+            </para>
             </remarks>
         </member>
         <member name="P:TimeSeriesFramework.ConcentratorBase.RealTime">
@@ -659,12 +686,12 @@
             Keyed measurements in this <see cref="T:TimeSeriesFramework.IFrame"/>.
             </summary>
             <remarks>
-            Represents a dictionary of measurements, keyed by <see cref="T:TimeSeriesFramework.MeasurementKey"/>.
+            Represents a concurrent dictionary of measurements, keyed by <see cref="T:TimeSeriesFramework.MeasurementKey"/>.
             </remarks>
         </member>
         <member name="P:TimeSeriesFramework.IFrame.Published">
             <summary>
-            Gets or sets published state of this <see cref="T:TimeSeriesFramework.IFrame"/>.
+            Gets or sets published state of this <see cref="T:TimeSeriesFramework.IFrame"/> (pre-processing).
             </summary>
         </member>
         <member name="P:TimeSeriesFramework.IFrame.SortedMeasurements">
@@ -681,6 +708,24 @@
             </summary>
             <remarks>
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
+            </remarks>
+        </member>
+        <member name="P:TimeSeriesFramework.IFrame.ReceivedTimestamp">
+            <summary>
+            Gets or sets exact timestamp, in ticks, of when this <see cref="T:TimeSeriesFramework.IMeasurement"/> was received (i.e., created).
+            </summary>
+            <remarks>
+            <para>Implementors should set this timestamp to be the ticks of <see cref="P:TVA.PrecisionTimer.UtcNow"/> of when this class was created.</para>
+            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
+            </remarks>
+        </member>
+        <member name="P:TimeSeriesFramework.IFrame.PublishedTimestamp">
+            <summary>
+            Gets or sets exact timestamp, in ticks, of when this <see cref="T:TimeSeriesFramework.IMeasurement"/> was published (post-processing).
+            </summary>
+            <remarks>
+            <para>Implementors should update all associated <see cref="P:TimeSeriesFramework.IMeasurement.PublishedTimestamp"/> values when setting this property.</para>
+            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
             </remarks>
         </member>
         <member name="P:TimeSeriesFramework.IFrame.LastSortedMeasurement">
@@ -814,7 +859,7 @@
         </member>
         <member name="P:TimeSeriesFramework.Frame.Published">
             <summary>
-            Gets or sets published state of this <see cref="T:TimeSeriesFramework.Frame"/>.
+            Gets or sets published state of this <see cref="T:TimeSeriesFramework.Frame"/> (pre-processing).
             </summary>
         </member>
         <member name="P:TimeSeriesFramework.Frame.SortedMeasurements">
@@ -831,6 +876,24 @@
             </summary>
             <remarks>
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
+            </remarks>
+        </member>
+        <member name="P:TimeSeriesFramework.Frame.ReceivedTimestamp">
+            <summary>
+            Gets or sets exact timestamp, in ticks, of when this <see cref="T:TimeSeriesFramework.Frame"/> was received (i.e., created).
+            </summary>
+            <remarks>
+            <para>In the default implementation, this timestamp will simply be the ticks of <see cref="P:TVA.PrecisionTimer.UtcNow"/> of when this class was created.</para>
+            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
+            </remarks>
+        </member>
+        <member name="P:TimeSeriesFramework.Frame.PublishedTimestamp">
+            <summary>
+            Gets or sets exact timestamp, in ticks, of when this <see cref="T:TimeSeriesFramework.Frame"/> was published (post-processing).
+            </summary>
+            <remarks>
+            <para>In the default implementation, setting this property will update all associated <see cref="P:TimeSeriesFramework.IMeasurement.PublishedTimestamp"/>.</para>
+            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
             </remarks>
         </member>
         <member name="P:TimeSeriesFramework.Frame.LastSortedMeasurement">
@@ -913,26 +976,21 @@
         </member>
         <member name="P:TimeSeriesFramework.FrameQueue.Head">
             <summary>
-            Returns the next <see cref="T:TimeSeriesFramework.IFrame"/> in the <see cref="T:TimeSeriesFramework.FrameQueue"/>, if any.
+            Returns the next <see cref="T:TimeSeriesFramework.TrackingFrame"/> in the <see cref="T:TimeSeriesFramework.FrameQueue"/>, if any.
             </summary>
             <remarks>
-            This property is tracked separately from the internal <see cref="T:TimeSeriesFramework.TrackingFrame"/> collection, as a
+            This property is tracked separately from the internal frame collection, as a
             result this property may be called at any time without a locking penalty.
             </remarks>
         </member>
         <member name="P:TimeSeriesFramework.FrameQueue.Last">
             <summary>
-            Gets the last processed <see cref="T:TimeSeriesFramework.IFrame"/> in the <see cref="T:TimeSeriesFramework.FrameQueue"/>.
+            Gets the last processed <see cref="T:TimeSeriesFramework.TrackingFrame"/> in the <see cref="T:TimeSeriesFramework.FrameQueue"/>.
             </summary>
             <remarks>
-            This property is tracked separately from the internal <see cref="T:TimeSeriesFramework.IFrame"/> collection, as a
+            This property is tracked separately from the internal frame collection, as a
             result this property may be called at any time without a locking penalty.
             </remarks>
-        </member>
-        <member name="P:TimeSeriesFramework.FrameQueue.LastDownsampledMeasurements">
-            <summary>
-            Gets total number of downsampled measurements from last published frame.
-            </summary>
         </member>
         <member name="P:TimeSeriesFramework.FrameQueue.Count">
             <summary>
@@ -1029,6 +1087,23 @@
         <member name="P:TimeSeriesFramework.IMeasurement.Timestamp">
             <summary>
             Gets or sets exact timestamp, in ticks, of the data represented by this <see cref="T:TimeSeriesFramework.IMeasurement"/>.
+            </summary>
+            <remarks>
+            The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
+            </remarks>
+        </member>
+        <member name="P:TimeSeriesFramework.IMeasurement.ReceivedTimestamp">
+            <summary>
+            Gets or sets exact timestamp, in ticks, of when this <see cref="T:TimeSeriesFramework.IMeasurement"/> was received (i.e., created).
+            </summary>
+            <remarks>
+            <para>Implementors should set this timestamp to be the ticks of <see cref="P:TVA.PrecisionTimer.UtcNow"/> of when this class was created.</para>
+            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
+            </remarks>
+        </member>
+        <member name="P:TimeSeriesFramework.IMeasurement.PublishedTimestamp">
+            <summary>
+            Gets or sets exact timestamp, in ticks, of when this <see cref="T:TimeSeriesFramework.IMeasurement"/> was published (post-processing).
             </summary>
             <remarks>
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
@@ -1502,6 +1577,23 @@
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
         </member>
+        <member name="P:TimeSeriesFramework.Measurement.ReceivedTimestamp">
+            <summary>
+            Gets or sets exact timestamp, in ticks, of when this <see cref="T:TimeSeriesFramework.Measurement"/> was received (i.e., created).
+            </summary>
+            <remarks>
+            <para>In the default implementation, this timestamp will simply be the ticks of <see cref="P:TVA.PrecisionTimer.UtcNow"/> of when this class was created.</para>
+            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
+            </remarks>
+        </member>
+        <member name="P:TimeSeriesFramework.Measurement.PublishedTimestamp">
+            <summary>
+            Gets or sets exact timestamp, in ticks, of when this <see cref="T:TimeSeriesFramework.Measurement"/> was published (post-processing).
+            </summary>
+            <remarks>
+            The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
+            </remarks>
+        </member>
         <member name="P:TimeSeriesFramework.Measurement.ValueQualityIsGood">
             <summary>
             Gets or sets a boolean value that determines if the quality of the numeric value of this <see cref="T:TimeSeriesFramework.Measurement"/> is good.
@@ -1815,6 +1907,11 @@
             Implementors should use value <see cref="F:System.Threading.Timeout.Infinite"/> to wait indefinitely.
             </remarks>
         </member>
+        <member name="P:TimeSeriesFramework.Adapters.IAdapter.ProcessMeasurementFilter">
+            <summary>
+            Gets or sets flag that determines if measurements being queued for processing should be tested to see if they are in the <see cref="P:TimeSeriesFramework.Adapters.IAdapter.InputMeasurementKeys"/>.
+            </summary>
+        </member>
         <member name="P:TimeSeriesFramework.Adapters.IAdapter.OutputMeasurements">
             <summary>
             Gets or sets output measurements that the action adapter will produce, if any.
@@ -1832,7 +1929,7 @@
         </member>
         <member name="M:TimeSeriesFramework.Adapters.IActionAdapter.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{TimeSeriesFramework.IMeasurement})">
             <summary>
-            Queues measurements for calculation processing.  Measurements are automatically filters to the defined <see cref="P:TimeSeriesFramework.Adapters.IAdapter.InputMeasurementKeys"/>.
+            Queues measurements for calculation processing.  Measurements are automatically filtered to the defined <see cref="P:TimeSeriesFramework.Adapters.IAdapter.InputMeasurementKeys"/>.
             </summary>
             <param name="measurements">Collection of measurements to queue for calculation processing.</param>
         </member>
@@ -1917,7 +2014,7 @@
         </member>
         <member name="M:TimeSeriesFramework.Adapters.ActionAdapterBase.QueueMeasurementForProcessing(TimeSeriesFramework.IMeasurement)">
             <summary>
-            Queues a single measurement for processing.
+            Queues a single measurement for processing. Measurements is automatically filtered to the defined <see cref="P:TimeSeriesFramework.Adapters.IAdapter.InputMeasurementKeys"/>.
             </summary>
             <param name="measurement">Measurement to queue for processing.</param>
             <remarks>
@@ -1926,7 +2023,7 @@
         </member>
         <member name="M:TimeSeriesFramework.Adapters.ActionAdapterBase.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{TimeSeriesFramework.IMeasurement})">
             <summary>
-            Queues a collection of measurements for processing.
+            Queues a collection of measurements for processing. Measurements are automatically filtered to the defined <see cref="P:TimeSeriesFramework.Adapters.IAdapter.InputMeasurementKeys"/>.
             </summary>
             <param name="measurements">Collection of measurements to queue for processing.</param>
             <remarks>
@@ -1946,6 +2043,12 @@
             </summary>
             <param name="timeout">The number of milliseconds to wait.</param>
             <returns><c>true</c> if the initialization succeeds; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:TimeSeriesFramework.Adapters.ActionAdapterBase.GetHashCode">
+            <summary>
+            Serves as a hash function for the current <see cref="T:TimeSeriesFramework.Adapters.ActionAdapterBase"/>.
+            </summary>
+            <returns>A hash code for the current <see cref="T:TimeSeriesFramework.Adapters.ActionAdapterBase"/>.</returns>
         </member>
         <member name="M:TimeSeriesFramework.Adapters.ActionAdapterBase.TryGetMinimumNeededMeasurements(TimeSeriesFramework.IFrame,TimeSeriesFramework.IMeasurement[]@)">
             <summary>
@@ -2081,6 +2184,11 @@
             <remarks>
             Set to <see cref="F:System.Threading.Timeout.Infinite"/> to wait indefinitely.
             </remarks>
+        </member>
+        <member name="P:TimeSeriesFramework.Adapters.ActionAdapterBase.ProcessMeasurementFilter">
+            <summary>
+            Gets or sets flag that determines if measurements being queued for processing should be tested to see if they are in the <see cref="P:TimeSeriesFramework.Adapters.ActionAdapterBase.InputMeasurementKeys"/>.
+            </summary>
         </member>
         <member name="P:TimeSeriesFramework.Adapters.ActionAdapterBase.OutputMeasurements">
             <summary>
@@ -2442,6 +2550,11 @@
             Set to <see cref="F:System.Threading.Timeout.Infinite"/> to wait indefinitely.
             </remarks>
         </member>
+        <member name="P:TimeSeriesFramework.Adapters.AdapterCollectionBase`1.ProcessMeasurementFilter">
+            <summary>
+            Gets or sets flag that determines if measurements being queued for processing should be tested to see if they are in the <see cref="P:TimeSeriesFramework.Adapters.AdapterCollectionBase`1.InputMeasurementKeys"/>.
+            </summary>
+        </member>
         <member name="P:TimeSeriesFramework.Adapters.AdapterCollectionBase`1.OutputMeasurements">
             <summary>
             Gets or sets output measurements that the <see cref="T:TimeSeriesFramework.Adapters.AdapterCollectionBase`1"/> will produce, if any.
@@ -2634,6 +2747,12 @@
             <param name="timeout">The number of milliseconds to wait.</param>
             <returns><c>true</c> if the initialization succeeds; otherwise, <c>false</c>.</returns>
         </member>
+        <member name="M:TimeSeriesFramework.Adapters.AdapterBase.GetHashCode">
+            <summary>
+            Serves as a hash function for the current <see cref="T:TimeSeriesFramework.Adapters.AdapterBase"/>.
+            </summary>
+            <returns>A hash code for the current <see cref="T:TimeSeriesFramework.Adapters.AdapterBase"/>.</returns>
+        </member>
         <member name="M:TimeSeriesFramework.Adapters.AdapterBase.OnStatusMessage(System.String)">
             <summary>
             Raises the <see cref="E:TimeSeriesFramework.Adapters.AdapterBase.StatusMessage"/> event.
@@ -2788,6 +2907,11 @@
             <remarks>
             Set to <see cref="F:System.Threading.Timeout.Infinite"/> to wait indefinitely.
             </remarks>
+        </member>
+        <member name="P:TimeSeriesFramework.Adapters.AdapterBase.ProcessMeasurementFilter">
+            <summary>
+            Gets or sets flag that determines if measurements being queued for processing should be tested to see if they are in the <see cref="P:TimeSeriesFramework.Adapters.AdapterBase.InputMeasurementKeys"/>.
+            </summary>
         </member>
         <member name="P:TimeSeriesFramework.Adapters.AdapterBase.OutputMeasurements">
             <summary>
@@ -3234,7 +3358,7 @@
         </member>
         <member name="M:TimeSeriesFramework.Adapters.IOutputAdapter.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{TimeSeriesFramework.IMeasurement})">
             <summary>
-            Queues measurements for processing.
+            Queues measurements for processing. Measurements are automatically filtered to the defined <see cref="P:TimeSeriesFramework.Adapters.IAdapter.InputMeasurementKeys"/>.
             </summary>
             <param name="measurements">Collection of measurements to queue for processing.</param>
         </member>
@@ -3279,7 +3403,7 @@
         </member>
         <member name="T:TimeSeriesFramework.Adapters.OutputAdapterBase">
             <summary>
-            Represents that base class for any outgoing data stream.
+            Represents the base class for any outgoing data stream.
             </summary>
             <remarks>
             This base class acts as a measurement queue so that output adapters can temporarily go
@@ -3354,13 +3478,13 @@
         </member>
         <member name="M:TimeSeriesFramework.Adapters.OutputAdapterBase.QueueMeasurementForProcessing(TimeSeriesFramework.IMeasurement)">
             <summary>
-            Queues a single measurement for processing.
+            Queues a single measurement for processing. Measurement is automatically filtered to the defined <see cref="P:TimeSeriesFramework.Adapters.IAdapter.InputMeasurementKeys"/>.
             </summary>
             <param name="measurement">Measurement to queue for processing.</param>
         </member>
         <member name="M:TimeSeriesFramework.Adapters.OutputAdapterBase.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{TimeSeriesFramework.IMeasurement})">
             <summary>
-            Queues a collection of measurements for processing.
+            Queues a collection of measurements for processing. Measurements are automatically filtered to the defined <see cref="P:TimeSeriesFramework.Adapters.IAdapter.InputMeasurementKeys"/>.
             </summary>
             <param name="measurements">Measurements to queue for processing.</param>
         </member>
@@ -3699,6 +3823,11 @@
             Represents a data publishing server that allows multiple connections for data subscriptions.
             </summary>
         </member>
+        <member name="F:TimeSeriesFramework.Transport.DataPublisher.CipherLookupKey">
+            <summary>
+            Lookup string for cipher key used for encryption of transport password.
+            </summary>
+        </member>
         <member name="M:TimeSeriesFramework.Transport.DataPublisher.#ctor">
             <summary>
             Creates a new <see cref="T:TimeSeriesFramework.Transport.DataPublisher"/>.
@@ -3798,6 +3927,11 @@
             <remarks>
             The assigned name is used as the settings category when persisting the TCP server settings.
             </remarks>
+        </member>
+        <member name="P:TimeSeriesFramework.Transport.DataPublisher.SharedSecret">
+            <summary>
+            Gets or sets shared secret required to access transport data.
+            </summary>
         </member>
         <member name="P:TimeSeriesFramework.Transport.DataPublisher.IClientSubscription.ClientID">
             <summary>
@@ -3949,11 +4083,12 @@
             Initializes <see cref="T:TimeSeriesFramework.Transport.DataSubscriber"/>.
             </summary>
         </member>
-        <member name="M:TimeSeriesFramework.Transport.DataSubscriber.SynchronizedSubscribe(System.Boolean,System.Int32,System.Double,System.Double,System.String,System.Boolean,System.Boolean,System.Boolean,System.Int64,System.Boolean,TimeSeriesFramework.DownsamplingMethod)">
+        <member name="M:TimeSeriesFramework.Transport.DataSubscriber.SynchronizedSubscribe(System.Boolean,System.String,System.Int32,System.Double,System.Double,System.String,System.Boolean,System.Boolean,System.Boolean,System.Int64,System.Boolean,TimeSeriesFramework.DownsamplingMethod)">
             <summary>
             Subscribes (or re-subscribes) to a data publisher for a synchronized set of data points.
             </summary>
             <param name="compactFormat">Boolean value that determines if the compact measurement format should be used. Set to <c>false</c> for full fidelity measurement serialization; otherwise set to <c>true</c> for bandwidth conservation.</param>
+            <param name="password">Pass-phrase required to connect to subscriber.</param>
             <param name="framesPerSecond">The desired number of data frames per second.</param>
             <param name="lagTime">Allowed past time deviation tolerance, in seconds (can be subsecond).</param>
             <param name="leadTime">Allowed future time deviation tolerance, in seconds (can be subsecond).</param>
@@ -3966,11 +4101,12 @@
             <param name="downsamplingMethod">Gets the total number of downsampled measurements processed by the concentrator.</param>
             <returns><c>true</c> if subscribe was successful; otherwise <c>false</c>.</returns>
         </member>
-        <member name="M:TimeSeriesFramework.Transport.DataSubscriber.UnsynchronizedSubscribe(System.Boolean,System.Boolean,System.String,System.Double,System.Double,System.Boolean)">
+        <member name="M:TimeSeriesFramework.Transport.DataSubscriber.UnsynchronizedSubscribe(System.Boolean,System.String,System.Boolean,System.String,System.Double,System.Double,System.Boolean)">
             <summary>
             Subscribes (or re-subscribes) to a data publisher for an unsynchronized set of data points.
             </summary>
             <param name="compactFormat">Boolean value that determines if the compact measurement format should be used. Set to <c>false</c> for full fidelity measurement serialization; otherwise set to <c>true</c> for bandwidth conservation.</param>
+            <param name="password">Pass-phrase required to connect to subscriber.</param>
             <param name="throttled">Boolean value that determines if data should be throttled at a set transmission interval or sent on change.</param>
             <param name="filterExpression">Filtering expression that defines the measurements that are being subscribed.</param>
             <param name="lagTime">When <paramref name="throttled"/> is <c>true</c>, defines the data transmission speed in seconds (can be subsecond).</param>
@@ -4174,7 +4310,7 @@
             </summary>
             <param name="args">Service start arguments.</param>
         </member>
-        <member name="M:TimeSeriesFramework.ServiceClientBase.ClientHelper_ReceivedServiceUpdate(System.Object,TVA.EventArgs{TVA.Services.ServiceProcess.UpdateType,System.String})">
+        <member name="M:TimeSeriesFramework.ServiceClientBase.ClientHelper_ReceivedServiceUpdate(System.Object,TVA.EventArgs{TVA.UpdateType,System.String})">
             <summary>
             Client helper service update reception handler.
             </summary>
@@ -4304,14 +4440,24 @@
             This method allows caching of the current system configuration so it can be used if primary configuration source is unavailable.
             </remarks>
         </member>
-        <member name="M:TimeSeriesFramework.ServiceHostBase.NewMeasurementsHandler(System.Object,TVA.EventArgs{System.Collections.Generic.ICollection{TimeSeriesFramework.IMeasurement}})">
+        <member name="M:TimeSeriesFramework.ServiceHostBase.RoutedMeasurementsHandler(System.Object,TVA.EventArgs{System.Collections.Generic.ICollection{TimeSeriesFramework.IMeasurement}})">
             <summary>
-            Event handler for distributing new measurements.
+            Event handler for distributing new measurements in a routed fashion.
             </summary>
             <param name="sender">Event source reference to adapter that generated new measurements.</param>
             <param name="e">Event arguments containing a collection of new measurements.</param>
             <remarks>
-            Time-series framework uses this handler to route new measurements to the action and output adapters.
+            Time-series framework uses this handler to directly route new measurements to the action and output adapters.
+            </remarks>
+        </member>
+        <member name="M:TimeSeriesFramework.ServiceHostBase.BroadcastMeasurementsHandler(System.Object,TVA.EventArgs{System.Collections.Generic.ICollection{TimeSeriesFramework.IMeasurement}})">
+            <summary>
+            Event handler for distributing new measurements in a broadcast fashion.
+            </summary>
+            <param name="sender">Event source reference to adapter that generated new measurements.</param>
+            <param name="e">Event arguments containing a collection of new measurements.</param>
+            <remarks>
+            Time-series framework uses this handler to route new measurements to the action and output adapters; adapter will handle filtering.
             </remarks>
         </member>
         <member name="M:TimeSeriesFramework.ServiceHostBase.UnpublishedSamplesHandler(System.Object,TVA.EventArgs{System.Int32})">
@@ -4446,6 +4592,12 @@
             </summary>
             <param name="requestInfo"><see cref="T:TVA.Services.ServiceProcess.ClientRequestInfo"/> instance containing the client request.</param>
         </member>
+        <member name="M:TimeSeriesFramework.ServiceHostBase.RefreshRoutesRequestHandler(TVA.Services.ServiceProcess.ClientRequestInfo)">
+            <summary>
+            Recalculates routing tables.
+            </summary>
+            <param name="requestInfo"><see cref="T:TVA.Services.ServiceProcess.ClientRequestInfo"/> instance containing the client request.</param>
+        </member>
         <member name="M:TimeSeriesFramework.ServiceHostBase.ReloadConfigRequstHandler(TVA.Services.ServiceProcess.ClientRequestInfo)">
             <summary>
             Manually reloads system configuration.
@@ -4504,19 +4656,19 @@
             <param name="status">Formatted status message to send to client.</param>
             <param name="args">Arguments of the formatted status message.</param>
         </member>
-        <member name="M:TimeSeriesFramework.ServiceHostBase.DisplayStatusMessage(System.String,TVA.Services.ServiceProcess.UpdateType)">
+        <member name="M:TimeSeriesFramework.ServiceHostBase.DisplayStatusMessage(System.String,TVA.UpdateType)">
             <summary>
             Displays a broadcast message to all subscribed clients.
             </summary>
             <param name="status">Status message to send to all clients.</param>
-            <param name="type"><see cref="T:TVA.Services.ServiceProcess.UpdateType"/> of message to send.</param>
+            <param name="type"><see cref="T:TVA.UpdateType"/> of message to send.</param>
         </member>
-        <member name="M:TimeSeriesFramework.ServiceHostBase.DisplayStatusMessage(System.String,TVA.Services.ServiceProcess.UpdateType,System.Object[])">
+        <member name="M:TimeSeriesFramework.ServiceHostBase.DisplayStatusMessage(System.String,TVA.UpdateType,System.Object[])">
             <summary>
             Displays a broadcast message to all subscribed clients.
             </summary>
             <param name="status">Formatted status message to send to all clients.</param>
-            <param name="type"><see cref="T:TVA.Services.ServiceProcess.UpdateType"/> of message to send.</param>
+            <param name="type"><see cref="T:TVA.UpdateType"/> of message to send.</param>
             <param name="args">Arguments of the formatted status message.</param>
         </member>
         <member name="M:TimeSeriesFramework.ServiceHostBase.OnStart(System.String[])">
@@ -4715,6 +4867,11 @@
         <member name="P:TimeSeriesFramework.TrackingFrame.DownsampledMeasurements">
             <summary>
             Total number of measurements downsampled by <see cref="T:TimeSeriesFramework.TrackingFrame"/>.
+            </summary>
+        </member>
+        <member name="P:TimeSeriesFramework.TrackingFrame.Lock">
+            <summary>
+            Gets the <see cref="T:TimeSeriesFramework.TrackingFrame"/> locking primitive.
             </summary>
         </member>
     </members>

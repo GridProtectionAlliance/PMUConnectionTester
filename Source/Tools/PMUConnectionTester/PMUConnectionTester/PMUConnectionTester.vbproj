@@ -140,7 +140,7 @@
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="TimeSeriesFramework, Version=1.0.27.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TimeSeriesFramework, Version=1.0.68.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TimeSeriesFramework\TimeSeriesFramework.dll</HintPath>
     </Reference>
@@ -167,9 +167,6 @@
     <Reference Include="TVA.Services, Version=4.0.2.14, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TVA\TVA.Services.dll</HintPath>
-    </Reference>
-    <Reference Include="TVA.Web">
-      <HintPath>..\..\..\Dependencies\TVA\TVA.Web.dll</HintPath>
     </Reference>
     <Reference Include="TVA.Windows, Version=4.0.2.14, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

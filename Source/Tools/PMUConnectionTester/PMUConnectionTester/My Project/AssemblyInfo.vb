@@ -6,14 +6,14 @@ Imports System.Runtime.InteropServices
 
 ' Informational attributes.
 <Assembly: AssemblyCompany("Grid Protection Alliance")> 
-<Assembly: AssemblyCopyright("Copyright © 2010, All Rights Reserved.")> 
+<Assembly: AssemblyCopyright("Copyright © 2011, All Rights Reserved.")> 
 <Assembly: AssemblyProduct("openPDC")> 
 
 ' Assembly manifest attributes.
 #If DEBUG Then
 <Assembly: AssemblyConfiguration("Debug Build")> 
 #Else
-<Assembly: AssemblyConfiguration("Release Build")>
+<Assembly: AssemblyConfiguration("Release Build")> 
 #End If
 <Assembly: AssemblyTitle("PMU Connection Tester")> 
 <Assembly: AssemblyDescription("PMU Connection Tester")> 
