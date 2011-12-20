@@ -13,19 +13,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TVA", "TVA", "{9F66F141-5F50-4EDC-81AD-8CE261D7AC9D}"
 	ProjectSection(SolutionItems) = preProject
 		Dependencies\TVA\TVA.Communication.dll = Dependencies\TVA\TVA.Communication.dll
-		Dependencies\TVA\TVA.Communication.XML = Dependencies\TVA\TVA.Communication.XML
 		Dependencies\TVA\TVA.Core.dll = Dependencies\TVA\TVA.Core.dll
-		Dependencies\TVA\TVA.Core.XML = Dependencies\TVA\TVA.Core.XML
 		Dependencies\TVA\TVA.Historian.dll = Dependencies\TVA\TVA.Historian.dll
-		Dependencies\TVA\TVA.Historian.xml = Dependencies\TVA\TVA.Historian.xml
 		Dependencies\TVA\TVA.PhasorProtocols.dll = Dependencies\TVA\TVA.PhasorProtocols.dll
-		Dependencies\TVA\TVA.PhasorProtocols.xml = Dependencies\TVA\TVA.PhasorProtocols.xml
 		Dependencies\TVA\TVA.Security.dll = Dependencies\TVA\TVA.Security.dll
-		Dependencies\TVA\TVA.Security.xml = Dependencies\TVA\TVA.Security.xml
-		Dependencies\TVA\TVA.Services.dll = Dependencies\TVA\TVA.Services.dll
-		Dependencies\TVA\TVA.Services.xml = Dependencies\TVA\TVA.Services.xml
+		Dependencies\TVA\TVA.ServiceModel.dll = Dependencies\TVA\TVA.ServiceModel.dll
+		Dependencies\TVA\TVA.ServiceProcess.dll = Dependencies\TVA\TVA.ServiceProcess.dll
 		Dependencies\TVA\TVA.Windows.dll = Dependencies\TVA\TVA.Windows.dll
-		Dependencies\TVA\TVA.Windows.XML = Dependencies\TVA\TVA.Windows.XML
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infragistics", "Infragistics", "{C4DB0733-6C94-4FFA-99D1-EB8828C1E1D9}"
@@ -65,7 +59,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TimeSeriesFramework", "TimeSeriesFramework", "{4862AA50-B006-45A5-8A0C-6DABA6A31B31}"
 	ProjectSection(SolutionItems) = preProject
 		Dependencies\TimeSeriesFramework\TimeSeriesFramework.dll = Dependencies\TimeSeriesFramework\TimeSeriesFramework.dll
-		Dependencies\TimeSeriesFramework\TimeSeriesFramework.xml = Dependencies\TimeSeriesFramework\TimeSeriesFramework.xml
 	EndProjectSection
 EndProject
 Global

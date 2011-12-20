@@ -51,7 +51,7 @@
     <OutputPath>..\..\..\..\Build\Output\Debug\Tools\PMUConnectionTester\</OutputPath>
     <DocumentationFile>PMUConnectionTester.xml</DocumentationFile>
     <NoWarn>42030,42104,42108,42109,42353,42354,42355</NoWarn>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -140,35 +140,38 @@
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="TimeSeriesFramework, Version=1.0.68.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TimeSeriesFramework, Version=1.1.23.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TimeSeriesFramework\TimeSeriesFramework.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.Communication, Version=4.0.2.14, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TVA.Communication, Version=4.0.3.33, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TVA\TVA.Communication.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.Core, Version=4.0.2.14, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TVA.Core, Version=4.0.3.33, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TVA\TVA.Core.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.Historian, Version=1.1.45.64154, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TVA.Historian, Version=1.1.117.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TVA\TVA.Historian.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.PhasorProtocols, Version=1.4.77.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TVA.PhasorProtocols, Version=1.4.204.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TVA\TVA.PhasorProtocols.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.Security, Version=4.0.2.14, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TVA.Security, Version=4.0.3.33, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TVA\TVA.Security.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.Services, Version=4.0.2.14, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TVA.ServiceModel, Version=4.0.3.33, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Dependencies\TVA\TVA.Services.dll</HintPath>
+      <HintPath>..\..\..\Dependencies\TVA\TVA.ServiceModel.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.Windows, Version=4.0.2.14, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TVA.ServiceProcess">
+      <HintPath>..\..\..\Dependencies\TVA\TVA.ServiceProcess.dll</HintPath>
+    </Reference>
+    <Reference Include="TVA.Windows, Version=4.0.3.33, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TVA\TVA.Windows.dll</HintPath>
     </Reference>

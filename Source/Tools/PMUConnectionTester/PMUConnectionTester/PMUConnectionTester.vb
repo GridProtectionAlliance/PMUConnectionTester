@@ -46,6 +46,7 @@ Imports TVA.Common
 Imports TVA.Communication
 Imports TVA.Configuration
 Imports TVA.IO.FilePath
+Imports TVA.Parsing
 Imports TVA.PhasorProtocols
 Imports TVA.Reflection
 Imports TVA.Reflection.AssemblyInfo
@@ -150,9 +151,13 @@ Public Class PMUConnectionTester
             File.Copy(GetAbsolutePath("LastRun.PmuConnection"), m_lastConnectionFileName)
         End If
 
+#If DEBUG Then
+        LabelVersion.Text = "DEBUG VERSION"
+#Else
         With EntryAssembly.Version
             LabelVersion.Text = "Version " & .Major & "." & .Minor & "." & .Build ' & "." & .Revision
         End With
+#End If
 
         ' Initialize phasor protocol selection list
         Dim protocols As Integer() = CType([Enum].GetValues(GetType(PhasorProtocol)), Integer())
@@ -171,7 +176,9 @@ Public Class PMUConnectionTester
         Next
 
         For Each stopbit As String In [Enum].GetNames(GetType(Ports.StopBits))
-            ComboBoxSerialStopBits.Items.Add(stopbit)
+            If stopbit <> "None" Then
+                ComboBoxSerialStopBits.Items.Add(stopbit)
+            End If
         Next
 
         ' Properly position extra connection parameters group box.  Since it's
@@ -191,14 +198,13 @@ Public Class PMUConnectionTester
         PropertyGridApplicationSettings.AdjustCommentAreaHeight(4)
         PropertyGridApplicationSettings.AdjustLabelRatio(1.62)
 
-        ' Determine if default IP stack is IPv6
         Try
-            ' First address family in addresslist for loopback will determine default IP stack
-            If Dns.GetHostEntry(IPAddress.Loopback).AddressList(0).AddressFamily = Sockets.AddressFamily.InterNetworkV6 Then
-                m_ipStackIsIPv6 = True
+            ' Determine if default IP stack is IPv6
+            m_ipStackIsIPv6 = Transport.GetDefaultIPStack() = IPStack.IPv6
+
+            If m_ipStackIsIPv6 Then
                 LabelDefaultIPStack.Text = "Default IP Stack: IPv6"
             Else
-                m_ipStackIsIPv6 = False
                 LabelDefaultIPStack.Text = "Default IP Stack: IPv4"
             End If
         Catch
@@ -464,15 +470,15 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub ComboBoxCommands_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ComboBoxCommands.SelectedIndexChanged
+    'Private Sub ComboBoxCommands_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ComboBoxCommands.SelectedIndexChanged
 
-        ' Some protocols only support enable and disable real-time data commands...
-        If ComboBoxProtocols.SelectedIndex >= 4 And ComboBoxCommands.SelectedIndex > 1 Then
-            MsgBox("This protocol only supports enable and disable real-time data commands.", MsgBoxStyle.Exclamation Or MsgBoxStyle.OkOnly, "Invalid Command Selection")
-            ComboBoxCommands.SelectedIndex = 0
-        End If
+    '    ' Some protocols only support enable and disable real-time data commands...
+    '    If ComboBoxProtocols.SelectedIndex >= 4 And ComboBoxCommands.SelectedIndex > 1 Then
+    '        MsgBox("This protocol only supports enable and disable real-time data commands.", MsgBoxStyle.Exclamation Or MsgBoxStyle.OkOnly, "Invalid Command Selection")
+    '        ComboBoxCommands.SelectedIndex = 0
+    '    End If
 
-    End Sub
+    'End Sub
 
     Private Sub CheckBoxEstablishTcpServer_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckBoxEstablishTcpServer.CheckedChanged
 
@@ -1471,7 +1477,7 @@ Public Class PMUConnectionTester
 
         ' To make sure "sent" command frames can get captured and displayed, we make sure and
         ' send the frame to the frame buffer image handler
-        ReceivedFrameBufferImage(FundamentalFrameType.CommandFrame, frame.BinaryImage, 0, frame.BinaryLength)
+        ReceivedFrameBufferImage(FundamentalFrameType.CommandFrame, frame.BinaryImage(), 0, frame.BinaryLength)
 
     End Sub
 
@@ -1801,6 +1807,18 @@ Public Class PMUConnectionTester
 
         If m_applicationSettings.ForceIPv4 Then
             Try
+                Dim literalAddress As IPAddress
+
+                ' See if this is a literal IP address first
+                If IPAddress.TryParse(ipValue, literalAddress) Then
+                    ' Check to see if address has an IPv4 style address
+                    If literalAddress.AddressFamily = Sockets.AddressFamily.InterNetwork Then
+                        ' Assign IP address
+                        maskedEditControl.Text = literalAddress.ToString()
+                        Exit Sub
+                    End If
+                End If
+
                 ' When forcing IPv4, an input mask is applied and may cause assignment of IPv6 or DNS values loaded
                 ' from a saved connection string to fail
                 For Each address As IPAddress In Dns.GetHostEntry(ipValue).AddressList

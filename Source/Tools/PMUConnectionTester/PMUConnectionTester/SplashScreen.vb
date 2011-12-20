@@ -36,9 +36,13 @@ Public NotInheritable Class SplashScreen
             ' Set up the dialog text at runtime according to the application's assembly information
             ApplicationTitle.Text = .Title
 
+#If DEBUG Then
+            Version.Text = "DEBUG VERSION - DO NOT DEPLOY"
+#Else
             With .Version
                 Version.Text = "Version " & .Major & "." & .Minor & "." & .Build ' & "." & .Revision
             End With
+#End If
 
             Copyright.Text = .Copyright
         End With
