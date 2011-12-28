@@ -232,7 +232,7 @@ Public Class PMUConnectionTester
         If ComboBoxSerialPorts.Items.Count > 0 Then ComboBoxSerialPorts.SelectedIndex = 0
         ComboBoxSerialBaudRates.SelectedIndex = 0
         ComboBoxSerialParities.SelectedIndex = 0
-        ComboBoxSerialStopBits.SelectedIndex = 1
+        ComboBoxSerialStopBits.SelectedIndex = 0
         LabelSelectedIsRefAngle.Visible = (m_applicationSettings.PhaseAngleGraphStyle = ApplicationSettings.AngleGraphStyle.Relative)
 
         If Environment.GetCommandLineArgs.Length > 1 Then
@@ -466,6 +466,10 @@ Public Class PMUConnectionTester
             If TabControlCommunications.SelectedTab.Index = TransportProtocol.File And GetExtension(TextBoxFileCaptureName.Text).ToLower() = ".dst" Then
                 CType(m_frameParser.ConnectionParameters, BpaPdcStream.ConnectionParameters).UsePhasorDataFileFormat = True
             End If
+        ElseIf ComboBoxProtocols.SelectedIndex = PhasorProtocol.Macrodyne Then
+            ' Macrodyne connections work best when real-time data is disabled before sending other commands
+            m_applicationSettings.SkipDisableRealTimeData = False
+            PropertyGridApplicationSettings.Refresh()
         End If
 
     End Sub
