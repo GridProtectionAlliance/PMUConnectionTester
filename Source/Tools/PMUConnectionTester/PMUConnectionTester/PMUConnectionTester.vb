@@ -1347,9 +1347,12 @@ Public Class PMUConnectionTester
 
         If m_selectedCell IsNot Nothing And frame.Cells.Count > 0 Then
             Dim cell As IDataCell = frame.Cells(ComboBoxPmus.SelectedIndex)
-            Dim frequency As Double = cell.FrequencyValue.Frequency
-            Dim phasorCount As Integer = cell.PhasorValues.Count
+            Dim frequency As Double
+            Dim phasorCount As Integer
             Dim phasorIndex As Integer = ComboBoxPhasors.SelectedIndex
+
+            If cell.FrequencyValue IsNot Nothing Then frequency = cell.FrequencyValue.Frequency
+            If cell.PhasorValues IsNot Nothing Then phasorCount = cell.PhasorValues.Count
 
             ' Plot real-time frequency trend
             m_frequencyData.Rows.Add(New Object() {frequency})
@@ -1360,58 +1363,71 @@ Public Class PMUConnectionTester
 
             ' Plot real-time phasor trends
             If phasorIndex < phasorCount AndAlso phasorIndex > -1 AndAlso phasorCount > 0 Then
-                Dim phasor As IPhasorValue = cell.PhasorValues(phasorIndex)
+                Try
+                    Dim phasor As IPhasorValue = cell.PhasorValues(phasorIndex)
 
-                If Math.Abs((phasor.Angle - m_lastPhaseAngle).ToDegrees()) >= 0.5! OrElse m_phasorData.Rows.Count < 2 Then
-                    Dim row As DataRow = m_phasorData.NewRow()
+                    If Math.Abs((phasor.Angle - m_lastPhaseAngle).ToDegrees()) >= 0.5! OrElse m_phasorData.Rows.Count < 2 Then
+                        Dim row As DataRow = m_phasorData.NewRow()
 
-                    If m_applicationSettings.PhaseAngleGraphStyle = ApplicationSettings.AngleGraphStyle.Raw Then
-                        ' Plot raw phase angles
-                        For x As Integer = 0 To phasorCount - 1
-                            If m_phasorData.Columns.Count > x Then row(x) = cell.PhasorValues(x).Angle.ToDegrees()
-                        Next
-                    Else
-                        ' Plot relative phase angles
-                        For x As Integer = 0 To phasorCount - 1
-                            If m_phasorData.Columns.Count > x Then row(x) = (phasor.Angle - cell.PhasorValues(x).Angle).ToDegrees()
-                        Next
-                    End If
+                        If m_applicationSettings.PhaseAngleGraphStyle = ApplicationSettings.AngleGraphStyle.Raw Then
+                            ' Plot raw phase angles
+                            For x As Integer = 0 To phasorCount - 1
+                                If m_phasorData.Columns.Count > x Then row(x) = cell.PhasorValues(x).Angle.ToDegrees()
+                            Next
+                        Else
+                            ' Plot relative phase angles
+                            For x As Integer = 0 To phasorCount - 1
+                                If m_phasorData.Columns.Count > x Then row(x) = (phasor.Angle - cell.PhasorValues(x).Angle).ToDegrees()
+                            Next
+                        End If
 
-                    m_phasorData.Rows.Add(row)
+                        m_phasorData.Rows.Add(row)
 
-                    Do While m_phasorData.Rows.Count > m_applicationSettings.PhaseAnglePointsToPlot
-                        m_phasorData.Rows.RemoveAt(0)
-                    Loop
+                        Do While m_phasorData.Rows.Count > m_applicationSettings.PhaseAnglePointsToPlot
+                            m_phasorData.Rows.RemoveAt(0)
+                        Loop
 
-                    If GroupBoxConfigurationFrame.Expanded Then
-                        ' Update power and vars calculations
-                        If ComboBoxCurrentPhasors.SelectedIndex > -1 AndAlso ComboBoxVoltagePhasors.SelectedIndex > -1 Then
-                            Dim selectedVoltageIndex As Integer = Convert.ToInt32(ComboBoxVoltagePhasors.Items(ComboBoxVoltagePhasors.SelectedIndex).ToString.Split(":"c)(0))
-                            Dim selectedCurrentIndex As Integer = Convert.ToInt32(ComboBoxCurrentPhasors.Items(ComboBoxCurrentPhasors.SelectedIndex).ToString.Split(":"c)(0))
+                        If GroupBoxConfigurationFrame.Expanded Then
+                            ' Update power and vars calculations
+                            If ComboBoxCurrentPhasors.SelectedIndex > -1 AndAlso ComboBoxVoltagePhasors.SelectedIndex > -1 Then
+                                Dim selectedVoltageIndex As Integer = Convert.ToInt32(ComboBoxVoltagePhasors.Items(ComboBoxVoltagePhasors.SelectedIndex).ToString.Split(":"c)(0))
+                                Dim selectedCurrentIndex As Integer = Convert.ToInt32(ComboBoxCurrentPhasors.Items(ComboBoxCurrentPhasors.SelectedIndex).ToString.Split(":"c)(0))
 
-                            If selectedVoltageIndex < phasorCount AndAlso selectedCurrentIndex < phasorCount Then
-                                Dim voltagePhasor As IPhasorValue = cell.PhasorValues(selectedVoltageIndex)
-                                Dim currentPhasor As IPhasorValue = cell.PhasorValues(selectedCurrentIndex)
+                                If selectedVoltageIndex < phasorCount AndAlso selectedCurrentIndex < phasorCount Then
+                                    Try
+                                        Dim voltagePhasor As IPhasorValue = cell.PhasorValues(selectedVoltageIndex)
+                                        Dim currentPhasor As IPhasorValue = cell.PhasorValues(selectedCurrentIndex)
 
-                                LabelPower.Text = (PhasorValueBase.CalculatePower(voltagePhasor, currentPhasor) / 1000000).ToString("0.0000") & " MW"
-                                LabelVars.Text = (PhasorValueBase.CalculateVars(voltagePhasor, currentPhasor) / 1000000).ToString("0.0000") & " MVars"
+                                        LabelPower.Text = (PhasorValueBase.CalculatePower(voltagePhasor, currentPhasor) / 1000000).ToString("0.0000") & " MW"
+                                        LabelVars.Text = (PhasorValueBase.CalculateVars(voltagePhasor, currentPhasor) / 1000000).ToString("0.0000") & " MVars"
+                                    Catch
+                                        ' Skip calculation if something is not available or fails to calculate properly
+                                        LabelPower.Text = "--- MW"
+                                        LabelVars.Text = "--- MVars"
+                                    End Try
+                                End If
                             End If
                         End If
+
+                        m_lastPhaseAngle = phasor.Angle
                     End If
 
-                    m_lastPhaseAngle = phasor.Angle
-                End If
-
-                If GroupBoxStatus.Expanded Then
-                    LabelFrequency.Text = frequency.ToString("0.0000") & " Hz"
-                    LabelAngle.Text = phasor.Angle.ToDegrees().ToString() & "°"
-                    If phasor.Type = PhasorType.Voltage Then
-                        ' Most PMU's are setup such that voltage magnitudes need to multiplied by the SQRT(3)
-                        LabelMagnitude.Text = (phasor.Magnitude / 1000).ToString("0.0000") & " (" & (phasor.Magnitude * m_sqrtOf3 / 1000).ToString("0.0000") & ") kV"
-                    Else
-                        LabelMagnitude.Text = phasor.Magnitude.ToString("0.0000") & " Amperes"
+                    If GroupBoxStatus.Expanded Then
+                        LabelFrequency.Text = frequency.ToString("0.0000") & " Hz"
+                        LabelAngle.Text = phasor.Angle.ToDegrees().ToString() & "°"
+                        If phasor.Type = PhasorType.Voltage Then
+                            ' Most PMU's are setup such that voltage magnitudes need to multiplied by the SQRT(3)
+                            LabelMagnitude.Text = (phasor.Magnitude / 1000).ToString("0.0000") & " (" & (phasor.Magnitude * m_sqrtOf3 / 1000).ToString("0.0000") & ") kV"
+                        Else
+                            LabelMagnitude.Text = phasor.Magnitude.ToString("0.0000") & " Amperes"
+                        End If
                     End If
-                End If
+                Catch ex As ArgumentOutOfRangeException
+                Catch ex As IndexOutOfRangeException
+                    ' This can happen randomly on occasion when using a large file based input - very odd, so we just ignore it and go on...
+                Catch ex As Exception
+                    AppendStatusMessage(String.Format("Exception occured while attempting to plot data: {0}", ex.Message))
+                End Try
             End If
 
             ' We only refresh graph every so often
@@ -2222,26 +2238,49 @@ Public Class PMUConnectionTester
                     Dim dataFrame As IDataFrame = DirectCast(frame, IDataFrame)
 
                     ' Add frame cells collection object to frame item
-                    lastNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, dataFrame.Cells, Nothing, dataFrame.ConfigurationFrame.Cells)
+                    If dataFrame.ConfigurationFrame IsNot Nothing Then
+                        lastNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, dataFrame.Cells, Nothing, dataFrame.ConfigurationFrame.Cells)
 
-                    ' Add each frame cell item to the list
-                    For Each cellNode As IDataCell In dataFrame.Cells
-                        lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, cellNode, cellNode.StationName, cellNode.ConfigurationCell)
+                        ' Add each frame cell item to the list
+                        For Each cellNode As IDataCell In dataFrame.Cells
+                            lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, cellNode, cellNode.StationName, cellNode.ConfigurationCell)
 
-                        For Each phasorValue As IPhasorValue In cellNode.PhasorValues
-                            AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, phasorValue, phasorValue.Label, phasorValue.Definition)
+                            For Each phasorValue As IPhasorValue In cellNode.PhasorValues
+                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, phasorValue, phasorValue.Label, phasorValue.Definition)
+                            Next
+
+                            AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, cellNode.FrequencyValue, Nothing, cellNode.FrequencyValue.Definition)
+
+                            For Each analogValue As IAnalogValue In cellNode.AnalogValues
+                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, analogValue, analogValue.Label, analogValue.Definition)
+                            Next
+
+                            For Each digitalValue As IDigitalValue In cellNode.DigitalValues
+                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, digitalValue, digitalValue.Label, digitalValue.Definition)
+                            Next
                         Next
+                    Else
+                        lastNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, dataFrame.Cells, Nothing, Nothing)
 
-                        AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, cellNode.FrequencyValue, Nothing, cellNode.FrequencyValue.Definition)
+                        ' Add each frame cell item to the list
+                        For Each cellNode As IDataCell In dataFrame.Cells
+                            lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, cellNode, cellNode.StationName, Nothing)
 
-                        For Each analogValue As IAnalogValue In cellNode.AnalogValues
-                            AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, analogValue, analogValue.Label, analogValue.Definition)
+                            For Each phasorValue As IPhasorValue In cellNode.PhasorValues
+                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, phasorValue, phasorValue.Label, Nothing)
+                            Next
+
+                            AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, cellNode.FrequencyValue, Nothing, Nothing)
+
+                            For Each analogValue As IAnalogValue In cellNode.AnalogValues
+                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, analogValue, analogValue.Label, Nothing)
+                            Next
+
+                            For Each digitalValue As IDigitalValue In cellNode.DigitalValues
+                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, digitalValue, digitalValue.Label, Nothing)
+                            Next
                         Next
-
-                        For Each digitalValue As IDigitalValue In cellNode.DigitalValues
-                            AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, digitalValue, digitalValue.Label, digitalValue.Definition)
-                        Next
-                    Next
+                    End If
             End Select
         Next
 
@@ -2266,48 +2305,21 @@ Public Class PMUConnectionTester
             row("RootElement") = True
         End If
 
-        If channelNode.Tag IsNot Nothing Then row("Key") = channelNode.Tag
+        If channelNode IsNot Nothing Then
+            If channelNode.Tag IsNot Nothing Then row("Key") = channelNode.Tag
 
-        If channelLabel Is Nothing Then
-            row("Attribute") = channelNode.Attributes("Derived Type").Replace("TVA.PhasorProtocols.", "").Replace("_", ".")
-        Else
-            row("Attribute") = channelNode.Attributes("Derived Type").Replace("TVA.PhasorProtocols.", "").Replace("_", ".") & " (" & channelLabel & ")"
-        End If
-
-        row("ChannelNode") = parentID
-        attributeTable.Rows.Add(row)
-
-        With channelNode.Attributes
-            ' Add associated channel node reference (i.e., a "link" node), if defined
-            If associatedChannelNode IsNot Nothing Then
-                currentNodeID += 1
-                row = attributeTable.NewRow()
-                row("ID") = currentNodeID
-
-                ' We allow the frame attributes to show up at root level if user doesn't want
-                ' attributes to show up as child nodes
-                If m_applicationSettings.ShowAttributesAsChildren Then
-                    row("ParentID") = channelNodeID
-                    row("RootElement") = False
-                Else
-                    If parentID > FundamentalFrameType.Undetermined Then
-                        row("ParentID") = parentID
-                        row("RootElement") = False
-                    Else
-                        row("RootElement") = True
-                    End If
-                End If
-
-                row("AssociatedKey") = associatedChannelNode.Tag
-                row("Attribute") = "     Click for Associated Definition"
-                row("Value") = associatedChannelNode.Attributes("Derived Type").Replace("TVA.PhasorProtocols.", "")
-                row("ChannelNode") = -1
-                attributeTable.Rows.Add(row)
+            If channelLabel Is Nothing Then
+                row("Attribute") = channelNode.Attributes("Derived Type").Replace("TVA.PhasorProtocols.", "").Replace("_", ".")
+            Else
+                row("Attribute") = channelNode.Attributes("Derived Type").Replace("TVA.PhasorProtocols.", "").Replace("_", ".") & " (" & channelLabel & ")"
             End If
 
-            ' Add channel node attributes
-            For Each attribute As KeyValuePair(Of String, String) In channelNode.Attributes
-                If String.Compare(attribute.Key, "Derived Type", True) <> 0 Then
+            row("ChannelNode") = parentID
+            attributeTable.Rows.Add(row)
+
+            With channelNode.Attributes
+                ' Add associated channel node reference (i.e., a "link" node), if defined
+                If associatedChannelNode IsNot Nothing Then
                     currentNodeID += 1
                     row = attributeTable.NewRow()
                     row("ID") = currentNodeID
@@ -2326,13 +2338,42 @@ Public Class PMUConnectionTester
                         End If
                     End If
 
-                    row("Attribute") = "     " & attribute.Key
-                    row("Value") = attribute.Value
-                    row("ChannelNode") = 0
+                    row("AssociatedKey") = associatedChannelNode.Tag
+                    row("Attribute") = "     Click for Associated Definition"
+                    row("Value") = associatedChannelNode.Attributes("Derived Type").Replace("TVA.PhasorProtocols.", "")
+                    row("ChannelNode") = -1
                     attributeTable.Rows.Add(row)
                 End If
-            Next
-        End With
+
+                ' Add channel node attributes
+                For Each attribute As KeyValuePair(Of String, String) In channelNode.Attributes
+                    If String.Compare(attribute.Key, "Derived Type", True) <> 0 Then
+                        currentNodeID += 1
+                        row = attributeTable.NewRow()
+                        row("ID") = currentNodeID
+
+                        ' We allow the frame attributes to show up at root level if user doesn't want
+                        ' attributes to show up as child nodes
+                        If m_applicationSettings.ShowAttributesAsChildren Then
+                            row("ParentID") = channelNodeID
+                            row("RootElement") = False
+                        Else
+                            If parentID > FundamentalFrameType.Undetermined Then
+                                row("ParentID") = parentID
+                                row("RootElement") = False
+                            Else
+                                row("RootElement") = True
+                            End If
+                        End If
+
+                        row("Attribute") = "     " & attribute.Key
+                        row("Value") = attribute.Value
+                        row("ChannelNode") = 0
+                        attributeTable.Rows.Add(row)
+                    End If
+                Next
+            End With
+        End If
 
         Return channelNodeID
 
