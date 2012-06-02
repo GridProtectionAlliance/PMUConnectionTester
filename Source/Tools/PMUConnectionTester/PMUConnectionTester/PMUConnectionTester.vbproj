@@ -196,10 +196,22 @@
     </Compile>
     <Compile Include="ApplicationSettings.vb" />
     <Compile Include="ConnectionSettings.vb" />
+    <Compile Include="MulticastSourceSelector.Designer.vb">
+      <DependentUpon>MulticastSourceSelector.vb</DependentUpon>
+    </Compile>
+    <Compile Include="MulticastSourceSelector.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="NetworkInterfaceSelector.Designer.vb">
+      <DependentUpon>NetworkInterfaceSelector.vb</DependentUpon>
+    </Compile>
+    <Compile Include="NetworkInterfaceSelector.vb">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="PMUConnectionTester.vb">
       <SubType>Form</SubType>
@@ -221,6 +233,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="MulticastSourceSelector.resx">
+      <DependentUpon>MulticastSourceSelector.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NetworkInterfaceSelector.resx">
+      <DependentUpon>NetworkInterfaceSelector.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PMUConnectionTester.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PMUConnectionTester.vb</DependentUpon>

@@ -19,9 +19,11 @@
 '  03/16/2006 - J. Ritchie Carroll
 '       Initial version of source generated.
 '  01/21/2011 - AJ Stadlin
-'       ShowMessagesTabOnDataException Option added to DataStreamException
+'       ShowMessagesTabOnDataException Option added to DataStreamException.
 '  05/19/2011 - Ritchie
 '       Added DST file support.
+'  06/01/2012 - J. Ritchie Carroll
+'       Added network interface multicast source selection.
 '
 '******************************************************************************************************
 
@@ -31,15 +33,17 @@ Imports Infragistics.Win.UltraWinMaskedEdit
 Imports Infragistics.UltraChart.Shared.Styles
 Imports Infragistics.UltraChart.Resources.Appearance
 Imports Infragistics.UltraChart.Core.Layers
+Imports System.Collections.Concurrent
+Imports System.ComponentModel
+Imports System.Drawing
 Imports System.IO
 Imports System.Net
+Imports System.Net.NetworkInformation
 Imports System.Text
 Imports System.Runtime.Serialization.Formatters
 Imports System.Runtime.Serialization.Formatters.Soap
 Imports System.Windows.Forms.DialogResult
-Imports System.Drawing
 Imports System.Threading
-Imports System.ComponentModel
 Imports TVA
 Imports TVA.Collections
 Imports TVA.Common
@@ -94,6 +98,10 @@ Public Class PMUConnectionTester
     Private m_lastFileName As String
     Private m_ipStackIsIPv6 As Boolean
     Private m_loopbackAddress As String
+    Private m_networkInterfaces As Tuple(Of String, String, String)()
+    Private m_tcpNetworkInterface As Integer
+    Private m_udpNetworkInterface As Integer
+    Private m_commandNetworkInterface As Integer
 
     ' Charting data variables
     Private m_frequencyData As DataTable
@@ -102,8 +110,8 @@ Public Class PMUConnectionTester
     Private m_lastRefresh As Long
 
     ' Attribute tree data variables
-    Private m_attributeFrames As Dictionary(Of FundamentalFrameType, IChannelFrame)
-    Private m_associatedNodes As Dictionary(Of String, UltraTreeNode)
+    Private m_attributeFrames As ConcurrentDictionary(Of FundamentalFrameType, IChannelFrame)
+    Private m_associatedNodes As ConcurrentDictionary(Of String, UltraTreeNode)
 
     ' File capture variables
     Private m_frameCaptureStream As FileStream
@@ -132,8 +140,8 @@ Public Class PMUConnectionTester
         m_frameParser = New MultiProtocolFrameParser
 
         ' Initialize attribute tree variables
-        m_attributeFrames = New Dictionary(Of FundamentalFrameType, IChannelFrame)
-        m_associatedNodes = New Dictionary(Of String, UltraTreeNode)
+        m_attributeFrames = New ConcurrentDictionary(Of FundamentalFrameType, IChannelFrame)
+        m_associatedNodes = New ConcurrentDictionary(Of String, UltraTreeNode)
 
         m_dataStreamLock = New Object
 
@@ -220,6 +228,35 @@ Public Class PMUConnectionTester
         TextBoxTcpHostIP.Text = m_loopbackAddress
         TextBoxUdpHostIP.Text = m_loopbackAddress
         AlternateCommandChannel.TextBoxTcpHostIP.Text = m_loopbackAddress
+        MulticastSourceSelector.TextBoxMulticastSourceIP.Text = m_loopbackAddress
+
+        ' Load network interfaces
+        Dim networkInterfaces As New List(Of Tuple(Of String, String, String))
+
+        ' Make sure "default" NIC is available in network interface list
+        networkInterfaces.Add(New Tuple(Of String, String, String)("Default", "0.0.0.0", "::0"))
+
+        Try
+            ' Add IP's for active, physical NIC's - if IPv4 is not supported, default to "::0", if IPv6 is not supported, default to "0.0.0.0"
+            networkInterfaces.AddRange(NetworkInterface.GetAllNetworkInterfaces(). _
+                Where(Function(nic) _
+                    nic.OperationalStatus = OperationalStatus.Up AndAlso _
+                    nic.NetworkInterfaceType <> NetworkInterfaceType.Loopback AndAlso _
+                    nic.NetworkInterfaceType <> NetworkInterfaceType.Tunnel). _
+                Select(Function(nic) New Tuple(Of String, String, String)( _
+                    nic.Description, _
+                    nic.GetIPProperties().UnicastAddresses.FirstOrDefault(Function(info) _
+                        info.Address.AddressFamily = Sockets.AddressFamily.InterNetwork).Address.ToNonNullString("::0"), _
+                    nic.GetIPProperties().UnicastAddresses.FirstOrDefault(Function(info) _
+                        info.Address.AddressFamily = Sockets.AddressFamily.InterNetworkV6).Address.ToNonNullString("0.0.0.0"))))
+        Catch
+            ' Can operate with only default NIC selection if needed
+        End Try
+
+        m_networkInterfaces = networkInterfaces.ToArray()
+
+        NetworkInterfaceSelector.ComboBoxNetworkInterfaces.Items.AddRange(m_networkInterfaces)
+        NetworkInterfaceSelector.ComboBoxNetworkInterfaces.DisplayMember = "Item1"
 
         InitializeChart()
         ComboBoxProtocols.SelectedIndex = 0
@@ -505,6 +542,8 @@ Public Class PMUConnectionTester
         TextBoxUdpRemotePort.Enabled = needsHostIP
         LabelUdpRemotePort.Enabled = needsHostIP
 
+        LabelMulticastSource.Enabled = needsHostIP
+
         If Not needsHostIP Then TextBoxUdpHostIP.Text = m_loopbackAddress
 
     End Sub
@@ -606,14 +645,47 @@ Public Class PMUConnectionTester
 
     End Sub
 
+    Private Sub LabelTcpNetworkInterface_Click(sender As System.Object, e As System.EventArgs) Handles LabelTcpNetworkInterface.Click
+
+        NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex = m_tcpNetworkInterface
+
+        If NetworkInterfaceSelector.ShowDialog(Me) = OK Then
+            m_tcpNetworkInterface = NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex
+        End If
+
+        NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex = -1
+
+    End Sub
+
+    Private Sub LabelUdpNetworkInterface_Click(sender As System.Object, e As System.EventArgs) Handles LabelUdpNetworkInterface.Click
+
+        NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex = m_udpNetworkInterface
+
+        If NetworkInterfaceSelector.ShowDialog(Me) = OK Then
+            m_udpNetworkInterface = NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex
+        End If
+
+        NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex = -1
+
+    End Sub
+
+    Private Sub LabelMulticastSource_Click(sender As System.Object, e As System.EventArgs) Handles LabelMulticastSource.Click
+
+        MulticastSourceSelector.ShowDialog(Me)
+
+    End Sub
+
     Private Sub LabelAlternateCommandChannel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles LabelAlternateCommandChannel.Click
 
         Dim connectionString As String = CurrentConnectionSettings.ConnectionString
+        AlternateCommandChannel.NetworkInterface = m_commandNetworkInterface
 
         ' Show alternate command channel settings as a modal dialog
         If AlternateCommandChannel.ShowDialog(Me) = Cancel Then
             ' User canceled changes, reapply original settings to dialog
             AlternateCommandChannel.ConnectionString = connectionString
+        Else
+            m_commandNetworkInterface = AlternateCommandChannel.NetworkInterface
         End If
 
         UpdateAlternateCommandChannelLabel()
@@ -640,8 +712,9 @@ Public Class PMUConnectionTester
             If maskedEdit.EditAs = EditAsType.UseSpecifiedMask Then
                 maskedEdit.SelectAll()
             Else
-                maskedEdit.SelectionStart = 0
-                maskedEdit.SelectionLength = maskedEdit.Text.Length
+                'maskedEdit.SelectionStart = 0
+                'maskedEdit.SelectionLength = maskedEdit.Text.Trim().Length
+                maskedEdit.Select(0, maskedEdit.Text.Trim().Length)
             End If
         Else
             Dim windowsTextBox As TextBox = TryCast(sender, TextBox)
@@ -655,8 +728,9 @@ Public Class PMUConnectionTester
 
     Private Sub TextBox_MouseClick(ByVal sender As Object, ByVal e As MouseEventArgs) Handles _
         TextBoxDeviceID.MouseClick, TextBoxFileCaptureName.MouseClick, TextBoxFileFrameRate.MouseClick, _
-        TextBoxSerialDataBits.MouseClick, TextBoxTcpHostIP.MouseClick, TextBoxTcpPort.MouseClick, _
-        TextBoxUdpHostIP.MouseClick, TextBoxUdpLocalPort.MouseClick, TextBoxUdpRemotePort.MouseClick
+        TextBoxSerialDataBits.MouseClick, TextBoxTcpPort.MouseClick, TextBoxUdpLocalPort.MouseClick, TextBoxUdpRemotePort.MouseClick
+
+        'TextBoxUdpHostIP.MouseClick, TextBoxTcpHostIP.MouseClick
 
         TextBox_GotFocus(sender, e)
 
@@ -1160,7 +1234,7 @@ Public Class PMUConnectionTester
         If m_frameSampleStream IsNot Nothing Then CaptureFrameImage(frameType, binaryImage, offset, length)
 
         ' Note that we exclude command frames from capture stream that are typically "sent", not "received", to make sure frame alignment
-        ' stays in-tact - this fixes a bug with IEEE1344 play-back of captured streams that does not include a synchronization-byte
+        ' stays in-tact - this fixes issue with IEEE-1344 play-back of captured streams that does not include a synchronization-byte
         If m_frameCaptureStream IsNot Nothing AndAlso frameType <> FundamentalFrameType.CommandFrame Then m_frameCaptureStream.Write(binaryImage, offset, length)
 
         If length > 0 Then
@@ -1270,10 +1344,7 @@ Public Class PMUConnectionTester
     Private Sub ReceivedConfigFrame(ByVal frame As IConfigurationFrame)
 
         LabelTime.Text = frame.TimeTag.ToString()
-
-        SyncLock m_attributeFrames
-            m_attributeFrames(frame.FrameType) = frame
-        End SyncLock
+        m_attributeFrames(frame.FrameType) = frame
 
         If m_configurationFrame Is Nothing Then
             ' Cache config frame reference for future use...
@@ -1340,10 +1411,7 @@ Public Class PMUConnectionTester
     Private Sub ReceivedDataFrame(ByVal frame As IDataFrame)
 
         LabelTime.Text = frame.TimeTag.ToString()
-
-        SyncLock m_attributeFrames
-            m_attributeFrames(frame.FrameType) = frame
-        End SyncLock
+        m_attributeFrames(frame.FrameType) = frame
 
         If m_selectedCell IsNot Nothing And frame.Cells.Count > 0 Then
             Dim cell As IDataCell = frame.Cells(ComboBoxPmus.SelectedIndex)
@@ -1477,10 +1545,7 @@ Public Class PMUConnectionTester
     Private Sub ReceivedHeaderFrame(ByVal frame As IHeaderFrame)
 
         LabelTime.Text = frame.TimeTag.ToString()
-
-        SyncLock m_attributeFrames
-            m_attributeFrames(frame.FrameType) = frame
-        End SyncLock
+        m_attributeFrames(frame.FrameType) = frame
 
         TextBoxHeaderFrame.Text = frame.HeaderData
         GroupBoxHeaderFrame.Expanded = True
@@ -1490,10 +1555,7 @@ Public Class PMUConnectionTester
     Private Sub ReceivedCommandFrame(ByVal frame As ICommandFrame)
 
         LabelTime.Text = frame.TimeTag.ToString()
-
-        SyncLock m_attributeFrames
-            m_attributeFrames(frame.FrameType) = frame
-        End SyncLock
+        m_attributeFrames(frame.FrameType) = frame
 
         ' To make sure "sent" command frames can get captured and displayed, we make sure and
         ' send the frame to the frame buffer image handler
@@ -1504,10 +1566,7 @@ Public Class PMUConnectionTester
     Private Sub ReceivedUndeterminedFrame(ByVal frame As IChannelFrame)
 
         LabelTime.Text = frame.TimeTag.ToString()
-
-        SyncLock m_attributeFrames
-            m_attributeFrames(frame.FrameType) = frame
-        End SyncLock
+        m_attributeFrames(frame.FrameType) = frame
 
     End Sub
 
@@ -1691,7 +1750,7 @@ Public Class PMUConnectionTester
                         .ConnectionString = _
                             "server=" & TextBoxTcpHostIP.Text & _
                             "; port=" & TextBoxTcpPort.Text & _
-                            IIf(m_applicationSettings.ForceIPv4, "; interface=0.0.0.0", "") & _
+                            "; interface=" & GetNetworkInterfaceValue(m_tcpNetworkInterface) & _
                             "; islistener=" & CheckBoxEstablishTcpServer.Checked.ToString()
                     Case TransportProtocol.Udp
                         .TransportProtocol = TransportProtocol.Udp
@@ -1700,11 +1759,12 @@ Public Class PMUConnectionTester
                                 "localport=" & TextBoxUdpLocalPort.Text & _
                                 "; server=" & TextBoxUdpHostIP.Text & _
                                 "; remoteport=" & TextBoxUdpRemotePort.Text & _
-                                IIf(m_applicationSettings.ForceIPv4, "; interface=0.0.0.0", "")
+                                "; interface=" & GetNetworkInterfaceValue(m_udpNetworkInterface) & _
+                                MulticastSourceSelector.ConnectionString
                         Else
                             .ConnectionString = _
                                 "localport=" & TextBoxUdpLocalPort.Text & _
-                                IIf(m_applicationSettings.ForceIPv4, "; interface=0.0.0.0", "")
+                                "; interface=" & GetNetworkInterfaceValue(m_udpNetworkInterface)
                         End If
                     Case TransportProtocol.Serial
                         .TransportProtocol = TransportProtocol.Serial
@@ -1779,17 +1839,31 @@ Public Class PMUConnectionTester
                         AssignHostIP(TextBoxTcpHostIP, connectionData("server"))
                         CheckBoxEstablishTcpServer.Checked = False
                     End If
+
+                    If connectionData.TryGetValue("interface", setting) Then
+                        m_tcpNetworkInterface = GetNetworkInterfaceIndex(setting)
+                    Else
+                        m_tcpNetworkInterface = 0
+                    End If
                 Case TransportProtocol.Udp
                     If connectionData.ContainsKey("server") Then
                         TextBoxUdpLocalPort.Text = connectionData("localport")
                         AssignHostIP(TextBoxUdpHostIP, connectionData("server"))
                         TextBoxUdpRemotePort.Text = connectionData("remoteport")
+                        MulticastSourceSelector.ConnectionString = .ConnectionString
                         CheckBoxRemoteUdpServer.Checked = True
                     Else
                         TextBoxUdpLocalPort.Text = connectionData("localport")
                         TextBoxUdpHostIP.Text = m_loopbackAddress
                         TextBoxUdpRemotePort.Text = "5000"
+                        MulticastSourceSelector.ConnectionString = ""
                         CheckBoxRemoteUdpServer.Checked = False
+                    End If
+
+                    If connectionData.TryGetValue("interface", setting) Then
+                        m_udpNetworkInterface = GetNetworkInterfaceIndex(setting)
+                    Else
+                        m_udpNetworkInterface = 0
                     End If
                 Case TransportProtocol.Serial
                     ComboBoxSerialPorts.Text = connectionData("port")
@@ -1861,7 +1935,36 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private WriteOnly Property ForceIPv4() As Boolean
+    Public Function GetNetworkInterfaceValue(ByVal index As Integer) As String
+
+        If index < 0 OrElse index > m_networkInterfaces.Length - 1 Then index = 0
+        Return IIf(m_applicationSettings.ForceIPv4, m_networkInterfaces(index).Item2, m_networkInterfaces(index).Item3)
+
+    End Function
+
+    Public Function GetNetworkInterfaceIndex(ByVal ipValue As String) As Integer
+
+        Dim index As Integer
+
+        ipValue = ipValue.ToNonNullString().Trim()
+
+        ' Look for matching IPv4 address
+        index = m_networkInterfaces.IndexOf(Function(nic) String.Compare(nic.Item2, ipValue, True) = 0)
+
+        ' If not found, look for matching IPv6 address
+        If index < 0 Then index = m_networkInterfaces.IndexOf(Function(nic) String.Compare(nic.Item3, ipValue, True) = 0)
+
+        ' If not found, assume default network interface
+        If index < 0 Then index = 0
+
+        Return index
+
+    End Function
+
+    Public Property ForceIPv4() As Boolean
+        Get
+            Return m_applicationSettings.ForceIPv4
+        End Get
         Set(ByVal value As Boolean)
             If value Then
                 ' Attempt to coerce address into IPv4 format then enable IPv4 masks
@@ -1877,6 +1980,10 @@ Public Class PMUConnectionTester
                 AlternateCommandChannel.TextBoxTcpHostIP.InputMask = "nnn\.nnn\.nnn\.nnn"
                 AlternateCommandChannel.TextBoxTcpHostIP.EditAs = EditAsType.UseSpecifiedMask
 
+                AssignHostIP(MulticastSourceSelector.TextBoxMulticastSourceIP, MulticastSourceSelector.TextBoxMulticastSourceIP.Text)
+                MulticastSourceSelector.TextBoxMulticastSourceIP.InputMask = "nnn\.nnn\.nnn\.nnn"
+                MulticastSourceSelector.TextBoxMulticastSourceIP.EditAs = EditAsType.UseSpecifiedMask
+
                 m_loopbackAddress = "127.0.0.1"
             Else
                 ' We remove input mask if we're not forcing IPv4, this allows for free form DNS and IPv6 entry
@@ -1888,6 +1995,9 @@ Public Class PMUConnectionTester
 
                 AlternateCommandChannel.TextBoxTcpHostIP.InputMask = ""
                 AlternateCommandChannel.TextBoxTcpHostIP.EditAs = EditAsType.String
+
+                MulticastSourceSelector.TextBoxMulticastSourceIP.InputMask = ""
+                MulticastSourceSelector.TextBoxMulticastSourceIP.EditAs = EditAsType.String
 
                 If m_ipStackIsIPv6 Then
                     m_loopbackAddress = "::1"
@@ -2126,17 +2236,17 @@ Public Class PMUConnectionTester
 
     Private Sub InitializeAttributeTree()
 
+        m_associatedNodes.Clear()
         TreeFrameAttributes.Refresh()
+
         Dim attributeTreeDataSet As DataSet = CreateAttributeTreeDataSet()
         Dim attributeTable As DataTable = attributeTreeDataSet.Tables("Attributes")
         Dim attributeFrames As List(Of IChannelFrame)
         Dim lastNodeID, lastCellNodeID, currentNodeID As Integer
         Dim frame, associatedFrame As IChannelFrame
 
-        ' Get a synchronized copy of the current frame set
-        SyncLock m_attributeFrames
-            attributeFrames = New List(Of IChannelFrame)(m_attributeFrames.Values)
-        End SyncLock
+        ' Get a copy of the current frame set
+        attributeFrames = New List(Of IChannelFrame)(m_attributeFrames.Values)
 
         ' For consistency in display, we make sure frames are in desired order
         attributeFrames.Sort(AddressOf CompareByFrameType)
@@ -2438,7 +2548,7 @@ Public Class PMUConnectionTester
                 Dim channelNode As Integer = Convert.ToInt32(.Cells("ChannelNode").Value)
 
                 ' Track key nodes as they're added
-                If Not IsDBNull(.Cells("Key").Value) Then m_associatedNodes.Add(.Cells("Key").Value.ToString(), e.Node)
+                If Not IsDBNull(.Cells("Key").Value) Then m_associatedNodes.TryAdd(.Cells("Key").Value.ToString(), e.Node)
 
                 If channelNode > 0 Then
                     ' We highlight all channel nodes (actual phasor class instances) to distinguish them from their attributes

@@ -31,6 +31,8 @@ Imports Infragistics.Win.UltraWinMaskedEdit
 
 Public Class AlternateCommandChannel
 
+    Public NetworkInterface As Integer
+
     Public Sub New()
 
         ' This call is required by the Windows Form Designer.
@@ -101,9 +103,23 @@ Public Class AlternateCommandChannel
     End Sub
 
     Private Sub TextBox_MouseClick(ByVal sender As Object, ByVal e As MouseEventArgs) Handles _
-        TextBoxFileCaptureName.MouseClick, TextBoxSerialDataBits.MouseClick, TextBoxTcpHostIP.MouseClick, TextBoxTcpPort.MouseClick
+        TextBoxFileCaptureName.MouseClick, TextBoxSerialDataBits.MouseClick, TextBoxTcpPort.MouseClick
+
+        ' TextBoxTcpHostIP.MouseClick, 
 
         TextBox_GotFocus(sender, e)
+
+    End Sub
+
+    Private Sub LabelTcpNetworkInterface_Click(sender As System.Object, e As System.EventArgs) Handles LabelTcpNetworkInterface.Click
+
+        NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex = NetworkInterface
+
+        If NetworkInterfaceSelector.ShowDialog(Me) = OK Then
+            NetworkInterface = NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex
+        End If
+
+        NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex = -1
 
     End Sub
 
@@ -124,7 +140,7 @@ Public Class AlternateCommandChannel
                             "; commandchannel={protocol=Tcp" & _
                             "; server=" & TextBoxTcpHostIP.Text & _
                             "; port=" & TextBoxTcpPort.Text & _
-                            IIf(PMUConnectionTester.m_applicationSettings.ForceIPv4, "; interface=0.0.0.0", "") & "}"
+                            "; interface=" & PMUConnectionTester.GetNetworkInterfaceValue(NetworkInterface) & "}"
                     Case TransportProtocol.Serial - 1 ' UDP removed from tab set...
                         Return _
                             "; commandchannel={protocol=Serial" & _
@@ -149,6 +165,7 @@ Public Class AlternateCommandChannel
 
             If connectionData.ContainsKey("commandchannel") Then
                 Dim protocol As TransportProtocol
+                Dim interfaceIP As String
 
                 CheckBoxUndefined.Checked = False
                 connectionData = connectionData("commandchannel").ParseKeyValuePairs()
@@ -161,6 +178,12 @@ Public Class AlternateCommandChannel
                     Case TransportProtocol.Tcp
                         TextBoxTcpPort.Text = connectionData("port")
                         PMUConnectionTester.AssignHostIP(TextBoxTcpHostIP, connectionData("server"))
+
+                        If connectionData.TryGetValue("interface", interfaceIP) Then
+                            NetworkInterface = PMUConnectionTester.GetNetworkInterfaceIndex(interfaceIP)
+                        Else
+                            NetworkInterface = 0
+                        End If
                     Case TransportProtocol.Serial
                         ComboBoxSerialPorts.Text = connectionData("port")
                         ComboBoxSerialBaudRates.Text = connectionData("baudrate")

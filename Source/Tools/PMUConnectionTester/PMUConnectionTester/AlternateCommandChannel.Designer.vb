@@ -22,51 +22,54 @@ Partial Class AlternateCommandChannel
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container
-        Dim Appearance11 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance
-        Dim UltraToolTipInfo2 As Infragistics.Win.UltraWinToolTip.UltraToolTipInfo = New Infragistics.Win.UltraWinToolTip.UltraToolTipInfo("Enter host DNS name, IPv4 or IPv6 address", Infragistics.Win.ToolTipImage.[Default], Nothing, Infragistics.Win.DefaultableBoolean.[Default])
-        Dim Appearance12 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance
-        Dim Appearance13 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance
-        Dim Appearance14 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance
-        Dim Appearance15 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance
-        Dim Appearance16 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance
-        Dim Appearance17 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance
-        Dim Appearance18 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance
-        Dim Appearance19 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance
+        Me.components = New System.ComponentModel.Container()
+        Dim Appearance1 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
+        Dim Appearance2 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
+        Dim Appearance3 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
+        Dim UltraToolTipInfo1 As Infragistics.Win.UltraWinToolTip.UltraToolTipInfo = New Infragistics.Win.UltraWinToolTip.UltraToolTipInfo("Enter host DNS name, IPv4 or IPv6 address", Infragistics.Win.ToolTipImage.[Default], Nothing, Infragistics.Win.DefaultableBoolean.[Default])
+        Dim Appearance12 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
+        Dim Appearance5 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
+        Dim Appearance6 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
+        Dim Appearance7 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
+        Dim Appearance8 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
+        Dim Appearance9 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
+        Dim Appearance10 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
+        Dim Appearance11 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(AlternateCommandChannel))
-        Dim Appearance2 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance
-        Dim UltraTab1 As Infragistics.Win.UltraWinTabControl.UltraTab = New Infragistics.Win.UltraWinTabControl.UltraTab
-        Dim UltraTab2 As Infragistics.Win.UltraWinTabControl.UltraTab = New Infragistics.Win.UltraWinTabControl.UltraTab
-        Dim UltraTab3 As Infragistics.Win.UltraWinTabControl.UltraTab = New Infragistics.Win.UltraWinTabControl.UltraTab
-        Me.TabPageControl1 = New Infragistics.Win.UltraWinTabControl.UltraTabPageControl
-        Me.LabelTcpHostIP = New Infragistics.Win.Misc.UltraLabel
-        Me.TextBoxTcpHostIP = New Infragistics.Win.UltraWinMaskedEdit.UltraMaskedEdit
-        Me.LabelTcpPort = New Infragistics.Win.Misc.UltraLabel
-        Me.TextBoxTcpPort = New Infragistics.Win.UltraWinMaskedEdit.UltraMaskedEdit
-        Me.TabPageControl2 = New Infragistics.Win.UltraWinTabControl.UltraTabPageControl
-        Me.CheckBoxSerialRTS = New Infragistics.Win.UltraWinEditors.UltraCheckEditor
-        Me.CheckBoxSerialDTR = New Infragistics.Win.UltraWinEditors.UltraCheckEditor
-        Me.TextBoxSerialDataBits = New Infragistics.Win.UltraWinMaskedEdit.UltraMaskedEdit
-        Me.ComboBoxSerialStopBits = New System.Windows.Forms.ComboBox
-        Me.ComboBoxSerialParities = New System.Windows.Forms.ComboBox
-        Me.LabelSerialParity = New Infragistics.Win.Misc.UltraLabel
-        Me.ComboBoxSerialBaudRates = New System.Windows.Forms.ComboBox
-        Me.LabelSerialBaudRate = New Infragistics.Win.Misc.UltraLabel
-        Me.ComboBoxSerialPorts = New System.Windows.Forms.ComboBox
-        Me.LabelSerialPort = New Infragistics.Win.Misc.UltraLabel
-        Me.LabelSerialStopBits = New Infragistics.Win.Misc.UltraLabel
-        Me.LabelSerialDataBits = New Infragistics.Win.Misc.UltraLabel
-        Me.TabPageControl3 = New Infragistics.Win.UltraWinTabControl.UltraTabPageControl
-        Me.ButtonBrowse = New System.Windows.Forms.Button
-        Me.TextBoxFileCaptureName = New System.Windows.Forms.TextBox
-        Me.LabelCaptureFile = New Infragistics.Win.Misc.UltraLabel
-        Me.LabelReplayCapturedFile = New Infragistics.Win.Misc.UltraLabel
-        Me.ButtonSave = New System.Windows.Forms.Button
-        Me.ButtonCancel = New System.Windows.Forms.Button
-        Me.PictureBoxIcon = New System.Windows.Forms.PictureBox
-        Me.TabControlCommunications = New Infragistics.Win.UltraWinTabControl.UltraTabControl
-        Me.TabSharedControlsPageCommunications = New Infragistics.Win.UltraWinTabControl.UltraTabSharedControlsPage
-        Me.CheckBoxUndefined = New Infragistics.Win.UltraWinEditors.UltraCheckEditor
+        Dim Appearance4 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
+        Dim UltraTab1 As Infragistics.Win.UltraWinTabControl.UltraTab = New Infragistics.Win.UltraWinTabControl.UltraTab()
+        Dim UltraTab2 As Infragistics.Win.UltraWinTabControl.UltraTab = New Infragistics.Win.UltraWinTabControl.UltraTab()
+        Dim UltraTab3 As Infragistics.Win.UltraWinTabControl.UltraTab = New Infragistics.Win.UltraWinTabControl.UltraTab()
+        Me.TabPageControl1 = New Infragistics.Win.UltraWinTabControl.UltraTabPageControl()
+        Me.LabelTcpNetworkInterface = New Infragistics.Win.Misc.UltraLabel()
+        Me.LabelTcpHostIP = New Infragistics.Win.Misc.UltraLabel()
+        Me.TextBoxTcpHostIP = New Infragistics.Win.UltraWinMaskedEdit.UltraMaskedEdit()
+        Me.LabelTcpPort = New Infragistics.Win.Misc.UltraLabel()
+        Me.TextBoxTcpPort = New Infragistics.Win.UltraWinMaskedEdit.UltraMaskedEdit()
+        Me.TabPageControl2 = New Infragistics.Win.UltraWinTabControl.UltraTabPageControl()
+        Me.CheckBoxSerialRTS = New Infragistics.Win.UltraWinEditors.UltraCheckEditor()
+        Me.CheckBoxSerialDTR = New Infragistics.Win.UltraWinEditors.UltraCheckEditor()
+        Me.TextBoxSerialDataBits = New Infragistics.Win.UltraWinMaskedEdit.UltraMaskedEdit()
+        Me.ComboBoxSerialStopBits = New System.Windows.Forms.ComboBox()
+        Me.ComboBoxSerialParities = New System.Windows.Forms.ComboBox()
+        Me.LabelSerialParity = New Infragistics.Win.Misc.UltraLabel()
+        Me.ComboBoxSerialBaudRates = New System.Windows.Forms.ComboBox()
+        Me.LabelSerialBaudRate = New Infragistics.Win.Misc.UltraLabel()
+        Me.ComboBoxSerialPorts = New System.Windows.Forms.ComboBox()
+        Me.LabelSerialPort = New Infragistics.Win.Misc.UltraLabel()
+        Me.LabelSerialStopBits = New Infragistics.Win.Misc.UltraLabel()
+        Me.LabelSerialDataBits = New Infragistics.Win.Misc.UltraLabel()
+        Me.TabPageControl3 = New Infragistics.Win.UltraWinTabControl.UltraTabPageControl()
+        Me.ButtonBrowse = New System.Windows.Forms.Button()
+        Me.TextBoxFileCaptureName = New System.Windows.Forms.TextBox()
+        Me.LabelCaptureFile = New Infragistics.Win.Misc.UltraLabel()
+        Me.LabelReplayCapturedFile = New Infragistics.Win.Misc.UltraLabel()
+        Me.ButtonSave = New System.Windows.Forms.Button()
+        Me.ButtonCancel = New System.Windows.Forms.Button()
+        Me.PictureBoxIcon = New System.Windows.Forms.PictureBox()
+        Me.TabControlCommunications = New Infragistics.Win.UltraWinTabControl.UltraTabControl()
+        Me.TabSharedControlsPageCommunications = New Infragistics.Win.UltraWinTabControl.UltraTabSharedControlsPage()
+        Me.CheckBoxUndefined = New Infragistics.Win.UltraWinEditors.UltraCheckEditor()
         Me.ToolTipManager = New Infragistics.Win.UltraWinToolTip.UltraToolTipManager(Me.components)
         Me.TabPageControl1.SuspendLayout()
         Me.TabPageControl2.SuspendLayout()
@@ -78,6 +81,7 @@ Partial Class AlternateCommandChannel
         '
         'TabPageControl1
         '
+        Me.TabPageControl1.Controls.Add(Me.LabelTcpNetworkInterface)
         Me.TabPageControl1.Controls.Add(Me.LabelTcpHostIP)
         Me.TabPageControl1.Controls.Add(Me.TextBoxTcpHostIP)
         Me.TabPageControl1.Controls.Add(Me.LabelTcpPort)
@@ -86,17 +90,35 @@ Partial Class AlternateCommandChannel
         Me.TabPageControl1.Name = "TabPageControl1"
         Me.TabPageControl1.Size = New System.Drawing.Size(304, 96)
         '
+        'LabelTcpNetworkInterface
+        '
+        Me.LabelTcpNetworkInterface.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Appearance1.ForeColor = System.Drawing.SystemColors.HotTrack
+        Appearance1.TextHAlignAsString = "Center"
+        Appearance1.TextVAlignAsString = "Middle"
+        Me.LabelTcpNetworkInterface.Appearance = Appearance1
+        Me.LabelTcpNetworkInterface.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.LabelTcpNetworkInterface.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Appearance2.FontData.UnderlineAsString = "True"
+        Me.LabelTcpNetworkInterface.HotTrackAppearance = Appearance2
+        Me.LabelTcpNetworkInterface.Location = New System.Drawing.Point(63, 72)
+        Me.LabelTcpNetworkInterface.Name = "LabelTcpNetworkInterface"
+        Me.LabelTcpNetworkInterface.Size = New System.Drawing.Size(94, 21)
+        Me.LabelTcpNetworkInterface.TabIndex = 20
+        Me.LabelTcpNetworkInterface.Text = "Network Interface"
+        Me.LabelTcpNetworkInterface.UseHotTracking = Infragistics.Win.DefaultableBoolean.[True]
+        '
         'LabelTcpHostIP
         '
-        Appearance11.TextHAlignAsString = "Right"
-        Me.LabelTcpHostIP.Appearance = Appearance11
+        Appearance3.TextHAlignAsString = "Right"
+        Me.LabelTcpHostIP.Appearance = Appearance3
         Me.LabelTcpHostIP.Location = New System.Drawing.Point(15, 25)
         Me.LabelTcpHostIP.Name = "LabelTcpHostIP"
         Me.LabelTcpHostIP.Size = New System.Drawing.Size(45, 23)
         Me.LabelTcpHostIP.TabIndex = 0
         Me.LabelTcpHostIP.Text = "Host &IP:"
-        UltraToolTipInfo2.ToolTipText = "Enter host DNS name, IPv4 or IPv6 address"
-        Me.ToolTipManager.SetUltraToolTip(Me.LabelTcpHostIP, UltraToolTipInfo2)
+        UltraToolTipInfo1.ToolTipText = "Enter host DNS name, IPv4 or IPv6 address"
+        Me.ToolTipManager.SetUltraToolTip(Me.LabelTcpHostIP, UltraToolTipInfo1)
         '
         'TextBoxTcpHostIP
         '
@@ -200,8 +222,8 @@ Partial Class AlternateCommandChannel
         '
         'LabelSerialParity
         '
-        Appearance13.TextHAlignAsString = "Right"
-        Me.LabelSerialParity.Appearance = Appearance13
+        Appearance5.TextHAlignAsString = "Right"
+        Me.LabelSerialParity.Appearance = Appearance5
         Me.LabelSerialParity.Location = New System.Drawing.Point(-4, 68)
         Me.LabelSerialParity.Name = "LabelSerialParity"
         Me.LabelSerialParity.Size = New System.Drawing.Size(64, 23)
@@ -221,8 +243,8 @@ Partial Class AlternateCommandChannel
         '
         'LabelSerialBaudRate
         '
-        Appearance14.TextHAlignAsString = "Right"
-        Me.LabelSerialBaudRate.Appearance = Appearance14
+        Appearance6.TextHAlignAsString = "Right"
+        Me.LabelSerialBaudRate.Appearance = Appearance6
         Me.LabelSerialBaudRate.Location = New System.Drawing.Point(-4, 40)
         Me.LabelSerialBaudRate.Name = "LabelSerialBaudRate"
         Me.LabelSerialBaudRate.Size = New System.Drawing.Size(64, 23)
@@ -241,8 +263,8 @@ Partial Class AlternateCommandChannel
         '
         'LabelSerialPort
         '
-        Appearance15.TextHAlignAsString = "Right"
-        Me.LabelSerialPort.Appearance = Appearance15
+        Appearance7.TextHAlignAsString = "Right"
+        Me.LabelSerialPort.Appearance = Appearance7
         Me.LabelSerialPort.Location = New System.Drawing.Point(-4, 13)
         Me.LabelSerialPort.Name = "LabelSerialPort"
         Me.LabelSerialPort.Size = New System.Drawing.Size(64, 23)
@@ -251,8 +273,8 @@ Partial Class AlternateCommandChannel
         '
         'LabelSerialStopBits
         '
-        Appearance16.TextHAlignAsString = "Right"
-        Me.LabelSerialStopBits.Appearance = Appearance16
+        Appearance8.TextHAlignAsString = "Right"
+        Me.LabelSerialStopBits.Appearance = Appearance8
         Me.LabelSerialStopBits.Location = New System.Drawing.Point(150, 13)
         Me.LabelSerialStopBits.Name = "LabelSerialStopBits"
         Me.LabelSerialStopBits.Size = New System.Drawing.Size(57, 23)
@@ -261,8 +283,8 @@ Partial Class AlternateCommandChannel
         '
         'LabelSerialDataBits
         '
-        Appearance17.TextHAlignAsString = "Right"
-        Me.LabelSerialDataBits.Appearance = Appearance17
+        Appearance9.TextHAlignAsString = "Right"
+        Me.LabelSerialDataBits.Appearance = Appearance9
         Me.LabelSerialDataBits.Location = New System.Drawing.Point(148, 40)
         Me.LabelSerialDataBits.Name = "LabelSerialDataBits"
         Me.LabelSerialDataBits.Size = New System.Drawing.Size(59, 23)
@@ -298,8 +320,8 @@ Partial Class AlternateCommandChannel
         '
         'LabelCaptureFile
         '
-        Appearance18.TextHAlignAsString = "Right"
-        Me.LabelCaptureFile.Appearance = Appearance18
+        Appearance10.TextHAlignAsString = "Right"
+        Me.LabelCaptureFile.Appearance = Appearance10
         Me.LabelCaptureFile.Location = New System.Drawing.Point(11, 42)
         Me.LabelCaptureFile.Name = "LabelCaptureFile"
         Me.LabelCaptureFile.Size = New System.Drawing.Size(54, 23)
@@ -308,8 +330,8 @@ Partial Class AlternateCommandChannel
         '
         'LabelReplayCapturedFile
         '
-        Appearance19.FontData.ItalicAsString = "True"
-        Me.LabelReplayCapturedFile.Appearance = Appearance19
+        Appearance11.FontData.ItalicAsString = "True"
+        Me.LabelReplayCapturedFile.Appearance = Appearance11
         Me.LabelReplayCapturedFile.Location = New System.Drawing.Point(191, 22)
         Me.LabelReplayCapturedFile.Name = "LabelReplayCapturedFile"
         Me.LabelReplayCapturedFile.Size = New System.Drawing.Size(120, 17)
@@ -348,8 +370,8 @@ Partial Class AlternateCommandChannel
         '
         'TabControlCommunications
         '
-        Appearance2.ForeColor = System.Drawing.Color.Black
-        Me.TabControlCommunications.Appearance = Appearance2
+        Appearance4.ForeColor = System.Drawing.Color.Black
+        Me.TabControlCommunications.Appearance = Appearance4
         Me.TabControlCommunications.Controls.Add(Me.TabSharedControlsPageCommunications)
         Me.TabControlCommunications.Controls.Add(Me.TabPageControl1)
         Me.TabControlCommunications.Controls.Add(Me.TabPageControl2)
@@ -455,4 +477,5 @@ Partial Class AlternateCommandChannel
     Friend WithEvents LabelReplayCapturedFile As Infragistics.Win.Misc.UltraLabel
     Friend WithEvents CheckBoxUndefined As Infragistics.Win.UltraWinEditors.UltraCheckEditor
     Friend WithEvents ToolTipManager As Infragistics.Win.UltraWinToolTip.UltraToolTipManager
+    Friend WithEvents LabelTcpNetworkInterface As Infragistics.Win.Misc.UltraLabel
 End Class
