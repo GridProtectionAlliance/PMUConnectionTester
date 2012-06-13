@@ -65,6 +65,7 @@ Public Class ApplicationSettings
     Private Const DefaultSkipDisableRealTimeData As Boolean = False
     Private Const DefaultInjectSimulatedTimestamp As Boolean = False
     Private Const DefaultUseHighResolutionInputTimer As Boolean = False
+    Friend Const DefaultAlternateInterfaces As String = "Default|0.0.0.0|::0"
 
     ' Default phase angle graph settings
     Private Const DefaultPhaseAngleGraphStyle As String = "Relative"
@@ -214,6 +215,7 @@ Public Class ApplicationSettings
     Private m_skipDisableRealTimeData As Boolean
     Private m_injectSimulatedTimestamp As Boolean
     Private m_useHighResolutionInputTimer As Boolean
+    Private m_alternateInterfaces As String
 
     ' Phase angle graph settings
     Private m_phaseAngleGraphStyle As AngleGraphStyle
@@ -566,6 +568,19 @@ Public Class ApplicationSettings
         End Get
         Set(ByVal value As Boolean)
             m_useHighResolutionInputTimer = value
+        End Set
+    End Property
+
+    <Category(ConnectionSettingsCategory), _
+    Description("Defines alternate interfaces that can be used for sourcing socket connections."), _
+    DefaultValue(DefaultAlternateInterfaces), _
+    UserScopedSetting()> _
+    Public Property AlternateInterfaces() As String
+        Get
+            Return m_alternateInterfaces
+        End Get
+        Set(value As String)
+            m_alternateInterfaces = value
         End Set
     End Property
 

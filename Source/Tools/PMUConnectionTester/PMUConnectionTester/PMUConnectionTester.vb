@@ -230,33 +230,7 @@ Public Class PMUConnectionTester
         AlternateCommandChannel.TextBoxTcpHostIP.Text = m_loopbackAddress
         MulticastSourceSelector.TextBoxMulticastSourceIP.Text = m_loopbackAddress
 
-        ' Load network interfaces
-        Dim networkInterfaces As New List(Of Tuple(Of String, String, String))
-
-        ' Make sure "default" NIC is available in network interface list
-        networkInterfaces.Add(New Tuple(Of String, String, String)("Default", "0.0.0.0", "::0"))
-
-        Try
-            ' Add IP's for active, physical NIC's - if IPv4 is not supported, default to "::0", if IPv6 is not supported, default to "0.0.0.0"
-            networkInterfaces.AddRange(NetworkInterface.GetAllNetworkInterfaces(). _
-                Where(Function(nic) _
-                    nic.OperationalStatus = OperationalStatus.Up AndAlso _
-                    nic.NetworkInterfaceType <> NetworkInterfaceType.Loopback AndAlso _
-                    nic.NetworkInterfaceType <> NetworkInterfaceType.Tunnel). _
-                Select(Function(nic) New Tuple(Of String, String, String)( _
-                    nic.Description, _
-                    nic.GetIPProperties().UnicastAddresses.FirstOrDefault(Function(info) _
-                        info.Address.AddressFamily = Sockets.AddressFamily.InterNetwork).Address.ToNonNullString("::0"), _
-                    nic.GetIPProperties().UnicastAddresses.FirstOrDefault(Function(info) _
-                        info.Address.AddressFamily = Sockets.AddressFamily.InterNetworkV6).Address.ToNonNullString("0.0.0.0"))))
-        Catch
-            ' Can operate with only default NIC selection if needed
-        End Try
-
-        m_networkInterfaces = networkInterfaces.ToArray()
-
-        NetworkInterfaceSelector.ComboBoxNetworkInterfaces.Items.AddRange(m_networkInterfaces)
-        NetworkInterfaceSelector.ComboBoxNetworkInterfaces.DisplayMember = "Item1"
+        InitializeNetworkInterfaces()
 
         InitializeChart()
         ComboBoxProtocols.SelectedIndex = 0
@@ -771,6 +745,8 @@ Public Class PMUConnectionTester
 
                         ' Change in UseHighResolutionInputTimer may not be allowed if debugger is attached, so we restore accepted state to application settings
                         m_applicationSettings.UseHighResolutionInputTimer = m_frameParser.UseHighResolutionInputTimer
+                    ElseIf String.Compare(.Name, "AlternateInterfaces", True) = 0 Then
+                        InitializeNetworkInterfaces()
                     End If
                 Case ApplicationSettings.ChartSettingsCategory, ApplicationSettings.PhaseAngleGraphCategory, ApplicationSettings.FrequencyGraphCategory
                     If String.Compare(.Name, "PhaseAngleGraphStyle", True) = 0 Then
@@ -1932,6 +1908,63 @@ Public Class PMUConnectionTester
         End If
 
         If String.IsNullOrEmpty(maskedEditControl.Text) Then maskedEditControl.Text = m_loopbackAddress
+
+    End Sub
+
+    Public Sub InitializeNetworkInterfaces()
+
+        ' Load network interfaces
+        Dim networkInterfaces As New List(Of Tuple(Of String, String, String))
+
+        ' Make sure "default" NIC is available in network interface list
+        Dim nicInterfaces As String() = m_applicationSettings.AlternateInterfaces.ToNonNullNorEmptyString(ApplicationSettings.DefaultAlternateInterfaces).Split(";"c)
+
+        For Each nicInterface As String In nicInterfaces
+            Dim elem As String() = nicInterface.Split("|"c)
+
+            If elem.Length = 2 Then
+                Dim ipV6Address As String = "::0"
+
+                Try
+                    For Each address As IPAddress In Dns.GetHostEntry(elem(1)).AddressList
+                        ' Check to see if address has an IPv4 style address
+                        If address.AddressFamily = Sockets.AddressFamily.InterNetworkV6 Then
+                            ' Attempt to assign IP address
+                            ipV6Address = address.ToString()
+                            Exit For
+                        End If
+                    Next
+                Catch
+                    ' If all else fails, just assign a loopback address
+                    ipV6Address = "::0"
+                End Try
+                networkInterfaces.Add(New Tuple(Of String, String, String)(elem(0), elem(1), ipV6Address))
+            ElseIf elem.Length = 3 Then
+                networkInterfaces.Add(New Tuple(Of String, String, String)(elem(0), elem(1), elem(2)))
+            End If
+        Next
+
+        Try
+            ' Add IP's for active, physical NIC's - if IPv4 is not supported, default to "::0", if IPv6 is not supported, default to "0.0.0.0"
+            networkInterfaces.AddRange(NetworkInterface.GetAllNetworkInterfaces(). _
+                Where(Function(nic) _
+                    nic.OperationalStatus = OperationalStatus.Up AndAlso _
+                    nic.NetworkInterfaceType <> NetworkInterfaceType.Loopback AndAlso _
+                    nic.NetworkInterfaceType <> NetworkInterfaceType.Tunnel). _
+                Select(Function(nic) New Tuple(Of String, String, String)( _
+                    nic.Description, _
+                    nic.GetIPProperties().UnicastAddresses.FirstOrDefault(Function(info) _
+                        info.Address.AddressFamily = Sockets.AddressFamily.InterNetwork).Address.ToNonNullString("::0"), _
+                    nic.GetIPProperties().UnicastAddresses.FirstOrDefault(Function(info) _
+                        info.Address.AddressFamily = Sockets.AddressFamily.InterNetworkV6).Address.ToNonNullString("0.0.0.0"))))
+        Catch
+            ' Can operate with only default NIC selection if needed
+        End Try
+
+        m_networkInterfaces = networkInterfaces.ToArray()
+        NetworkInterfaceSelector.ComboBoxNetworkInterfaces.Items.Clear()
+        NetworkInterfaceSelector.ComboBoxNetworkInterfaces.Items.AddRange(m_networkInterfaces)
+        NetworkInterfaceSelector.ComboBoxNetworkInterfaces.DisplayMember = "Item1"
 
     End Sub
 
