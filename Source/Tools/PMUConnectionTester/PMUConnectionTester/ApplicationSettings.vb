@@ -572,7 +572,7 @@ Public Class ApplicationSettings
     End Property
 
     <Category(ConnectionSettingsCategory), _
-    Description("Defines alternate interfaces that can be used for sourcing socket connections."), _
+    Description("Defines alternate network interface addresses that can be used for sourcing socket connections. Use the format ""Name|IPv4Addy|IPv6Addy"" (IPv6 address specification is optional) separating multiple alternate interfaces with a semi-colon "";"""), _
     DefaultValue(DefaultAlternateInterfaces), _
     UserScopedSetting()> _
     Public Property AlternateInterfaces() As String
