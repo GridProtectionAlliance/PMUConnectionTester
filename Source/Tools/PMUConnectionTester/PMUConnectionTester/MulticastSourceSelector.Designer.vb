@@ -25,7 +25,6 @@ Partial Class MulticastSourceSelector
         Me.TextBoxMulticastSourceIP = New Infragistics.Win.UltraWinMaskedEdit.UltraMaskedEdit()
         Me.RadioButtonAnySource = New System.Windows.Forms.RadioButton()
         Me.RadioButtonSpecificSource = New System.Windows.Forms.RadioButton()
-        Me.ButtonCancel = New System.Windows.Forms.Button()
         Me.ButtonOK = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
@@ -64,20 +63,10 @@ Partial Class MulticastSourceSelector
         Me.RadioButtonSpecificSource.Text = "Use &Specific Source IP:"
         Me.RadioButtonSpecificSource.UseVisualStyleBackColor = True
         '
-        'ButtonCancel
-        '
-        Me.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.ButtonCancel.Location = New System.Drawing.Point(169, 71)
-        Me.ButtonCancel.Name = "ButtonCancel"
-        Me.ButtonCancel.Size = New System.Drawing.Size(75, 23)
-        Me.ButtonCancel.TabIndex = 4
-        Me.ButtonCancel.Text = "&Cancel"
-        Me.ButtonCancel.UseVisualStyleBackColor = True
-        '
         'ButtonOK
         '
         Me.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.ButtonOK.Location = New System.Drawing.Point(88, 71)
+        Me.ButtonOK.Location = New System.Drawing.Point(169, 73)
         Me.ButtonOK.Name = "ButtonOK"
         Me.ButtonOK.Size = New System.Drawing.Size(75, 23)
         Me.ButtonOK.TabIndex = 3
@@ -89,10 +78,8 @@ Partial Class MulticastSourceSelector
         Me.AcceptButton = Me.ButtonOK
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.CancelButton = Me.ButtonCancel
         Me.ClientSize = New System.Drawing.Size(255, 108)
         Me.ControlBox = False
-        Me.Controls.Add(Me.ButtonCancel)
         Me.Controls.Add(Me.ButtonOK)
         Me.Controls.Add(Me.TextBoxMulticastSourceIP)
         Me.Controls.Add(Me.RadioButtonSpecificSource)
@@ -113,6 +100,5 @@ Partial Class MulticastSourceSelector
     Friend WithEvents TextBoxMulticastSourceIP As Infragistics.Win.UltraWinMaskedEdit.UltraMaskedEdit
     Friend WithEvents RadioButtonAnySource As System.Windows.Forms.RadioButton
     Friend WithEvents RadioButtonSpecificSource As System.Windows.Forms.RadioButton
-    Friend WithEvents ButtonCancel As System.Windows.Forms.Button
     Friend WithEvents ButtonOK As System.Windows.Forms.Button
 End Class
