@@ -152,10 +152,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TVA\TVA.Core.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.Historian, Version=1.1.117.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Dependencies\TVA\TVA.Historian.dll</HintPath>
-    </Reference>
     <Reference Include="TVA.PhasorProtocols, Version=1.4.204.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TVA\TVA.PhasorProtocols.dll</HintPath>
@@ -196,6 +192,12 @@
     </Compile>
     <Compile Include="ApplicationSettings.vb" />
     <Compile Include="ConnectionSettings.vb" />
+    <Compile Include="ReceiveFromSelector.Designer.vb">
+      <DependentUpon>ReceiveFromSelector.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ReceiveFromSelector.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="MulticastSourceSelector.Designer.vb">
       <DependentUpon>MulticastSourceSelector.vb</DependentUpon>
     </Compile>
@@ -233,6 +235,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ReceiveFromSelector.resx">
+      <DependentUpon>ReceiveFromSelector.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MulticastSourceSelector.resx">
       <DependentUpon>MulticastSourceSelector.vb</DependentUpon>
     </EmbeddedResource>

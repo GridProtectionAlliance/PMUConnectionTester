@@ -66,6 +66,7 @@ Public Class ApplicationSettings
     Private Const DefaultInjectSimulatedTimestamp As Boolean = False
     Private Const DefaultUseHighResolutionInputTimer As Boolean = False
     Friend Const DefaultAlternateInterfaces As String = "Default|0.0.0.0|::0"
+    Private Const DefaultKeepCommandChannelOpen As Boolean = True
 
     ' Default phase angle graph settings
     Private Const DefaultPhaseAngleGraphStyle As String = "Relative"
@@ -216,6 +217,7 @@ Public Class ApplicationSettings
     Private m_injectSimulatedTimestamp As Boolean
     Private m_useHighResolutionInputTimer As Boolean
     Private m_alternateInterfaces As String
+    Private m_keepCommandChannelOpen As Boolean
 
     ' Phase angle graph settings
     Private m_phaseAngleGraphStyle As AngleGraphStyle
@@ -581,6 +583,19 @@ Public Class ApplicationSettings
         End Get
         Set(value As String)
             m_alternateInterfaces = value
+        End Set
+    End Property
+
+    <Category(ConnectionSettingsCategory), _
+    Description("Defines flag that determines if alternate command channel will remain open after successfully connecting device."), _
+    DefaultValue(DefaultKeepCommandChannelOpen), _
+    UserScopedSetting()> _
+    Public Property KeepCommandChannelOpen() As Boolean
+        Get
+            Return m_keepCommandChannelOpen
+        End Get
+        Set(value As Boolean)
+            m_keepCommandChannelOpen = value
         End Set
     End Property
 

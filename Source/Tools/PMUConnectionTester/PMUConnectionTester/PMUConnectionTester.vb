@@ -211,14 +211,14 @@ Public Class PMUConnectionTester
             m_ipStackIsIPv6 = Transport.GetDefaultIPStack() = IPStack.IPv6
 
             If m_ipStackIsIPv6 Then
-                LabelDefaultIPStack.Text = "Default IP Stack: IPv6"
+                LabelDefaultIPStack.Text = "Default System IP Stack: IPv6"
             Else
-                LabelDefaultIPStack.Text = "Default IP Stack: IPv4"
+                LabelDefaultIPStack.Text = "Default System IP Stack: IPv4"
             End If
         Catch
             ' Default to IPv4
             m_ipStackIsIPv6 = False
-            LabelDefaultIPStack.Text = "Default IP Stack: IPv4"
+            LabelDefaultIPStack.Text = "Default System IP Stack: IPv4"
         End Try
 
         ' Setup IP mode
@@ -229,6 +229,7 @@ Public Class PMUConnectionTester
         TextBoxUdpHostIP.Text = m_loopbackAddress
         AlternateCommandChannel.TextBoxTcpHostIP.Text = m_loopbackAddress
         MulticastSourceSelector.TextBoxMulticastSourceIP.Text = m_loopbackAddress
+        ReceiveFromSourceSelector.TextBoxUdpSourceIP.Text = m_loopbackAddress
 
         InitializeNetworkInterfaces()
 
@@ -646,6 +647,12 @@ Public Class PMUConnectionTester
     Private Sub LabelMulticastSource_Click(sender As System.Object, e As System.EventArgs) Handles LabelMulticastSource.Click
 
         MulticastSourceSelector.ShowDialog(Me)
+
+    End Sub
+
+    Private Sub LabelReceiveFrom_Click(sender As System.Object, e As System.EventArgs) Handles LabelReceiveFrom.Click
+
+        ReceiveFromSourceSelector.ShowDialog(Me)
 
     End Sub
 
@@ -1736,11 +1743,13 @@ Public Class PMUConnectionTester
                                 "; server=" & TextBoxUdpHostIP.Text & _
                                 "; remoteport=" & TextBoxUdpRemotePort.Text & _
                                 "; interface=" & GetNetworkInterfaceValue(m_udpNetworkInterface) & _
+                                ReceiveFromSourceSelector.ConnectionString & _
                                 MulticastSourceSelector.ConnectionString
                         Else
                             .ConnectionString = _
                                 "localport=" & TextBoxUdpLocalPort.Text & _
-                                "; interface=" & GetNetworkInterfaceValue(m_udpNetworkInterface)
+                                "; interface=" & GetNetworkInterfaceValue(m_udpNetworkInterface) & _
+                                ReceiveFromSourceSelector.ConnectionString
                         End If
                     Case TransportProtocol.Serial
                         .TransportProtocol = TransportProtocol.Serial
@@ -1768,6 +1777,7 @@ Public Class PMUConnectionTester
                 If m_applicationSettings.SkipDisableRealTimeData Then .ConnectionString &= "; skipDisableRealTimeData = true"
                 If m_applicationSettings.InjectSimulatedTimestamp Then .ConnectionString &= "; simulateTimestamp = true"
                 If m_applicationSettings.UseHighResolutionInputTimer Then .ConnectionString &= "; useHighResolutionInputTimer = true"
+                If Not m_applicationSettings.KeepCommandChannelOpen Then .ConnectionString &= "; keepCommandChannelOpen = false"
 
                 .PmuID = Convert.ToInt32(TextBoxDeviceID.Text)
                 .FrameRate = Convert.ToInt32(TextBoxFileFrameRate.Text)
@@ -1826,12 +1836,14 @@ Public Class PMUConnectionTester
                         TextBoxUdpLocalPort.Text = connectionData("localport")
                         AssignHostIP(TextBoxUdpHostIP, connectionData("server"))
                         TextBoxUdpRemotePort.Text = connectionData("remoteport")
+                        ReceiveFromSourceSelector.ConnectionString = .ConnectionString
                         MulticastSourceSelector.ConnectionString = .ConnectionString
                         CheckBoxRemoteUdpServer.Checked = True
                     Else
                         TextBoxUdpLocalPort.Text = connectionData("localport")
                         TextBoxUdpHostIP.Text = m_loopbackAddress
                         TextBoxUdpRemotePort.Text = "5000"
+                        ReceiveFromSourceSelector.ConnectionString = .ConnectionString
                         MulticastSourceSelector.ConnectionString = ""
                         CheckBoxRemoteUdpServer.Checked = False
                     End If
@@ -1864,6 +1876,7 @@ Public Class PMUConnectionTester
             If connectionData.TryGetValue("skipDisableRealTimeData", setting) Then m_applicationSettings.SkipDisableRealTimeData = setting.ParseBoolean()
             If connectionData.TryGetValue("simulateTimestamp", setting) Then m_applicationSettings.InjectSimulatedTimestamp = setting.ParseBoolean()
             If connectionData.TryGetValue("useHighResolutionInputTimer", setting) Then m_applicationSettings.UseHighResolutionInputTimer = setting.ParseBoolean()
+            If connectionData.TryGetValue("keepCommandChannelOpen", setting) Then m_applicationSettings.KeepCommandChannelOpen = setting.ParseBoolean()
 
             TextBoxDeviceID.Text = .PmuID.ToString()
             TextBoxFileFrameRate.Text = .FrameRate.ToString()
@@ -2013,6 +2026,10 @@ Public Class PMUConnectionTester
                 AlternateCommandChannel.TextBoxTcpHostIP.InputMask = "nnn\.nnn\.nnn\.nnn"
                 AlternateCommandChannel.TextBoxTcpHostIP.EditAs = EditAsType.UseSpecifiedMask
 
+                AssignHostIP(ReceiveFromSourceSelector.TextBoxUdpSourceIP, ReceiveFromSourceSelector.TextBoxUdpSourceIP.Text)
+                ReceiveFromSourceSelector.TextBoxUdpSourceIP.InputMask = "nnn\.nnn\.nnn\.nnn"
+                ReceiveFromSourceSelector.TextBoxUdpSourceIP.EditAs = EditAsType.UseSpecifiedMask
+
                 AssignHostIP(MulticastSourceSelector.TextBoxMulticastSourceIP, MulticastSourceSelector.TextBoxMulticastSourceIP.Text)
                 MulticastSourceSelector.TextBoxMulticastSourceIP.InputMask = "nnn\.nnn\.nnn\.nnn"
                 MulticastSourceSelector.TextBoxMulticastSourceIP.EditAs = EditAsType.UseSpecifiedMask
@@ -2028,6 +2045,9 @@ Public Class PMUConnectionTester
 
                 AlternateCommandChannel.TextBoxTcpHostIP.InputMask = ""
                 AlternateCommandChannel.TextBoxTcpHostIP.EditAs = EditAsType.String
+
+                ReceiveFromSourceSelector.TextBoxUdpSourceIP.InputMask = ""
+                ReceiveFromSourceSelector.TextBoxUdpSourceIP.EditAs = EditAsType.String
 
                 MulticastSourceSelector.TextBoxMulticastSourceIP.InputMask = ""
                 MulticastSourceSelector.TextBoxMulticastSourceIP.EditAs = EditAsType.String
@@ -2105,6 +2125,7 @@ Public Class PMUConnectionTester
                     .AllowedParsingExceptions = m_applicationSettings.AllowedParsingExceptions
                     .InjectSimulatedTimestamp = m_applicationSettings.InjectSimulatedTimestamp
                     .UseHighResolutionInputTimer = m_applicationSettings.UseHighResolutionInputTimer
+                    .KeepCommandChannelOpen = m_applicationSettings.KeepCommandChannelOpen
                     .ParsingExceptionWindow = Ticks.FromSeconds(m_applicationSettings.ParsingExceptionWindow)
                     .AutoRepeatCapturedPlayback = currentSettings.AutoRepeatPlayback
                     .DefinedFrameRate = Convert.ToInt32(TextBoxFileFrameRate.Text)
