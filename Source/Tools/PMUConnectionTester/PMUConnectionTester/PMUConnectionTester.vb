@@ -34,7 +34,6 @@ Imports Infragistics.UltraChart.Shared.Styles
 Imports Infragistics.UltraChart.Resources.Appearance
 Imports Infragistics.UltraChart.Core.Layers
 Imports System.Collections.Concurrent
-Imports System.ComponentModel
 Imports System.Drawing
 Imports System.IO
 Imports System.Net
@@ -52,10 +51,8 @@ Imports TVA.Configuration
 Imports TVA.IO.FilePath
 Imports TVA.Parsing
 Imports TVA.PhasorProtocols
-Imports TVA.Reflection
 Imports TVA.Reflection.AssemblyInfo
 Imports TVA.Units
-Imports TVA.Windows
 Imports TVA.Windows.Forms
 
 Public Class PMUConnectionTester
@@ -83,6 +80,7 @@ Public Class PMUConnectionTester
 
     ' Phasor parsing variables
     Private WithEvents m_frameParser As MultiProtocolFrameParser
+    Private WithEvents m_imageQueue As AsyncQueue(Of EventArgs(Of FundamentalFrameType, Byte(), Integer, Integer))
     Private m_configurationFrame As IConfigurationFrame
     Private m_configChangeDetected As Boolean
     Private m_configChangeTime As Long
@@ -128,7 +126,7 @@ Public Class PMUConnectionTester
 
 #Region " Primary Form Event Handlers "
 
-    Private Sub PMUConnectionTester_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    Private Sub PMUConnectionTester_Load(ByVal sender As Object, ByVal e As EventArgs) Handles MyBase.Load
 
         ' We display a custom message for unhandled exceptions
         GlobalExceptionLogger.ErrorTextMethod = AddressOf UnhandledExceptionErrorMessage
@@ -286,13 +284,13 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub PMUConnectionTester_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
+    Private Sub PMUConnectionTester_Shown(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Shown
 
         TimerDelay.Start()
 
     End Sub
 
-    Private Sub TimerDelay_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerDelay.Tick
+    Private Sub TimerDelay_Tick(ByVal sender As Object, ByVal e As EventArgs) Handles TimerDelay.Tick
 
         ' We show the default IP stack label on startup only after a momentary pause - this prevents the visual side effect
         ' of having the label's grey background stand out over a temporary white background
@@ -342,7 +340,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub ButtonListen_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonListen.Click
+    Private Sub ButtonListen_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ButtonListen.Click
 
         If m_frameParser.Enabled Then
             Disconnect()
@@ -352,13 +350,13 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub ButtonSendCommand_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonSendCommand.Click
+    Private Sub ButtonSendCommand_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ButtonSendCommand.Click
 
         SendDeviceCommand(CType(ComboBoxCommands.SelectedIndex + 1, DeviceCommand))
 
     End Sub
 
-    Private Sub ComboBoxPmus_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ComboBoxPmus.SelectedIndexChanged
+    Private Sub ComboBoxPmus_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs) Handles ComboBoxPmus.SelectedIndexChanged
 
         m_selectedCell = Nothing
 
@@ -400,14 +398,14 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub ComboBoxPhasors_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ComboBoxPhasors.SelectedIndexChanged
+    Private Sub ComboBoxPhasors_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs) Handles ComboBoxPhasors.SelectedIndexChanged
 
         m_phasorData.Rows.Clear()
         m_lastPhaseAngle = 0.0!
 
     End Sub
 
-    Private Sub ComboBoxByteEncodingDisplayFormats_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ComboBoxByteEncodingDisplayFormats.SelectedIndexChanged
+    Private Sub ComboBoxByteEncodingDisplayFormats_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs) Handles ComboBoxByteEncodingDisplayFormats.SelectedIndexChanged
 
         Select Case ComboBoxByteEncodingDisplayFormats.SelectedIndex
             Case 0
@@ -428,7 +426,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub ComboBoxProtocols_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ComboBoxProtocols.SelectedIndexChanged
+    Private Sub ComboBoxProtocols_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs) Handles ComboBoxProtocols.SelectedIndexChanged
 
         If m_frameParser IsNot Nothing Then
             With ToolTipManagerForExtraParameters
@@ -486,7 +484,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    'Private Sub ComboBoxCommands_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ComboBoxCommands.SelectedIndexChanged
+    'Private Sub ComboBoxCommands_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs) Handles ComboBoxCommands.SelectedIndexChanged
 
     '    ' Some protocols only support enable and disable real-time data commands...
     '    If ComboBoxProtocols.SelectedIndex >= 4 And ComboBoxCommands.SelectedIndex > 1 Then
@@ -496,7 +494,7 @@ Public Class PMUConnectionTester
 
     'End Sub
 
-    Private Sub CheckBoxEstablishTcpServer_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckBoxEstablishTcpServer.CheckedChanged
+    Private Sub CheckBoxEstablishTcpServer_CheckedChanged(ByVal sender As Object, ByVal e As EventArgs) Handles CheckBoxEstablishTcpServer.CheckedChanged
 
         Dim needsHostIP As Boolean = Not CheckBoxEstablishTcpServer.Checked
 
@@ -507,7 +505,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub CheckBoxRemoteUDPServer_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckBoxRemoteUdpServer.CheckedChanged
+    Private Sub CheckBoxRemoteUDPServer_CheckedChanged(ByVal sender As Object, ByVal e As EventArgs) Handles CheckBoxRemoteUdpServer.CheckedChanged
 
         Dim needsHostIP As Boolean = CheckBoxRemoteUdpServer.Checked
 
@@ -523,20 +521,17 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub CheckBoxAutoRepeatPlayback_CheckChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles CheckBoxAutoRepeatPlayback.CheckStateChanged
+    Private Sub CheckBoxAutoRepeatPlayback_CheckChanged(ByVal sender As Object, ByVal e As EventArgs) Handles CheckBoxAutoRepeatPlayback.CheckStateChanged
 
         If m_frameParser IsNot Nothing Then
             ' Update state in frame parser
             m_frameParser.AutoRepeatCapturedPlayback = CheckBoxAutoRepeatPlayback.Checked
-
-            ' Change in ExecuteParseOnSeparateThread may not be allowed based on connection settings, so we restore accepted state to application settings
-            m_applicationSettings.ExecuteParseOnSeparateThread = m_frameParser.ExecuteParseOnSeparateThread
             PropertyGridApplicationSettings.Refresh()
         End If
 
     End Sub
 
-    Private Sub ButtonGetStatus_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonGetStatus.Click
+    Private Sub ButtonGetStatus_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ButtonGetStatus.Click
 
         TabControlChart.Tabs(ChartTabs.Messages).Selected = True
 
@@ -548,7 +543,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub ButtonRestoreDefaultSettings_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonRestoreDefaultSettings.Click
+    Private Sub ButtonRestoreDefaultSettings_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ButtonRestoreDefaultSettings.Click
 
         If MsgBox("Are you sure you want to restore the default settings?" & vbCrLf & vbCrLf & _
                   "Note that application will be closed and you will need to restart.", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, _
@@ -566,7 +561,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub ButtonBrowse_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonBrowse.Click
+    Private Sub ButtonBrowse_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ButtonBrowse.Click
 
         With OpenFileDialog
             .Title = "Open Capture File"
@@ -580,7 +575,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub TabControlChart_SelectedTabChanged(ByVal sender As System.Object, ByVal e As Infragistics.Win.UltraWinTabControl.SelectedTabChangedEventArgs) Handles TabControlChart.SelectedTabChanged
+    Private Sub TabControlChart_SelectedTabChanged(ByVal sender As Object, ByVal e As Infragistics.Win.UltraWinTabControl.SelectedTabChangedEventArgs) Handles TabControlChart.SelectedTabChanged
 
         ' We load protocol specific data attribute tree when user selects that tab...
         If e.Tab.Index = ChartTabs.ProtocolSpecific AndAlso m_attributeFrames.Count > 0 _
@@ -589,7 +584,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub TabControlProtocolParameters_SelectedTabChanged(ByVal sender As System.Object, ByVal e As Infragistics.Win.UltraWinTabControl.SelectedTabChangedEventArgs) Handles TabControlProtocolParameters.SelectedTabChanged
+    Private Sub TabControlProtocolParameters_SelectedTabChanged(ByVal sender As Object, ByVal e As Infragistics.Win.UltraWinTabControl.SelectedTabChangedEventArgs) Handles TabControlProtocolParameters.SelectedTabChanged
 
         Select Case e.Tab.Index
             Case ProtocolTabs.Protocol
@@ -612,7 +607,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub CalculatedPowerOrVarLabel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) _
+    Private Sub CalculatedPowerOrVarLabel_Click(ByVal sender As Object, ByVal e As EventArgs) _
         Handles LabelPowerLabel.Click, LabelVarsLabel.Click
 
         TabControlChart.Tabs(ChartTabs.Settings).Selected = True
@@ -620,7 +615,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub LabelTcpNetworkInterface_Click(sender As System.Object, e As System.EventArgs) Handles LabelTcpNetworkInterface.Click
+    Private Sub LabelTcpNetworkInterface_Click(sender As Object, e As EventArgs) Handles LabelTcpNetworkInterface.Click
 
         NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex = m_tcpNetworkInterface
 
@@ -632,7 +627,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub LabelUdpNetworkInterface_Click(sender As System.Object, e As System.EventArgs) Handles LabelUdpNetworkInterface.Click
+    Private Sub LabelUdpNetworkInterface_Click(sender As Object, e As EventArgs) Handles LabelUdpNetworkInterface.Click
 
         NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex = m_udpNetworkInterface
 
@@ -644,19 +639,19 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub LabelMulticastSource_Click(sender As System.Object, e As System.EventArgs) Handles LabelMulticastSource.Click
+    Private Sub LabelMulticastSource_Click(sender As Object, e As EventArgs) Handles LabelMulticastSource.Click
 
         MulticastSourceSelector.ShowDialog(Me)
 
     End Sub
 
-    Private Sub LabelReceiveFrom_Click(sender As System.Object, e As System.EventArgs) Handles LabelReceiveFrom.Click
+    Private Sub LabelReceiveFrom_Click(sender As Object, e As EventArgs) Handles LabelReceiveFrom.Click
 
         ReceiveFromSourceSelector.ShowDialog(Me)
 
     End Sub
 
-    Private Sub LabelAlternateCommandChannel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles LabelAlternateCommandChannel.Click
+    Private Sub LabelAlternateCommandChannel_Click(ByVal sender As Object, ByVal e As EventArgs) Handles LabelAlternateCommandChannel.Click
 
         Dim connectionString As String = CurrentConnectionSettings.ConnectionString
         AlternateCommandChannel.NetworkInterface = m_commandNetworkInterface
@@ -673,7 +668,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub LabelAlternateCommandChannelState_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles LabelAlternateCommandChannelState.Click
+    Private Sub LabelAlternateCommandChannelState_Click(ByVal sender As Object, ByVal e As EventArgs) Handles LabelAlternateCommandChannelState.Click
 
         ' Assume user simply wants to change defined state when clicking on label
         AlternateCommandChannel.CheckBoxUndefined.Checked = AlternateCommandChannel.IsDefined
@@ -681,7 +676,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub TextBox_GotFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles _
+    Private Sub TextBox_GotFocus(ByVal sender As Object, ByVal e As EventArgs) Handles _
         TextBoxDeviceID.GotFocus, TextBoxFileCaptureName.GotFocus, TextBoxFileFrameRate.GotFocus, _
         TextBoxSerialDataBits.GotFocus, TextBoxTcpHostIP.GotFocus, TextBoxTcpPort.GotFocus, _
         TextBoxUdpHostIP.GotFocus, TextBoxUdpLocalPort.GotFocus, TextBoxUdpRemotePort.GotFocus
@@ -717,7 +712,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub TextBoxFileCaptureName_TextChanged(sender As Object, e As System.EventArgs) Handles TextBoxFileCaptureName.TextChanged
+    Private Sub TextBoxFileCaptureName_TextChanged(sender As Object, e As EventArgs) Handles TextBoxFileCaptureName.TextChanged
 
         If Not String.IsNullOrEmpty(TextBoxFileCaptureName.Text) Then
             If GetExtension(TextBoxFileCaptureName.Text).ToLower() = ".dst" Then
@@ -740,12 +735,7 @@ Public Class PMUConnectionTester
                     End If
                 Case ApplicationSettings.ConnectionSettingsCategory
                     ' We allow run-time dynamic changes to some frame parsing states
-                    If String.Compare(.Name, "ExecuteParseOnSeparateThread", True) = 0 Then
-                        m_frameParser.ExecuteParseOnSeparateThread = m_applicationSettings.ExecuteParseOnSeparateThread
-
-                        ' Change in ExecuteParseOnSeparateThread may not be allowed based on connection settings, so we restore accepted state to application settings
-                        m_applicationSettings.ExecuteParseOnSeparateThread = m_frameParser.ExecuteParseOnSeparateThread
-                    ElseIf String.Compare(.Name, "InjectSimulatedTimestamp", True) = 0 Then
+                    If String.Compare(.Name, "InjectSimulatedTimestamp", True) = 0 Then
                         m_frameParser.InjectSimulatedTimestamp = m_applicationSettings.InjectSimulatedTimestamp
                     ElseIf String.Compare(.Name, "UseHighResolutionInputTimer", True) = 0 Then
                         m_frameParser.UseHighResolutionInputTimer = m_applicationSettings.UseHighResolutionInputTimer
@@ -772,7 +762,7 @@ Public Class PMUConnectionTester
 
 #Region " Menu Event Handlers "
 
-    Private Sub MenuItemLoadConnection_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemLoadConnection.Click
+    Private Sub MenuItemLoadConnection_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemLoadConnection.Click
 
         With OpenFileDialog
             .Title = "Load Connection Settings"
@@ -786,7 +776,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub MenuItemSaveConnection_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSaveConnection.Click
+    Private Sub MenuItemSaveConnection_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemSaveConnection.Click
 
         With SaveFileDialog
             .Title = "Save Connection Settings"
@@ -799,7 +789,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub MenuItemLoadConfigFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemLoadConfigFile.Click
+    Private Sub MenuItemLoadConfigFile_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemLoadConfigFile.Click
 
         With OpenFileDialog
             .Title = "Load Configuration File"
@@ -828,7 +818,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub MenuItemSaveConfigFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSaveConfigFile.Click
+    Private Sub MenuItemSaveConfigFile_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemSaveConfigFile.Click
 
         If m_configurationFrame Is Nothing Then
             MsgBox("No configuration file has been received or loaded...", MsgBoxStyle.Information Or MsgBoxStyle.OkOnly)
@@ -865,7 +855,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub MenuItemStartCapture_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemStartCapture.Click
+    Private Sub MenuItemStartCapture_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemStartCapture.Click
 
         With SaveFileDialog
             .Title = "Set Capture File Name"
@@ -884,7 +874,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub MenuItemStopCapture_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemStopCapture.Click
+    Private Sub MenuItemStopCapture_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemStopCapture.Click
 
         If m_frameCaptureStream IsNot Nothing Then m_frameCaptureStream.Close()
         m_frameCaptureStream = Nothing
@@ -894,7 +884,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub MenuItemStartStreamDebugCapture_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemStartStreamDebugCapture.Click
+    Private Sub MenuItemStartStreamDebugCapture_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemStartStreamDebugCapture.Click
 
         With SaveFileDialog
             .Title = "Set Stream Debug Capture File Name"
@@ -913,7 +903,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub MenuItemStopStreamDebugCapture_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemStopStreamDebugCapture.Click
+    Private Sub MenuItemStopStreamDebugCapture_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemStopStreamDebugCapture.Click
 
         If m_streamDebugCapture IsNot Nothing Then m_streamDebugCapture.Close()
         m_streamDebugCapture = Nothing
@@ -923,7 +913,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub MenuItemCaptureSampleFrames_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemCaptureSampleFrames.Click
+    Private Sub MenuItemCaptureSampleFrames_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemCaptureSampleFrames.Click
 
         With SaveFileDialog
             .Title = "Set Sample Frames Capture File Name"
@@ -950,25 +940,25 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub MenuItemCancelSampleFrameCapture_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemCancelSampleFrameCapture.Click
+    Private Sub MenuItemCancelSampleFrameCapture_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemCancelSampleFrameCapture.Click
 
         CloseSampleCapture()
 
     End Sub
 
-    Private Sub MenuItemLocalHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemLocalHelp.Click
+    Private Sub MenuItemLocalHelp_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemLocalHelp.Click
 
         Help.ShowHelp(Me, GetAbsolutePath("PMUConnectionTester.chm"))
 
     End Sub
 
-    Private Sub MenuItemOnlineHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemOnlineHelp.Click
+    Private Sub MenuItemOnlineHelp_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemOnlineHelp.Click
 
         Process.Start("http://openpdc.codeplex.com/wikipage?title=Connection%20Tester&referringTitle=Documentation")
 
     End Sub
 
-    Private Sub MenuItemAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemAbout.Click
+    Private Sub MenuItemAbout_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemAbout.Click
 
         With New AboutDialog
             Dim localNamespace As String = Me.GetType.Namespace
@@ -980,19 +970,19 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub MenuItemExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemExit.Click
+    Private Sub MenuItemExit_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemExit.Click
 
         Me.Close()
 
     End Sub
 
-    Private Sub MenuItemRefresh_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemRefresh.Click
+    Private Sub MenuItemRefresh_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemRefresh.Click
 
         InitializeAttributeTree()
 
     End Sub
 
-    Private Sub MenuItemExpandAll_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemExpandAll.Click
+    Private Sub MenuItemExpandAll_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemExpandAll.Click
 
         Dim frameKey As String
 
@@ -1014,7 +1004,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub MenuItemCollapseAll_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemCollapseAll.Click
+    Private Sub MenuItemCollapseAll_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemCollapseAll.Click
 
         With TreeFrameAttributes
             .Refresh()
@@ -1027,19 +1017,19 @@ Public Class PMUConnectionTester
 
 #Region " Control Resizing Event Code "
 
-    Private Sub PMUConnectionTester_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Resize
+    Private Sub PMUConnectionTester_Resize(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Resize
 
         UpdateApplicationTitle(Nothing)
 
     End Sub
 
-    Private Sub GroupBoxStatus_ExpandedStateChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles GroupBoxStatus.ExpandedStateChanged
+    Private Sub GroupBoxStatus_ExpandedStateChanged(ByVal sender As Object, ByVal e As EventArgs) Handles GroupBoxStatus.ExpandedStateChanged
 
         ToolTipManager.GetUltraToolTip(GroupBoxStatus).Enabled = IIf(GroupBoxStatus.Expanded, DefaultableBoolean.False, DefaultableBoolean.True)
 
     End Sub
 
-    Private Sub GroupBoxStatus_ExpandedStateChanging(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles GroupBoxStatus.ExpandedStateChanging
+    Private Sub GroupBoxStatus_ExpandedStateChanging(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles GroupBoxStatus.ExpandedStateChanging
 
         If GroupBoxStatus.Expanded Then
             TabControlChart.Height += GroupBoxPanelStatus.Height
@@ -1053,7 +1043,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub GroupBoxConnection_ExpandedStateChanging(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles GroupBoxConnection.ExpandedStateChanging
+    Private Sub GroupBoxConnection_ExpandedStateChanging(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles GroupBoxConnection.ExpandedStateChanging
 
         If GroupBoxConnection.Expanded Then
             TabControlChart.Top -= GroupBoxPanelConnection.Height
@@ -1075,7 +1065,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub GroupBoxHeaderFrame_ExpandedStateChanging(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles GroupBoxHeaderFrame.ExpandedStateChanging
+    Private Sub GroupBoxHeaderFrame_ExpandedStateChanging(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles GroupBoxHeaderFrame.ExpandedStateChanging
 
         If GroupBoxHeaderFrame.Expanded Then
             TabControlChart.Width += GroupBoxPanelHeaderFrame.Width
@@ -1087,7 +1077,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub GroupBoxConfigurationFrame_ExpandedStateChanging(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles GroupBoxConfigurationFrame.ExpandedStateChanging
+    Private Sub GroupBoxConfigurationFrame_ExpandedStateChanging(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles GroupBoxConfigurationFrame.ExpandedStateChanging
 
         Const ExtraOffset As Integer = 8
 
@@ -1114,7 +1104,7 @@ Public Class PMUConnectionTester
     ' These functions are invoked from a separate threads, so you must use the "Invoke" method so you can safely manipulate visual control elements
     Private Sub m_frameParser_ReceivedFrameBufferImage(ByVal sender As Object, ByVal e As EventArgs(Of FundamentalFrameType, Byte(), Integer, Integer)) Handles m_frameParser.ReceivedFrameBufferImage
 
-        BeginInvoke(New Action(Of FundamentalFrameType, Byte(), Integer, Integer)(AddressOf ReceivedFrameBufferImage), e.Argument1, e.Argument2, e.Argument3, e.Argument4)
+        If m_imageQueue IsNot Nothing Then m_imageQueue.Enqueue(e)
 
     End Sub
 
@@ -1149,7 +1139,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub m_frameParser_DataStreamException(ByVal sender As Object, ByVal e As EventArgs(Of System.Exception)) Handles m_frameParser.ParsingException
+    Private Sub m_frameParser_DataStreamException(ByVal sender As Object, ByVal e As EventArgs(Of Exception)) Handles m_frameParser.ParsingException
 
         BeginInvoke(New Action(Of Exception)(AddressOf DataStreamException), e.Argument)
 
@@ -1167,13 +1157,13 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub m_frameParser_ConnectionException(ByVal sender As Object, ByVal e As EventArgs(Of System.Exception, Integer)) Handles m_frameParser.ConnectionException
+    Private Sub m_frameParser_ConnectionException(ByVal sender As Object, ByVal e As EventArgs(Of Exception, Integer)) Handles m_frameParser.ConnectionException
 
         BeginInvoke(New Action(Of Exception, Integer)(AddressOf ConnectionException), e.Argument1, e.Argument2)
 
     End Sub
 
-    Private Sub m_frameParser_ExceededParsingExceptionThreshold(ByVal sender As Object, ByVal e As System.EventArgs) Handles m_frameParser.ExceededParsingExceptionThreshold
+    Private Sub m_frameParser_ExceededParsingExceptionThreshold(ByVal sender As Object, ByVal e As EventArgs) Handles m_frameParser.ExceededParsingExceptionThreshold
 
         BeginInvoke(New EventHandler(AddressOf ExceededParsingExceptionThreshold), sender, e)
 
@@ -1197,6 +1187,12 @@ Public Class PMUConnectionTester
 
     End Sub
 
+    Private Sub m_imageQueue_ProcessException(sender As Object, e As EventArgs(Of Exception)) Handles m_imageQueue.ProcessException
+
+        BeginInvoke(New Action(Of Exception)(AddressOf DataStreamException), e.Argument)
+
+    End Sub
+
     Private Sub m_chartSettings_PhaseAngleColorsChanged() Handles m_applicationSettings.PhaseAngleColorsChanged
 
         BeginInvoke(New Action(AddressOf PhaseAngleColorsChanged))
@@ -1206,6 +1202,21 @@ Public Class PMUConnectionTester
 #End Region
 
 #Region " Thread Delegate Implementations "
+
+    Private Sub ProcessReceivedFrameBufferImage(ByVal state As Object)
+
+        Dim bufferImageArgs As EventArgs(Of FundamentalFrameType, Byte(), Integer, Integer) = TryCast(state, EventArgs(Of FundamentalFrameType, Byte(), Integer, Integer))
+
+        If bufferImageArgs IsNot Nothing Then
+            BeginInvoke(New Action(Of FundamentalFrameType, Byte(), Integer, Integer)(AddressOf ReceivedFrameBufferImage), bufferImageArgs.Argument1, bufferImageArgs.Argument2, bufferImageArgs.Argument3, bufferImageArgs.Argument4)
+
+            ' For file based input we slow image processing to attempt some level of synchronization with frame reception
+            If m_frameParser.TransportProtocol = TransportProtocol.File Then
+                Thread.Sleep(1000 \ m_frameParser.DefinedFrameRate)
+            End If
+        End If
+
+    End Sub
 
     Private Sub ReceivedFrameBufferImage(ByVal frameType As FundamentalFrameType, ByVal binaryImage As Byte(), ByVal offset As Integer, ByVal length As Integer)
 
@@ -1553,7 +1564,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub DataStreamException(ByVal ex As System.Exception)
+    Private Sub DataStreamException(ByVal ex As Exception)
 
         AppendStatusMessage("Exception: " & ex.Message)
         If m_applicationSettings.ShowMessagesTabOnDataException Then
@@ -1582,7 +1593,7 @@ Public Class PMUConnectionTester
 
     Private Sub Connected()
 
-        ChartDataDisplay.TitleTop.Text = "Awaiting configuration frame..."
+        If m_configurationFrame Is Nothing Then ChartDataDisplay.TitleTop.Text = "Awaiting configuration frame..."
         AppendStatusMessage("Connected to device " & ConnectionInformation)
         TabControlChart.Tabs(ChartTabs.Graph).Selected = True
 
@@ -1603,7 +1614,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub ExceededParsingExceptionThreshold(ByVal sender As Object, ByVal e As System.EventArgs)
+    Private Sub ExceededParsingExceptionThreshold(ByVal sender As Object, ByVal e As EventArgs)
 
         ' Connection has been terminated, but we still need to clean up display...
         Disconnect()
@@ -1773,7 +1784,6 @@ Public Class PMUConnectionTester
                 ' these settings will ride with their serialized connection file
                 If m_applicationSettings.MaximumConnectionAttempts <> 1 Then .ConnectionString &= "; maximumConnectionAttempts = " & m_applicationSettings.MaximumConnectionAttempts
                 If Not m_applicationSettings.AutoStartDataParsingSequence Then .ConnectionString &= "; autoStartDataParsingSequence = false"
-                If m_applicationSettings.ExecuteParseOnSeparateThread Then .ConnectionString &= "; executeParseOnSeparateThread = true"
                 If m_applicationSettings.SkipDisableRealTimeData Then .ConnectionString &= "; skipDisableRealTimeData = true"
                 If m_applicationSettings.InjectSimulatedTimestamp Then .ConnectionString &= "; simulateTimestamp = true"
                 If m_applicationSettings.UseHighResolutionInputTimer Then .ConnectionString &= "; useHighResolutionInputTimer = true"
@@ -1872,7 +1882,6 @@ Public Class PMUConnectionTester
             ' Check for connection specific settings that may have been serialized into the connection string
             If connectionData.TryGetValue("maximumConnectionAttempts", setting) Then m_applicationSettings.MaximumConnectionAttempts = Integer.Parse(setting)
             If connectionData.TryGetValue("autoStartDataParsingSequence", setting) Then m_applicationSettings.AutoStartDataParsingSequence = setting.ParseBoolean()
-            If connectionData.TryGetValue("executeParseOnSeparateThread", setting) Then m_applicationSettings.ExecuteParseOnSeparateThread = setting.ParseBoolean()
             If connectionData.TryGetValue("skipDisableRealTimeData", setting) Then m_applicationSettings.SkipDisableRealTimeData = setting.ParseBoolean()
             If connectionData.TryGetValue("simulateTimestamp", setting) Then m_applicationSettings.InjectSimulatedTimestamp = setting.ParseBoolean()
             If connectionData.TryGetValue("useHighResolutionInputTimer", setting) Then m_applicationSettings.UseHighResolutionInputTimer = setting.ParseBoolean()
@@ -1940,7 +1949,7 @@ Public Class PMUConnectionTester
 
                 Try
                     For Each address As IPAddress In Dns.GetHostEntry(elem(1)).AddressList
-                        ' Check to see if address has an IPv4 style address
+                        ' Check to see if address has an IPv6 style address
                         If address.AddressFamily = Sockets.AddressFamily.InterNetworkV6 Then
                             ' Attempt to assign IP address
                             ipV6Address = address.ToString()
@@ -2102,6 +2111,8 @@ Public Class PMUConnectionTester
         Try
             ButtonListen.Enabled = False
 
+            m_imageQueue = New AsyncQueue(Of EventArgs(Of FundamentalFrameType, Byte(), Integer, Integer)) With {.ProcessItemFunction = AddressOf ProcessReceivedFrameBufferImage}
+
             With m_frameParser
                 Dim valuesAreValid As Boolean = True
 
@@ -2120,7 +2131,6 @@ Public Class PMUConnectionTester
                     .ConnectionString = currentSettings.ConnectionString
                     .DeviceID = CUShort(currentSettings.PmuID)
                     .AutoStartDataParsingSequence = m_applicationSettings.AutoStartDataParsingSequence
-                    .ExecuteParseOnSeparateThread = m_applicationSettings.ExecuteParseOnSeparateThread
                     .SkipDisableRealTimeData = m_applicationSettings.SkipDisableRealTimeData
                     .AllowedParsingExceptions = m_applicationSettings.AllowedParsingExceptions
                     .InjectSimulatedTimestamp = m_applicationSettings.InjectSimulatedTimestamp
@@ -2133,7 +2143,6 @@ Public Class PMUConnectionTester
 
                     ' Assignment of some can be affected by other settings, update these settings to reflect possible change
                     m_applicationSettings.MaximumConnectionAttempts = .MaximumConnectionAttempts
-                    m_applicationSettings.ExecuteParseOnSeparateThread = .ExecuteParseOnSeparateThread
 
                     ' Connect to PMU...
                     .Start()
@@ -2197,6 +2206,7 @@ Public Class PMUConnectionTester
         m_lastRefresh = 0
         m_lastFrameType = FundamentalFrameType.Undetermined
         m_attributeFrames.Clear()
+        m_imageQueue = Nothing
 
         ' Restore window state to normal if it is minimized since disconnect may happen by source,
         ' that is, not initiated by user - so user will need to know about the change in state

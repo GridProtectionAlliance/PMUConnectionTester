@@ -61,7 +61,6 @@ Public Class ApplicationSettings
     ' Default connection settings
     Private Const DefaultMaximumConnectionAttempts As Integer = 1
     Private Const DefaultAutoStartDataParsingSequence As Boolean = True
-    Private Const DefaultExecuteParseOnSeparateThread As Boolean = False
     Private Const DefaultSkipDisableRealTimeData As Boolean = False
     Private Const DefaultInjectSimulatedTimestamp As Boolean = False
     Private Const DefaultUseHighResolutionInputTimer As Boolean = False
@@ -518,19 +517,6 @@ Public Class ApplicationSettings
         End Get
         Set(ByVal value As Boolean)
             m_autoStartDataParsingSequence = value
-        End Set
-    End Property
-
-    <Category(ConnectionSettingsCategory), _
-    Description("Allows frame parsing to be executed on a separate thread (other than communications thread) - typically only needed when data frames are very large.  This change will happen dynamically, even if a connection is active."), _
-    DefaultValue(DefaultExecuteParseOnSeparateThread), _
-    UserScopedSetting()> _
-    Public Property ExecuteParseOnSeparateThread() As Boolean
-        Get
-            Return m_executeParseOnSeparateThread
-        End Get
-        Set(ByVal value As Boolean)
-            m_executeParseOnSeparateThread = value
         End Set
     End Property
 
