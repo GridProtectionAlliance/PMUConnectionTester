@@ -23,7 +23,7 @@
 
 Imports System.Configuration
 Imports System.IO
-Imports TVA.Reflection.AssemblyInfo
+Imports GSF.Reflection.AssemblyInfo
 
 Public NotInheritable Class SplashScreen
 

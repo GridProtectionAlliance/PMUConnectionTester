@@ -21,9 +21,8 @@
 '
 '******************************************************************************************************
 
-Imports System.Runtime.Serialization
-Imports TVA.Communication
-Imports TVA.PhasorProtocols
+Imports GSF.Communication
+Imports GSF.PhasorProtocols
 
 <Serializable()> _
 Public Class ConnectionSettings

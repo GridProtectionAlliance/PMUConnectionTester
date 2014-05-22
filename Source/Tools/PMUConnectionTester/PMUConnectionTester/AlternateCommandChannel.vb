@@ -22,11 +22,10 @@
 '******************************************************************************************************
 
 Imports System.IO
-Imports System.Text
 Imports System.Windows.Forms.DialogResult
-Imports TVA
-Imports TVA.Communication
-Imports TVA.Common
+Imports GSF
+Imports GSF.Communication
+Imports GSF.Common
 Imports Infragistics.Win.UltraWinMaskedEdit
 
 Public Class AlternateCommandChannel
@@ -43,11 +42,11 @@ Public Class AlternateCommandChannel
             ComboBoxSerialPorts.Items.Add(port)
         Next
 
-        For Each parity As String In [Enum].GetNames(GetType(Ports.Parity))
+        For Each parity As String In GetNames(GetType(Ports.Parity))
             ComboBoxSerialParities.Items.Add(parity)
         Next
 
-        For Each stopbit As String In [Enum].GetNames(GetType(Ports.StopBits))
+        For Each stopbit As String In GetNames(GetType(Ports.StopBits))
             ComboBoxSerialStopBits.Items.Add(stopbit)
         Next
 
@@ -56,17 +55,17 @@ Public Class AlternateCommandChannel
 
     End Sub
 
-    Private Sub CheckBoxUndefined_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckBoxUndefined.CheckedChanged
+    Private Sub CheckBoxUndefined_CheckedChanged(ByVal sender As Object, ByVal e As EventArgs) Handles CheckBoxUndefined.CheckedChanged
 
         ' Enable or disable command channel settings tab
         TabControlCommunications.Enabled = Not CheckBoxUndefined.Checked
 
         ' Automatically show change in link label text/format on parent for to cue user of defined state indicator
-        If Me.Visible Then PMUConnectionTester.UpdateAlternateCommandChannelLabel()
+        If Visible Then PMUConnectionTester.UpdateAlternateCommandChannelLabel()
 
     End Sub
 
-    Private Sub ButtonBrowse_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonBrowse.Click
+    Private Sub ButtonBrowse_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ButtonBrowse.Click
 
         With PMUConnectionTester.OpenFileDialog
             .Title = "Open Capture File"
@@ -79,7 +78,7 @@ Public Class AlternateCommandChannel
 
     End Sub
 
-    Private Sub TextBox_GotFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles _
+    Private Sub TextBox_GotFocus(ByVal sender As Object, ByVal e As EventArgs) Handles _
         TextBoxFileCaptureName.GotFocus, TextBoxSerialDataBits.GotFocus, TextBoxTcpHostIP.GotFocus, TextBoxTcpPort.GotFocus
 
         ' Select all text box contents upon focus or selection
@@ -111,7 +110,7 @@ Public Class AlternateCommandChannel
 
     End Sub
 
-    Private Sub LabelTcpNetworkInterface_Click(sender As System.Object, e As System.EventArgs) Handles LabelTcpNetworkInterface.Click
+    Private Sub LabelTcpNetworkInterface_Click(sender As Object, e As EventArgs) Handles LabelTcpNetworkInterface.Click
 
         NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex = NetworkInterface
 

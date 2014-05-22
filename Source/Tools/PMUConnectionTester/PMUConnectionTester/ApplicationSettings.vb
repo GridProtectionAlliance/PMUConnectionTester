@@ -28,7 +28,7 @@ Imports System.Collections.ObjectModel
 Imports System.ComponentModel
 Imports System.Configuration
 Imports System.Globalization
-Imports TVA.Configuration
+Imports GSF.Configuration
 
 Public Class ApplicationSettings
 
@@ -109,7 +109,7 @@ Public Class ApplicationSettings
 
         Inherits TypeConverter
 
-        Private m_colorParser As New ColorConverter
+        Private ReadOnly m_colorParser As New ColorConverter
 
         Public Overrides Function CanConvertFrom(ByVal context As ITypeDescriptorContext, ByVal sourceType As Type) As Boolean
 
@@ -211,7 +211,6 @@ Public Class ApplicationSettings
     ' Connection settings
     Private m_maximumConnectionAttempts As Integer
     Private m_autoStartDataParsingSequence As Boolean
-    Private m_executeParseOnSeparateThread As Boolean
     Private m_skipDisableRealTimeData As Boolean
     Private m_injectSimulatedTimestamp As Boolean
     Private m_useHighResolutionInputTimer As Boolean
@@ -719,7 +718,7 @@ Public Class ApplicationSettings
 
     End Sub
 
-    Private Sub m_eventDelayTimer_Elapsed(ByVal sender As Object, ByVal e As System.Timers.ElapsedEventArgs) Handles m_eventDelayTimer.Elapsed
+    Private Sub m_eventDelayTimer_Elapsed(ByVal sender As Object, ByVal e As Timers.ElapsedEventArgs) Handles m_eventDelayTimer.Elapsed
 
         RaiseEvent PhaseAngleColorsChanged()
 

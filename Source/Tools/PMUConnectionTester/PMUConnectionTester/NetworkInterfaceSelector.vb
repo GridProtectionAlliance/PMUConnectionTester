@@ -1,6 +1,6 @@
 ﻿Public Class NetworkInterfaceSelector
 
-    Private Sub ComboBoxNetworkInterfaces_SelectedIndexChanged(sender As System.Object, e As System.EventArgs) Handles ComboBoxNetworkInterfaces.SelectedIndexChanged
+    Private Sub ComboBoxNetworkInterfaces_SelectedIndexChanged(sender As Object, e As System.EventArgs) Handles ComboBoxNetworkInterfaces.SelectedIndexChanged
 
         Dim selection As Tuple(Of String, String, String) = TryCast(ComboBoxNetworkInterfaces.SelectedItem, Tuple(Of String, String, String))
 

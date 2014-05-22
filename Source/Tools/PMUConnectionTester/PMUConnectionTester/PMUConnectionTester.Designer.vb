@@ -270,7 +270,7 @@ Partial Class PMUConnectionTester
         Me.GroupBoxProtocolParameters = New Infragistics.Win.Misc.UltraGroupBox()
         Me.LabelTabMask = New Infragistics.Win.Misc.UltraLabel()
         Me.PropertyGridProtocolParameters = New System.Windows.Forms.PropertyGrid()
-        Me.GlobalExceptionLogger = New TVA.ErrorManagement.ErrorLogger(Me.components)
+        Me.GlobalExceptionLogger = New GSF.ErrorManagement.ErrorLogger(Me.components)
         Me.LabelDefaultIPStack = New Infragistics.Win.Misc.UltraLabel()
         Me.TimerDelay = New System.Windows.Forms.Timer(Me.components)
         Me.LabelReceiveFrom = New Infragistics.Win.Misc.UltraLabel()
@@ -2090,7 +2090,6 @@ Partial Class PMUConnectionTester
         '
         Me.GlobalExceptionLogger.ErrorLog.FileName = "ErrorLog.txt"
         Me.GlobalExceptionLogger.LogToEventLog = False
-        Me.GlobalExceptionLogger.LogToScreenshot = True
         Me.GlobalExceptionLogger.LogToUI = True
         Me.GlobalExceptionLogger.SettingsCategory = "GlobalExceptionLogger"
         '
@@ -2342,7 +2341,7 @@ Partial Class PMUConnectionTester
     Friend WithEvents GroupBoxProtocolParameters As Infragistics.Win.Misc.UltraGroupBox
     Friend WithEvents LabelTabMask As Infragistics.Win.Misc.UltraLabel
     Friend WithEvents PropertyGridProtocolParameters As System.Windows.Forms.PropertyGrid
-    Friend WithEvents GlobalExceptionLogger As TVA.ErrorManagement.ErrorLogger
+    Friend WithEvents GlobalExceptionLogger As GSF.ErrorManagement.ErrorLogger
     Friend WithEvents CheckBoxAutoRepeatPlayback As Infragistics.Win.UltraWinEditors.UltraCheckEditor
     Friend WithEvents ToolStripSeparator6 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents MenuItemStartStreamDebugCapture As System.Windows.Forms.ToolStripMenuItem

@@ -1,8 +1,8 @@
-﻿Imports TVA
+﻿Imports GSF
 
 Public Class ReceiveFromSourceSelector
 
-    Private Sub RadioButtonSpecificSource_CheckedChanged(sender As System.Object, e As System.EventArgs) Handles RadioButtonSpecificSource.CheckedChanged
+    Private Sub RadioButtonSpecificSource_CheckedChanged(sender As Object, e As System.EventArgs) Handles RadioButtonSpecificSource.CheckedChanged
 
         TextBoxUdpSourceIP.Enabled = RadioButtonSpecificSource.Checked
 

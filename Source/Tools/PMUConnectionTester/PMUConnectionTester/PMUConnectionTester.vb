@@ -24,6 +24,8 @@
 '       Added DST file support.
 '  06/01/2012 - J. Ritchie Carroll
 '       Added network interface multicast source selection.
+'  05/22/2014 - J. Ritchie Carroll
+'       Migrated code to use Grid Solutions Framework.
 '
 '******************************************************************************************************
 
@@ -43,17 +45,17 @@ Imports System.Runtime.Serialization.Formatters
 Imports System.Runtime.Serialization.Formatters.Soap
 Imports System.Windows.Forms.DialogResult
 Imports System.Threading
-Imports TVA
-Imports TVA.Collections
-Imports TVA.Common
-Imports TVA.Communication
-Imports TVA.Configuration
-Imports TVA.IO.FilePath
-Imports TVA.Parsing
-Imports TVA.PhasorProtocols
-Imports TVA.Reflection.AssemblyInfo
-Imports TVA.Units
-Imports TVA.Windows.Forms
+Imports GSF
+Imports GSF.Collections
+Imports GSF.Common
+Imports GSF.Communication
+Imports GSF.Configuration
+Imports GSF.IO.FilePath
+Imports GSF.Parsing
+Imports GSF.PhasorProtocols
+Imports GSF.Reflection.AssemblyInfo
+Imports GSF.Units
+Imports GSF.Windows.Forms
 
 Public Class PMUConnectionTester
 
@@ -88,7 +90,7 @@ Public Class PMUConnectionTester
     Private m_lastFrameType As FundamentalFrameType
     Private m_byteEncoding As ByteEncoding
     Private m_byteCount As Integer
-    Private m_sqrtOf3 As Single = Convert.ToSingle(System.Math.Sqrt(3))
+    Private ReadOnly m_sqrtOf3 As Single = Convert.ToSingle(Math.Sqrt(3))
 
     ' Application variables
     Friend WithEvents m_applicationSettings As ApplicationSettings
@@ -166,7 +168,7 @@ Public Class PMUConnectionTester
 #End If
 
         ' Initialize phasor protocol selection list
-        Dim protocols As Integer() = CType([Enum].GetValues(GetType(PhasorProtocol)), Integer())
+        Dim protocols As Integer() = CType(GetValues(GetType(PhasorProtocol)), Integer())
 
         For x As Integer = 0 To protocols.Length - 1
             ComboBoxProtocols.Items.Add(CType(protocols(x), PhasorProtocol).GetFormattedProtocolName())
@@ -177,11 +179,11 @@ Public Class PMUConnectionTester
             ComboBoxSerialPorts.Items.Add(port)
         Next
 
-        For Each parity As String In [Enum].GetNames(GetType(Ports.Parity))
+        For Each parity As String In GetNames(GetType(Ports.Parity))
             ComboBoxSerialParities.Items.Add(parity)
         Next
 
-        For Each stopbit As String In [Enum].GetNames(GetType(Ports.StopBits))
+        For Each stopbit As String In GetNames(GetType(Ports.StopBits))
             If stopbit <> "None" Then
                 ComboBoxSerialStopBits.Items.Add(stopbit)
             End If
@@ -258,13 +260,13 @@ Public Class PMUConnectionTester
             LoadConnectionSettings(m_lastConnectionFileName)
         End If
 
-        Me.RestoreLayout()
+        RestoreLayout()
 
     End Sub
 
     Private Sub PMUConnectionTester_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
 
-        Me.Hide()
+        Hide()
         Application.DoEvents()
 
         Try
@@ -275,9 +277,9 @@ Public Class PMUConnectionTester
             SaveConnectionSettings(m_lastConnectionFileName)
 
             ' Save current window settings
-            Me.SaveLayout()
+            SaveLayout()
         Catch
-            ' Don't want any possible failures during this event to prevent shudown :)
+            ' Don't want any possible failures during this event to prevent shutdown :)
         End Try
 
         Shutdown()
@@ -323,7 +325,7 @@ Public Class PMUConnectionTester
                     If Path.GetExtension(fileName).ToLower().Trim() = ".pmuconnection" Then
                         ' Deserializing connection settings may take a moment and explorer thread will be pending,
                         ' so we queue load operation on the form's invocation queue
-                        Me.BeginInvoke(New Action(Of String)(AddressOf LoadConnectionSettings), fileName)
+                        BeginInvoke(New Action(Of String)(AddressOf LoadConnectionSettings), fileName)
                     Else
                         ' All other files are assumed to be a capture file
                         TextBoxFileCaptureName.Text = fileName
@@ -331,11 +333,11 @@ Public Class PMUConnectionTester
                     End If
 
                     ' Show form in case explorer is overlapping
-                    Me.Activate()
+                    Activate()
                 End If
             End If
         Catch ex As Exception
-            AppendStatusMessage(String.Format("Exception occured while dropping file name: {0}", ex.Message))
+            AppendStatusMessage(String.Format("Exception occurred while dropping file name: {0}", ex.Message))
         End Try
 
     End Sub
@@ -463,7 +465,7 @@ Public Class PMUConnectionTester
 
         ' Because users may be unfamiliar with typical FNET device connection requirements, we default
         ' to the typical connection settings when user selects FNET from the list
-        If ComboBoxProtocols.SelectedIndex = PhasorProtocol.FNet Then
+        If ComboBoxProtocols.SelectedIndex = PhasorProtocol.FNET Then
             If TabControlCommunications.SelectedTab.Index = TransportProtocol.File Then
                 TextBoxFileFrameRate.Text = "10"
             Else
@@ -471,10 +473,10 @@ Public Class PMUConnectionTester
                 CheckBoxEstablishTcpServer.Checked = True
             End If
             ComboBoxByteEncodingDisplayFormats.SelectedIndex = 5
-        ElseIf ComboBoxProtocols.SelectedIndex = PhasorProtocol.BpaPdcStream Then
+        ElseIf ComboBoxProtocols.SelectedIndex = PhasorProtocol.BPAPDCstream Then
             ' If user selects the BPA protocol when a DST file is selected for input, make sure to automatically set the UsePhasorDataFileFormat to true
             If TabControlCommunications.SelectedTab.Index = TransportProtocol.File And GetExtension(TextBoxFileCaptureName.Text).ToLower() = ".dst" Then
-                CType(m_frameParser.ConnectionParameters, BpaPdcStream.ConnectionParameters).UsePhasorDataFileFormat = True
+                CType(m_frameParser.ConnectionParameters, BPAPDCstream.ConnectionParameters).UsePhasorDataFileFormat = True
             End If
         ElseIf ComboBoxProtocols.SelectedIndex = PhasorProtocol.Macrodyne Then
             ' Macrodyne connections work best when real-time data is disabled before sending other commands
@@ -555,7 +557,7 @@ Public Class PMUConnectionTester
                 If File.Exists(userSettingsFile) Then File.Delete(userSettingsFile)
                 Shutdown()
             Catch ex As Exception
-                MsgBox("Exception occured while trying to restore default settings: " & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Exclamation)
+                MsgBox("Exception occurred while trying to restore default settings: " & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Exclamation)
             End Try
         End If
 
@@ -716,8 +718,8 @@ Public Class PMUConnectionTester
 
         If Not String.IsNullOrEmpty(TextBoxFileCaptureName.Text) Then
             If GetExtension(TextBoxFileCaptureName.Text).ToLower() = ".dst" Then
-                ComboBoxProtocols.SelectedIndex = CType(PhasorProtocol.BpaPdcStream, Integer)
-                CType(m_frameParser.ConnectionParameters, BpaPdcStream.ConnectionParameters).UsePhasorDataFileFormat = True
+                ComboBoxProtocols.SelectedIndex = CType(PhasorProtocol.BPAPDCstream, Integer)
+                CType(m_frameParser.ConnectionParameters, BPAPDCstream.ConnectionParameters).UsePhasorDataFileFormat = True
             End If
         End If
 
@@ -796,12 +798,14 @@ Public Class PMUConnectionTester
             .Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
             .FileName = ""
             .CheckFileExists = True
+
             If .ShowDialog(Me) = OK Then
                 Dim configFile As FileStream = File.Open(.FileName, FileMode.Open, FileAccess.Read, FileShare.Read)
 
                 With New SoapFormatter
                     .AssemblyFormat = FormatterAssemblyStyle.Simple
                     .TypeFormat = FormatterTypeStyle.TypesWhenNeeded
+                    .Binder = Serialization.LegacyBinder
 
                     Try
                         m_configurationFrame = Nothing
@@ -827,6 +831,7 @@ Public Class PMUConnectionTester
                 .Title = "Save Configuration File"
                 .Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
                 .FileName = ""
+
                 If .ShowDialog(Me) = OK Then
                     Dim configFile As FileStream = File.Create(.FileName)
 
@@ -972,7 +977,7 @@ Public Class PMUConnectionTester
 
     Private Sub MenuItemExit_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemExit.Click
 
-        Me.Close()
+        Close()
 
     End Sub
 
@@ -992,7 +997,7 @@ Public Class PMUConnectionTester
             With .Nodes
                 ' Since expanding nodes can be a time consuming process, we perform expansion on root
                 ' nodes one at a time - resting between expansions to allow some UI thread time
-                For Each value As Integer In [Enum].GetValues(GetType(FundamentalFrameType))
+                For Each value As Integer In GetValues(GetType(FundamentalFrameType))
                     frameKey = "Frame" & (value + 1).ToString()
                     If .Exists(frameKey) Then
                         .Item(frameKey).ExpandAll(ExpandAllType.OnlyNodesWithChildren)
@@ -1222,7 +1227,7 @@ Public Class PMUConnectionTester
 
         If frameType <> m_lastFrameType Then
             m_lastFrameType = frameType
-            LabelFrameType.Text = [Enum].GetName(GetType(FundamentalFrameType), m_lastFrameType)
+            LabelFrameType.Text = GetName(GetType(FundamentalFrameType), m_lastFrameType)
         End If
 
         If m_frameSampleStream IsNot Nothing Then CaptureFrameImage(frameType, binaryImage, offset, length)
@@ -1235,7 +1240,7 @@ Public Class PMUConnectionTester
             If GroupBoxStatus.Expanded Then
                 If TypeOf m_byteEncoding Is ByteEncoding.ASCIIEncoding Then
                     ' We handle ASCII encoding as a special case removing any control characters, no spacing
-                    ' between charaters and allowing the entire frame to be displayed
+                    ' between characters and allowing the entire frame to be displayed
                     LabelBinaryFrameImage.Text = m_byteEncoding.GetString(binaryImage, offset, length).RemoveControlCharacters()
                 Else
                     ' For all others, we display bytes in the specified encoding format up to specified maximum display bytes
@@ -1273,7 +1278,7 @@ Public Class PMUConnectionTester
                 With m_frameSampleStream
                     Dim row As String
 
-                    .WriteLine("Captured Frame Type: " & [Enum].GetName(GetType(FundamentalFrameType), frameType) & " (0x" & frameBit.ToString("X2") & ")")
+                    .WriteLine("Captured Frame Type: " & GetName(GetType(FundamentalFrameType), frameType) & " (0x" & frameBit.ToString("X2") & ")")
                     .WriteLine("   Frame Image Size: " & length & " bytes")
                     .WriteLine()
                     .WriteLine(">> Decimal Image:")
@@ -1380,7 +1385,7 @@ Public Class PMUConnectionTester
 
                     For y = 0 To cell.PhasorDefinitions.Count - 1
                         With cell.PhasorDefinitions(y)
-                            label = station & " " & [Enum].GetName(GetType(PhasorType), .PhasorType) & y
+                            label = station & " " & GetName(GetType(PhasorType), .PhasorType) & y
                             m_streamDebugCapture.Write(label & " Angle " & .Label & "," & label & " Magnitude " & .Label & ",")
                         End With
                     Next
@@ -1488,7 +1493,7 @@ Public Class PMUConnectionTester
                 Catch ex As IndexOutOfRangeException
                     ' This can happen randomly on occasion when using a large file based input - very odd, so we just ignore it and go on...
                 Catch ex As Exception
-                    AppendStatusMessage(String.Format("Exception occured while attempting to plot data: {0}", ex.Message))
+                    AppendStatusMessage(String.Format("Exception occurred while attempting to plot data: {0}", ex.Message))
                 End Try
             End If
 
@@ -1676,15 +1681,16 @@ Public Class PMUConnectionTester
         With New SoapFormatter
             .AssemblyFormat = FormatterAssemblyStyle.Simple
             .TypeFormat = FormatterTypeStyle.TypesWhenNeeded
+            .Binder = Serialization.LegacyBinder
 
             Try
-                Me.Cursor = Cursors.WaitCursor
+                Cursor = Cursors.WaitCursor
                 ApplyConnectionSettings(CType(.Deserialize(settingsFile), ConnectionSettings))
                 UpdateApplicationTitle(filename)
             Catch ex As Exception
                 MsgBox("Failed to open connection settings: " & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Exclamation)
             Finally
-                Me.Cursor = Cursors.Default
+                Cursor = Cursors.Default
             End Try
         End With
 
@@ -1734,7 +1740,9 @@ Public Class PMUConnectionTester
 
     Private ReadOnly Property CurrentConnectionSettings() As ConnectionSettings
         Get
-            With New ConnectionSettings
+            Dim connectionSettings As New ConnectionSettings
+
+            With connectionSettings
                 ' Setup PMU connection parameters based on user selections...
                 .PhasorProtocol = CType(ComboBoxProtocols.SelectedIndex, PhasorProtocol)
 
@@ -1794,9 +1802,9 @@ Public Class PMUConnectionTester
                 .AutoRepeatPlayback = CheckBoxAutoRepeatPlayback.Checked
                 .ByteEncodingDisplayFormat = ComboBoxByteEncodingDisplayFormats.SelectedIndex
                 .ConnectionParameters = m_frameParser.ConnectionParameters
-
-                Return .This
             End With
+
+            Return connectionSettings
         End Get
     End Property
 
@@ -2073,7 +2081,7 @@ Public Class PMUConnectionTester
     Private Sub SendDeviceCommand(ByVal command As DeviceCommand)
 
         m_frameParser.SendDeviceCommand(command)
-        AppendStatusMessage("Command """ & [Enum].GetName(GetType(DeviceCommand), command) & """ requested at " & Date.Now)
+        AppendStatusMessage("Command """ & GetName(GetType(DeviceCommand), command) & """ requested at " & Date.Now)
 
     End Sub
 
@@ -2261,7 +2269,7 @@ Public Class PMUConnectionTester
     Private Sub Shutdown()
 
         Disconnect()
-        Global.System.Windows.Forms.Application.Exit()
+        System.Windows.Forms.Application.Exit()
         End
 
     End Sub
@@ -2382,7 +2390,7 @@ Public Class PMUConnectionTester
             ' Add frame to tree root using its frame type value as the ID
             lastNodeID = AddChannelNode(attributeTable, frame.FrameType + 1, currentNodeID, frame, CDate(frame.Timestamp).ToString("yyyy-MM-dd HH:mm:ss.fff"), associatedFrame)
 
-            ' We add extra detail for non partial cofiguration and data frames...
+            ' We add extra detail for non partial configuration and data frames...
             Select Case frame.FrameType
                 Case FundamentalFrameType.ConfigurationFrame
                     Dim configFrame As IConfigurationFrame = DirectCast(frame, IConfigurationFrame)
@@ -2483,9 +2491,9 @@ Public Class PMUConnectionTester
             If channelNode.Tag IsNot Nothing Then row("Key") = channelNode.Tag
 
             If channelLabel Is Nothing Then
-                row("Attribute") = channelNode.Attributes("Derived Type").Replace("TVA.PhasorProtocols.", "").Replace("_", ".")
+                row("Attribute") = channelNode.Attributes("Derived Type").Replace("GSF.PhasorProtocols.", "").Replace("_", ".")
             Else
-                row("Attribute") = channelNode.Attributes("Derived Type").Replace("TVA.PhasorProtocols.", "").Replace("_", ".") & " (" & channelLabel & ")"
+                row("Attribute") = channelNode.Attributes("Derived Type").Replace("GSF.PhasorProtocols.", "").Replace("_", ".") & " (" & channelLabel & ")"
             End If
 
             row("ChannelNode") = parentID
@@ -2514,7 +2522,7 @@ Public Class PMUConnectionTester
 
                     row("AssociatedKey") = associatedChannelNode.Tag
                     row("Attribute") = "     Click for Associated Definition"
-                    row("Value") = associatedChannelNode.Attributes("Derived Type").Replace("TVA.PhasorProtocols.", "")
+                    row("Value") = associatedChannelNode.Attributes("Derived Type").Replace("GSF.PhasorProtocols.", "")
                     row("ChannelNode") = -1
                     attributeTable.Rows.Add(row)
                 End If
@@ -2752,7 +2760,7 @@ Public Class PMUConnectionTester
 
     Private Sub InitializeFrequencyLayer()
 
-        Dim frequencyChartArea As New ChartArea
+        Dim frequencyChartArea As ChartArea
         Dim timeAxis As AxisItem
         Dim frequencyAxis As AxisItem
 
@@ -2792,7 +2800,7 @@ Public Class PMUConnectionTester
 
     Private Sub InitializePhaseAngleLayer(ByVal phasorCount As Integer)
 
-        Dim phaseAngleChartArea As New ChartArea
+        Dim phaseAngleChartArea As ChartArea
         Dim timeAxis As AxisItem
         Dim phaseAngleAxis As AxisItem
 

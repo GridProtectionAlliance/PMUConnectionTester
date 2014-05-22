@@ -20,7 +20,7 @@
     <OldToolsVersion>4.0</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <OptionStrict>On</OptionStrict>
     <SccProjectName>SAK</SccProjectName>
@@ -54,6 +54,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -65,35 +66,33 @@
     <NoWarn>42030,42104,42108,42109,42353,42354,42355</NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DefineDebug>true</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <OutputPath>..\..\..\..\Build\Output\Debug\Tools\PMUConnectionTester\</OutputPath>
-    <DocumentationFile>PMUConnectionTester.xml</DocumentationFile>
-    <NoWarn>42030,42104,42108,42109,42353,42354,42355</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.vb</CodeAnalysisModuleSuppressionsFile>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DefineTrace>true</DefineTrace>
-    <OutputPath>..\..\..\..\Build\Output\Release\Tools\PMUConnectionTester\</OutputPath>
-    <DocumentationFile>PMUConnectionTester.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <NoWarn>42030,42104,42108,42109,42353,42354,42355</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.vb</CodeAnalysisModuleSuppressionsFile>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  <PropertyGroup>
+    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GSF.Communication">
+      <HintPath>..\..\..\Dependencies\GSF\GSF.Communication.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.Core">
+      <HintPath>..\..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.PhasorProtocols">
+      <HintPath>..\..\..\Dependencies\GSF\GSF.PhasorProtocols.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.Security">
+      <HintPath>..\..\..\Dependencies\GSF\GSF.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.ServiceProcess">
+      <HintPath>..\..\..\Dependencies\GSF\GSF.ServiceProcess.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.TimeSeries">
+      <HintPath>..\..\..\Dependencies\GSF\GSF.TimeSeries.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.Windows">
+      <HintPath>..\..\..\Dependencies\GSF\GSF.Windows.dll</HintPath>
+    </Reference>
     <Reference Include="Infragistics2.Shared.v7.2, Version=7.2.20072.61, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\Infragistics\Infragistics2.Shared.v7.2.dll</HintPath>
@@ -140,37 +139,6 @@
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="TimeSeriesFramework, Version=1.1.23.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Dependencies\TimeSeriesFramework\TimeSeriesFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="TVA.Communication, Version=4.0.3.33, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Dependencies\TVA\TVA.Communication.dll</HintPath>
-    </Reference>
-    <Reference Include="TVA.Core, Version=4.0.3.33, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Dependencies\TVA\TVA.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="TVA.PhasorProtocols, Version=1.4.204.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Dependencies\TVA\TVA.PhasorProtocols.dll</HintPath>
-    </Reference>
-    <Reference Include="TVA.Security, Version=4.0.3.33, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Dependencies\TVA\TVA.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="TVA.ServiceModel, Version=4.0.3.33, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Dependencies\TVA\TVA.ServiceModel.dll</HintPath>
-    </Reference>
-    <Reference Include="TVA.ServiceProcess">
-      <HintPath>..\..\..\Dependencies\TVA\TVA.ServiceProcess.dll</HintPath>
-    </Reference>
-    <Reference Include="TVA.Windows, Version=4.0.3.33, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Dependencies\TVA\TVA.Windows.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -191,7 +159,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ApplicationSettings.vb" />
-    <Compile Include="ConnectionSettings.vb" />
     <Compile Include="ReceiveFromSelector.Designer.vb">
       <DependentUpon>ReceiveFromSelector.vb</DependentUpon>
     </Compile>
@@ -250,6 +217,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>

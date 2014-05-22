@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{18CAC75A-26A1-443A-8049-ED5353E5C60B}"
@@ -10,38 +10,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{34207C22-6EEE-48B6-AD0D-5880BCE89091}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TVA", "TVA", "{9F66F141-5F50-4EDC-81AD-8CE261D7AC9D}"
-	ProjectSection(SolutionItems) = preProject
-		Dependencies\TVA\TVA.Communication.dll = Dependencies\TVA\TVA.Communication.dll
-		Dependencies\TVA\TVA.Core.dll = Dependencies\TVA\TVA.Core.dll
-		Dependencies\TVA\TVA.PhasorProtocols.dll = Dependencies\TVA\TVA.PhasorProtocols.dll
-		Dependencies\TVA\TVA.Security.dll = Dependencies\TVA\TVA.Security.dll
-		Dependencies\TVA\TVA.ServiceBus.dll = Dependencies\TVA\TVA.ServiceBus.dll
-		Dependencies\TVA\TVA.ServiceModel.dll = Dependencies\TVA\TVA.ServiceModel.dll
-		Dependencies\TVA\TVA.ServiceProcess.dll = Dependencies\TVA\TVA.ServiceProcess.dll
-		Dependencies\TVA\TVA.Windows.dll = Dependencies\TVA\TVA.Windows.dll
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infragistics", "Infragistics", "{C4DB0733-6C94-4FFA-99D1-EB8828C1E1D9}"
 	ProjectSection(SolutionItems) = preProject
 		Dependencies\Infragistics\Infragistics2.Shared.v7.2.dll = Dependencies\Infragistics\Infragistics2.Shared.v7.2.dll
-		Dependencies\Infragistics\Infragistics2.Shared.v7.2.xml = Dependencies\Infragistics\Infragistics2.Shared.v7.2.xml
 		Dependencies\Infragistics\Infragistics2.Win.Misc.v7.2.dll = Dependencies\Infragistics\Infragistics2.Win.Misc.v7.2.dll
-		Dependencies\Infragistics\Infragistics2.Win.Misc.v7.2.xml = Dependencies\Infragistics\Infragistics2.Win.Misc.v7.2.xml
 		Dependencies\Infragistics\Infragistics2.Win.UltraWinChart.v7.2.dll = Dependencies\Infragistics\Infragistics2.Win.UltraWinChart.v7.2.dll
-		Dependencies\Infragistics\Infragistics2.Win.UltraWinChart.v7.2.xml = Dependencies\Infragistics\Infragistics2.Win.UltraWinChart.v7.2.xml
 		Dependencies\Infragistics\Infragistics2.Win.UltraWinEditors.v7.2.dll = Dependencies\Infragistics\Infragistics2.Win.UltraWinEditors.v7.2.dll
-		Dependencies\Infragistics\Infragistics2.Win.UltraWinEditors.v7.2.xml = Dependencies\Infragistics\Infragistics2.Win.UltraWinEditors.v7.2.xml
 		Dependencies\Infragistics\Infragistics2.Win.UltraWinMaskedEdit.v7.2.dll = Dependencies\Infragistics\Infragistics2.Win.UltraWinMaskedEdit.v7.2.dll
-		Dependencies\Infragistics\Infragistics2.Win.UltraWinMaskedEdit.v7.2.xml = Dependencies\Infragistics\Infragistics2.Win.UltraWinMaskedEdit.v7.2.xml
 		Dependencies\Infragistics\Infragistics2.Win.UltraWinStatusBar.v7.2.dll = Dependencies\Infragistics\Infragistics2.Win.UltraWinStatusBar.v7.2.dll
-		Dependencies\Infragistics\Infragistics2.Win.UltraWinStatusBar.v7.2.xml = Dependencies\Infragistics\Infragistics2.Win.UltraWinStatusBar.v7.2.xml
 		Dependencies\Infragistics\Infragistics2.Win.UltraWinTabControl.v7.2.dll = Dependencies\Infragistics\Infragistics2.Win.UltraWinTabControl.v7.2.dll
-		Dependencies\Infragistics\Infragistics2.Win.UltraWinTabControl.v7.2.xml = Dependencies\Infragistics\Infragistics2.Win.UltraWinTabControl.v7.2.xml
 		Dependencies\Infragistics\Infragistics2.Win.UltraWinTree.v7.2.dll = Dependencies\Infragistics\Infragistics2.Win.UltraWinTree.v7.2.dll
-		Dependencies\Infragistics\Infragistics2.Win.UltraWinTree.v7.2.xml = Dependencies\Infragistics\Infragistics2.Win.UltraWinTree.v7.2.xml
 		Dependencies\Infragistics\Infragistics2.Win.v7.2.dll = Dependencies\Infragistics\Infragistics2.Win.v7.2.dll
-		Dependencies\Infragistics\Infragistics2.Win.v7.2.xml = Dependencies\Infragistics\Infragistics2.Win.v7.2.xml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8BFAD476-F624-49D6-B178-E787EFB45CC5}"
@@ -52,18 +31,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "PMUConnectionTester", "Tools\PMUConnectionTester\PMUConnectionTester\PMUConnectionTester.vbproj", "{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PMUConnectionTesterSetup64", "Tools\PMUConnectionTester\PMUConnectionTesterSetup\PMUConnectionTesterSetup64.vdproj", "{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}"
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PMUConnectionTesterSetup", "Tools\PMUConnectionTester\PMUConnectionTesterSetup\PMUConnectionTesterSetup.vdproj", "{FBA54FB9-9F80-4E2F-8AFE-83F443BD9A1D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TimeSeriesFramework", "TimeSeriesFramework", "{4862AA50-B006-45A5-8A0C-6DABA6A31B31}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GSF", "GSF", "{62315676-F84B-42D0-AFD5-1A13A5B99FD1}"
 	ProjectSection(SolutionItems) = preProject
-		Dependencies\TimeSeriesFramework\TimeSeriesFramework.dll = Dependencies\TimeSeriesFramework\TimeSeriesFramework.dll
+		Dependencies\GSF\GSF.Communication.dll = Dependencies\GSF\GSF.Communication.dll
+		Dependencies\GSF\GSF.Core.dll = Dependencies\GSF\GSF.Core.dll
+		Dependencies\GSF\GSF.PhasorProtocols.dll = Dependencies\GSF\GSF.PhasorProtocols.dll
+		Dependencies\GSF\GSF.Security.dll = Dependencies\GSF\GSF.Security.dll
+		Dependencies\GSF\GSF.ServiceProcess.dll = Dependencies\GSF\GSF.ServiceProcess.dll
+		Dependencies\GSF\GSF.TimeSeries.dll = Dependencies\GSF\GSF.TimeSeries.dll
+		Dependencies\GSF\GSF.Windows.dll = Dependencies\GSF\GSF.Windows.dll
 	EndProjectSection
+EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "PMUConnectionTesterSetup", "Tools\PMUConnectionTester\PMUConnectionTesterSetup\PMUConnectionTesterSetup.wixproj", "{CE805F4F-885D-4BC4-89A8-F000E92500A5}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 3
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs02
 		SccLocalPath0 = .
@@ -71,14 +54,10 @@ Global
 		SccProjectTopLevelParentUniqueName1 = PMUConnectionTester.sln
 		SccProjectName1 = Tools/PMUConnectionTester/PMUConnectionTester
 		SccLocalPath1 = Tools\\PMUConnectionTester\\PMUConnectionTester
-		SccProjectUniqueName2 = Tools\\PMUConnectionTester\\PMUConnectionTesterSetup\\PMUConnectionTesterSetup64.vdproj
+		SccProjectUniqueName2 = Tools\\PMUConnectionTester\\PMUConnectionTesterSetup\\PMUConnectionTesterSetup.wixproj
 		SccProjectTopLevelParentUniqueName2 = PMUConnectionTester.sln
 		SccProjectName2 = Tools/PMUConnectionTester/PMUConnectionTesterSetup
 		SccLocalPath2 = Tools\\PMUConnectionTester\\PMUConnectionTesterSetup
-		SccProjectUniqueName3 = Tools\\PMUConnectionTester\\PMUConnectionTesterSetup\\PMUConnectionTesterSetup.vdproj
-		SccProjectTopLevelParentUniqueName3 = PMUConnectionTester.sln
-		SccProjectName3 = Tools/PMUConnectionTester/PMUConnectionTesterSetup
-		SccLocalPath3 = Tools\\PMUConnectionTester\\PMUConnectionTesterSetup
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,36 +68,27 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Debug|x86.ActiveCfg = Debug|x86
-		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Debug|x86.Build.0 = Debug|x86
+		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Debug|x86.Build.0 = Debug|Any CPU
 		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Release|x86.ActiveCfg = Release|x86
-		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Release|x86.Build.0 = Release|x86
-		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Debug|Any CPU.ActiveCfg = Debug
-		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Debug|x86.ActiveCfg = Debug
-		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Debug|x86.Build.0 = Debug
-		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Release|Any CPU.ActiveCfg = Release
-		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Release|Any CPU.Build.0 = Release
-		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Release|x86.ActiveCfg = Release
-		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA}.Release|x86.Build.0 = Release
-		{FBA54FB9-9F80-4E2F-8AFE-83F443BD9A1D}.Debug|Any CPU.ActiveCfg = Debug
-		{FBA54FB9-9F80-4E2F-8AFE-83F443BD9A1D}.Debug|x86.ActiveCfg = Debug
-		{FBA54FB9-9F80-4E2F-8AFE-83F443BD9A1D}.Debug|x86.Build.0 = Debug
-		{FBA54FB9-9F80-4E2F-8AFE-83F443BD9A1D}.Release|Any CPU.ActiveCfg = Release
-		{FBA54FB9-9F80-4E2F-8AFE-83F443BD9A1D}.Release|Any CPU.Build.0 = Release
-		{FBA54FB9-9F80-4E2F-8AFE-83F443BD9A1D}.Release|x86.ActiveCfg = Release
-		{FBA54FB9-9F80-4E2F-8AFE-83F443BD9A1D}.Release|x86.Build.0 = Release
+		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Release|x86.ActiveCfg = Release|Any CPU
+		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}.Release|x86.Build.0 = Release|Any CPU
+		{CE805F4F-885D-4BC4-89A8-F000E92500A5}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{CE805F4F-885D-4BC4-89A8-F000E92500A5}.Debug|Any CPU.Build.0 = Debug|x64
+		{CE805F4F-885D-4BC4-89A8-F000E92500A5}.Debug|x86.ActiveCfg = Debug|x86
+		{CE805F4F-885D-4BC4-89A8-F000E92500A5}.Debug|x86.Build.0 = Debug|x86
+		{CE805F4F-885D-4BC4-89A8-F000E92500A5}.Release|Any CPU.ActiveCfg = Release|x64
+		{CE805F4F-885D-4BC4-89A8-F000E92500A5}.Release|Any CPU.Build.0 = Release|x64
+		{CE805F4F-885D-4BC4-89A8-F000E92500A5}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{9F66F141-5F50-4EDC-81AD-8CE261D7AC9D} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
 		{C4DB0733-6C94-4FFA-99D1-EB8828C1E1D9} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
-		{4862AA50-B006-45A5-8A0C-6DABA6A31B31} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
+		{62315676-F84B-42D0-AFD5-1A13A5B99FD1} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
 		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
-		{EBCC6E76-DBFD-4644-AE46-15594EBE3FDA} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
-		{FBA54FB9-9F80-4E2F-8AFE-83F443BD9A1D} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
+		{CE805F4F-885D-4BC4-89A8-F000E92500A5} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
 	EndGlobalSection
 EndGlobal

@@ -2,11 +2,11 @@
 Imports System.Runtime.InteropServices
 
 ' Assembly identity attributes.
-<Assembly: AssemblyVersion("4.4.0.0")> 
+<Assembly: AssemblyVersion("4.5.0.0")> 
 
 ' Informational attributes.
 <Assembly: AssemblyCompany("Grid Protection Alliance")> 
-<Assembly: AssemblyCopyright("Copyright © 2012, All Rights Reserved.")> 
+<Assembly: AssemblyCopyright("Copyright © 2014, All Rights Reserved.")> 
 <Assembly: AssemblyProduct("openPDC")> 
 
 ' Assembly manifest attributes.
