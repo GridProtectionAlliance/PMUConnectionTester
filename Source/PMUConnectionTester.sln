@@ -44,6 +44,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GSF", "GSF", "{62315676-F84
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "PMUConnectionTesterSetup", "Tools\PMUConnectionTester\PMUConnectionTesterSetup\PMUConnectionTesterSetup.wixproj", "{CE805F4F-885D-4BC4-89A8-F000E92500A5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WiX", "WiX", "{6AC97E3F-2824-47E3-8523-76E80D70B1FC}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies\WiX\WixNetFxExtension.dll = Dependencies\WiX\WixNetFxExtension.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 3
@@ -88,6 +93,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C4DB0733-6C94-4FFA-99D1-EB8828C1E1D9} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
 		{62315676-F84B-42D0-AFD5-1A13A5B99FD1} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
+		{6AC97E3F-2824-47E3-8523-76E80D70B1FC} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
 		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
 		{CE805F4F-885D-4BC4-89A8-F000E92500A5} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
 	EndGlobalSection

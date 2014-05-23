@@ -12,7 +12,7 @@
   <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
   <?endif ?>
 
-  <Product Id="{6602B32E-0671-4FE1-A7A4-63025D325F49}" Codepage="1252" Language="1033" Manufacturer="Grid Protection Alliance" Name="$(var.ProductName)" UpgradeCode="{2F75A16E-39EE-44C2-B8EE-D147ACB4743E}" Version="4.5.0">
+  <Product Id="{6602B32E-0671-4FE1-A7A4-63025D325F49}" Codepage="1252" Language="1033" Manufacturer="Grid Protection Alliance" Name="$(var.ProductName)" UpgradeCode="{2F75A16E-39EE-44C2-B8EE-D147ACB4743E}" Version="!(bind.FileVersion.PMUConnectionTester.exe)">
     <Package Comments="$(var.SetupName)" Compressed="yes" InstallerVersion="200" Keywords="PMU PDC Phasors Connection Tester" Languages="1033" Manufacturer="GPA" Platform="x64" />
     <Binary Id="MSVBDPCADLL" SourceFile="$(var.ProjectDir)\Binary\MSVBDPCADLL" />
     <Binary Id="VSDNETCFG" SourceFile="$(var.ProjectDir)\Binary\VSDNETCFG" />
@@ -23,7 +23,7 @@
 
     <PropertyRef Id="NETFRAMEWORK45"/>
 
-    <Condition Message='This setup requires Microsoft .NET Framework 4.5 package or greater needs to be installed for this installation to continue.'>
+    <Condition Message='This setup requires Microsoft .NET Framework 4.5 or greater - this will need to be installed before installation can continue.'>
       <![CDATA[Installed OR NETFRAMEWORK45]]>
     </Condition>
 
@@ -110,7 +110,7 @@
       </Component>
       <!-- PMU Connection Tester Files -->
       <Component Id="C__2CAA468AA9A4C657C05DD8A1F234FBC9" Guid="{8D4FA540-C69A-8993-63CB-2B370BA18AC3}" Win64="yes">
-        <File Id="_2CAA468AA9A4C657C05DD8A1F234FBC9" Name="$(var.PMUConnectionTester.TargetFileName)" KeyPath="yes" Assembly=".net" AssemblyManifest="_2CAA468AA9A4C657C05DD8A1F234FBC9" AssemblyApplication="_2CAA468AA9A4C657C05DD8A1F234FBC9" DiskId="1"
+        <File Id="PMUConnectionTester.exe" Name="$(var.PMUConnectionTester.TargetFileName)" KeyPath="yes" Assembly=".net" AssemblyManifest="PMUConnectionTester.exe" AssemblyApplication="PMUConnectionTester.exe" DiskId="1"
               Source="$(var.PMUConnectionTester.TargetPath)" />
         <ProgId Id="PMU Capture File" Description="Captured data files associated with the $(var.ProductName)." Icon="PmuCapture.ico" IconIndex="0" Advertise="yes">
           <Extension Id="PmuCapture" Advertise="yes">
