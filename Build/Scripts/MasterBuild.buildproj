@@ -89,14 +89,6 @@
     <BuildInteractive></BuildInteractive>
     <!-- File containing the build version. -->
     <VersionFile></VersionFile>
-    <!-- Versioning scheme major number change type. -->
-    <VersionMajorChange></VersionMajorChange>
-    <!-- Versioning scheme minor number change type. -->
-    <VersionMinorChange></VersionMinorChange>
-    <!-- Versioning scheme build number change type. -->
-    <VersionBuildChange></VersionBuildChange>
-    <!-- Versioning scheme revision number change type. -->
-    <VersionRevisionChange></VersionRevisionChange>
     <!-- Version of the source code to build. -->
     <SourceVersion></SourceVersion>
     <!-- Paths to Team Foundation Client. -->
@@ -276,7 +268,7 @@
     <Error Condition="'$(TfsServer)' == ''" Text="TfsServer property must be set."/>
     <PropertyGroup>
       <ServerFolder Condition="'$(ServerFolder)' == ''">$/$(ProjectName)/Main</ServerFolder>
-      <LocalFolder Condition="'$(LocalFolder)' == ''">$(TEMP)\MSBuild\$(ProjectName)</LocalFolder>
+      <LocalFolder Condition="'$(LocalFolder)' == ''">$([System.IO.Path]::GetFullPath('$(TEMP)\MSBuild\$(ProjectName)')</LocalFolder>
       <BuildFlavor Condition="'$(BuildFlavor)' == ''">Release</BuildFlavor>
       <BuildTarget Condition="'$(BuildTarget)' == ''">Any CPU</BuildTarget>
       <BuildOutputFolder Condition="'$(BuildOutputFolder)' == ''">$(LocalFolder)\Build\Output\$(BuildFlavor)</BuildOutputFolder>
@@ -361,7 +353,7 @@
     <Message Text="Versioning source code..."/>
     <Exec Command="%22$(TfsClient)%22 checkout /noprompt %22$(VersionFile)%22"/>
     <Exec Command="%22$(TfsClient)%22 checkout /noprompt %22%(FilesToVersion.FullPath)%22"/>
-    <Version VersionFile="$(VersionFile)" Major="$(VersionMajorChange)" Minor="$(VersionMinorChange)" BuildType="$(VersionBuildChange)" RevisionType="$(VersionRevisionChange)">
+    <Version VersionFile="$(VersionFile)" BuildType="Increment" RevisionType="Reset">
       <Output TaskParameter="Major" PropertyName="Major"/>
       <Output TaskParameter="Minor" PropertyName="Minor"/>
       <Output TaskParameter="Build" PropertyName="Build"/>

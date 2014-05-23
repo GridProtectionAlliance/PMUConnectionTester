@@ -1,26 +1,35 @@
 ::*******************************************************************************************************
 ::  UpdateDependencies.bat - Gbtc
 ::
-::  Tennessee Valley Authority, 2009
-::  No copyright is claimed pursuant to 17 USC § 105.  All Other Rights Reserved.
+::  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 ::
-::  This software is made freely available under the TVA Open Source Agreement (see below).
+::  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+::  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+::  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+::  not use this file except in compliance with the License. You may obtain a copy of the License at:
+::
+::      http://www.opensource.org/licenses/eclipse-1.0.php
+::
+::  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+::  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+::  License for the specific language governing permissions and limitations.
 ::
 ::  Code Modification History:
 ::  -----------------------------------------------------------------------------------------------------
 ::  02/26/2011 - Pinal C. Patel
 ::       Generated original version of source code.
+::  05/23/2014 - J. Ritchie Carroll
+::       Updated to roll-down schema files from Grid Solutions Framework.
 ::
 ::*******************************************************************************************************
 
 @ECHO OFF
 
-SET vs="%VS100COMNTOOLS%\..\IDE\devenv.com"
-SET tfs="%VS100COMNTOOLS%\..\IDE\tf.exe"
-SET source1="\\GPAWEB\NightlyBuilds\TVACodeLibrary\Beta\Libraries\*.*"
-SET target1="..\..\Source\Dependencies\TVA"
-SET source2="\\GPAWEB\NightlyBuilds\TimeSeriesFramework\Beta\Libraries\TimeSeriesFramework.*"
-SET target2="..\..\Source\Dependencies\TimeSeriesFramework"
+SET vs="%VS110COMNTOOLS%\..\IDE\devenv.com"
+SET tfs="%VS110COMNTOOLS%\..\IDE\tf.exe"
+SET source1="\\GPAWEB\NightlyBuilds\GridSolutionsFramework\Beta\Libraries\*.*"
+SET target1="..\..\Source\Dependencies\GSF"
+
 SET solution="..\..\Source\PMUConnectionTester.sln"
 SET checkinComment="Updated dependencies."
 SET /p checkin=Check-in updates (Y or N)? 
@@ -28,17 +37,14 @@ SET /p checkin=Check-in updates (Y or N)?
 ECHO.
 ECHO Getting latest version...
 %tfs% get %target1% /version:T /force /recursive /noprompt
-%tfs% get %target2% /version:T /force /recursive /noprompt
 
 ECHO.
 ECHO Checking out dependencies...
 %tfs% checkout %target1% /recursive /noprompt
-%tfs% checkout %target2% /recursive /noprompt
 
 ECHO.
 ECHO Updating dependencies...
 XCOPY %source1% %target1% /Y
-XCOPY %source2% %target2% /Y
 
 ECHO.
 ECHO Building solution...
@@ -51,7 +57,6 @@ GOTO Finalize
 ECHO.
 ECHO Checking in dependencies...
 %tfs% checkin %target1% /noprompt /recursive /comment:%checkinComment%
-%tfs% checkin %target2% /noprompt /recursive /comment:%checkinComment%
 
 :Finalize
 ECHO.
