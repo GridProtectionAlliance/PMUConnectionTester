@@ -29,6 +29,10 @@
       <!-- Must-override settings. -->
       <ProjectName>PMUConnectionTester</ProjectName>
       <TfsServer>https://tfs.codeplex.com/tfs/tfs02</TfsServer>
+      <!-- Use Visual Studio 11.0 common tools -->
+      <TfsClient Condition="'$(TfsClient)' == ''">$(VS110COMNTOOLS)\..\IDE\tf.exe</TfsClient>
+      <VisualStudio Condition="'$(VisualStudio)' == ''">$(VS110COMNTOOLS)\..\IDE\devenv.com</VisualStudio>
+      <MSTest Condition="'$(MSTest)' == ''">$(VS110COMNTOOLS)\..\IDE\mstest.exe</MSTest>
     </PropertyGroup>
   </Target>
 
@@ -59,6 +63,8 @@
       <!-- List of projects to build. -->
       <ProjectsToBuild Include="$(ProjectSolution)"/>
       <!--<ProjectsToBuild Include="$(LocalFolder)\Build\Scripts\$(ProjectName).shfbproj" Condition="'$(SkipHelpFiles)' == ''"/>-->
+      <!-- List of installs to build. -->
+      <InstallsToBuild Include="$(LocalFolder)\Source\**\*.wixproj" />
     </ItemGroup>
   </Target>
 
