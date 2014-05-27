@@ -2,17 +2,18 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 
   <?define ProductName = "PMU Connection Tester" ?>
+  <?define ProductVersion=!(bind.FileVersion.PMUConnectionTester.exe) ?>
   <?if $(var.Platform) = x64 ?>
-  <?define SetupName = "$(var.ProductName) (64-bit)" ?>
+  <?define SetupName = "$(var.ProductName) v$(var.ProductVersion) (64-bit)" ?>
   <?define Win64 = "yes" ?>
   <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
   <?else ?>
-  <?define SetupName = "$(var.ProductName) (32-bit)" ?>
+  <?define SetupName = "$(var.ProductName) v$(var.ProductVersion) (32-bit)" ?>
   <?define Win64 = "no" ?>
   <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
   <?endif ?>
 
-  <Product Id="{6602B32E-0671-4FE1-A7A4-63025D325F49}" Codepage="1252" Language="1033" Manufacturer="Grid Protection Alliance" Name="$(var.ProductName)" UpgradeCode="{2F75A16E-39EE-44C2-B8EE-D147ACB4743E}" Version="!(bind.FileVersion.PMUConnectionTester.exe)">
+  <Product Id="*" Codepage="1252" Language="1033" Manufacturer="Grid Protection Alliance" Name="$(var.ProductName)" UpgradeCode="{2F75A16E-39EE-44C2-B8EE-D147ACB4743E}" Version="$(var.ProductVersion)">
     <Package Comments="$(var.SetupName)" Compressed="yes" InstallerVersion="200" Keywords="PMU PDC Phasors Connection Tester" Languages="1033" Manufacturer="GPA" Platform="x64" />
     <Binary Id="MSVBDPCADLL" SourceFile="$(var.ProjectDir)\Binary\MSVBDPCADLL" />
     <Binary Id="VSDNETCFG" SourceFile="$(var.ProjectDir)\Binary\VSDNETCFG" />
@@ -27,13 +28,16 @@
       <![CDATA[Installed OR NETFRAMEWORK45]]>
     </Condition>
 
+    <!-- Always uninstall older versions -->
+    <MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+
     <CustomAction Id="DIRCA_TARGETDIR" Property="TARGETDIR" Value="[$(var.PlatformProgramFilesFolder)]$(var.ProductName)" Execute="firstSequence" />
     <CustomAction Id="DIRCA_CheckFX" BinaryKey="MSVBDPCADLL" DllEntry="CheckFX" />
     <CustomAction Id="VSDCA_VsdLaunchConditions" BinaryKey="MSVBDPCADLL" DllEntry="VsdLaunchConditions" />
-    <CustomAction Id="ERRCA_CANCELNEWERVERSION" Error="[VSDVERSIONMSG]" />
+    <!-- CustomAction Id="ERRCA_CANCELNEWERVERSION" Error="[VSDVERSIONMSG]" / -->
     <CustomAction Id="ERRCA_UIANDADVERTISED" Error="[VSDUIANDADVERTISED]" />
     <CustomAction Id="VSDCA_FolderForm_AllUsers" Property="FolderForm_AllUsers" Value="ALL" />
-    
+
     <CustomTable Id="_VsdLaunchCondition">
       <Column Id="Condition" PrimaryKey="yes" Type="string" Width="255" Category="Condition" Description="Expression which must evaluate to TRUE in order for install to commence." Modularize="Condition" />
       <Column Id="Description" Type="string" Width="255" Localizable="yes" Category="Formatted" Description="Localizable text to display when condition fails and install must abort." Modularize="Property" />
@@ -44,7 +48,7 @@
         <Data Column="Url">http://go.microsoft.com/fwlink/?LinkId=76617</Data>
       </Row>
     </CustomTable>
-    
+
     <Directory Id="TARGETDIR" Name="SourceDir">
       <!-- GSF Dependencies -->
       <Component Id="C__01CA316036851AAB8FDEF3B61BE5762C" Guid="{F2BF745A-35E2-F808-B222-4DBB2BD4650B}" Win64="yes">
@@ -832,13 +836,9 @@
         </Control>
       </Dialog>
     </UI>
-    <Upgrade Id="{2F75A16E-39EE-44C2-B8EE-D147ACB4743E}">
-      <UpgradeVersion Maximum="4.4.0" Property="PREVIOUSVERSIONSINSTALLED" />
-      <UpgradeVersion Minimum="4.4.0" Property="NEWERPRODUCTFOUND" OnlyDetect="yes" IncludeMinimum="yes" />
-    </Upgrade>
     <InstallExecuteSequence>
       <Custom Action="DIRCA_CheckFX" Sequence="1" />
-      <Custom Action="ERRCA_CANCELNEWERVERSION" Sequence="201">NEWERPRODUCTFOUND AND NOT Installed</Custom>
+      <!-- <Custom Action="ERRCA_CANCELNEWERVERSION" Sequence="201">NEWERPRODUCTFOUND AND NOT Installed</Custom> -->
       <Custom Action="VSDCA_VsdLaunchConditions" Sequence="399">NOT Installed</Custom>
       <Custom Action="DIRCA_TARGETDIR" Sequence="750">TARGETDIR=""</Custom>
       <LaunchConditions Sequence="400">NOT Installed</LaunchConditions>
@@ -903,7 +903,7 @@
       <PublishFeatures Sequence="6300" />
       <PublishProduct Sequence="6400" />
       <InstallFinalize Sequence="6600" />
-      <RemoveExistingProducts Sequence="6550" />
+      <!-- <RemoveExistingProducts Before="InstallInitialize" /> -->
       <InstallExecute Sequence="6500" />
       <MsiPublishAssemblies Sequence="6250" />
       <MsiUnpublishAssemblies Sequence="1650" />
