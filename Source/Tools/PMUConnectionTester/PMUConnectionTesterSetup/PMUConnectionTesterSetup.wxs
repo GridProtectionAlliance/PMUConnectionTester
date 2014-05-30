@@ -14,7 +14,7 @@
   <?endif ?>
 
   <Product Id="*" Codepage="1252" Language="1033" Manufacturer="Grid Protection Alliance" Name="$(var.ProductName)" UpgradeCode="{2F75A16E-39EE-44C2-B8EE-D147ACB4743E}" Version="$(var.ProductVersion)">
-    <Package Comments="$(var.SetupName)" Compressed="yes" InstallerVersion="200" Keywords="PMU PDC Phasors Connection Tester" Languages="1033" Manufacturer="GPA" Platform="x64" />
+    <Package Comments="$(var.SetupName)" Compressed="yes" InstallerVersion="200" Keywords="PMU PDC Phasors Connection Tester" Languages="1033" Manufacturer="GPA" />
     <Binary Id="MSVBDPCADLL" SourceFile="$(var.ProjectDir)\Binary\MSVBDPCADLL" />
     <Binary Id="VSDNETCFG" SourceFile="$(var.ProjectDir)\Binary\VSDNETCFG" />
     <Binary Id="DefBannerBitmap" SourceFile="$(var.ProjectDir)\Binary\DefBannerBitmap" />
@@ -51,69 +51,69 @@
 
     <Directory Id="TARGETDIR" Name="SourceDir">
       <!-- GSF Dependencies -->
-      <Component Id="C__01CA316036851AAB8FDEF3B61BE5762C" Guid="{F2BF745A-35E2-F808-B222-4DBB2BD4650B}" Win64="yes">
+      <Component Id="C__01CA316036851AAB8FDEF3B61BE5762C" Guid="{F2BF745A-35E2-F808-B222-4DBB2BD4650B}" Win64="$(var.Win64)">
         <File Id="_01CA316036851AAB8FDEF3B61BE5762C" Name="GSF.Core.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_01CA316036851AAB8FDEF3B61BE5762C" AssemblyApplication="_01CA316036851AAB8FDEF3B61BE5762C" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Core.dll" />
       </Component>
-      <Component Id="C__8B08DC84991A82D1DDA17C72F1B7B821" Guid="{8B55CBE9-3555-5F83-819B-1A5782BE3848}" Win64="yes">
+      <Component Id="C__8B08DC84991A82D1DDA17C72F1B7B821" Guid="{8B55CBE9-3555-5F83-819B-1A5782BE3848}" Win64="$(var.Win64)">
         <File Id="_8B08DC84991A82D1DDA17C72F1B7B821" Name="GSF.Communication.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_8B08DC84991A82D1DDA17C72F1B7B821" AssemblyApplication="_8B08DC84991A82D1DDA17C72F1B7B821" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Communication.dll" />
       </Component>
-      <Component Id="C__CE019C704C72268ED41580D69459FB0B" Guid="{0121C0E3-4101-E5E1-8473-EE0C80E75325}" Win64="yes">
+      <Component Id="C__CE019C704C72268ED41580D69459FB0B" Guid="{0121C0E3-4101-E5E1-8473-EE0C80E75325}" Win64="$(var.Win64)">
         <File Id="_CE019C704C72268ED41580D69459FB0B" Name="GSF.Security.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_CE019C704C72268ED41580D69459FB0B" AssemblyApplication="_CE019C704C72268ED41580D69459FB0B" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Security.dll" />
       </Component>
-      <Component Id="C__812194EB33914E9915661329FB7CEC78" Guid="{C4B2BF10-0724-1D30-20F2-E846CE0F9C87}" Win64="yes">
+      <Component Id="C__812194EB33914E9915661329FB7CEC78" Guid="{C4B2BF10-0724-1D30-20F2-E846CE0F9C87}" Win64="$(var.Win64)">
         <File Id="_812194EB33914E9915661329FB7CEC78" Name="GSF.TimeSeries.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_812194EB33914E9915661329FB7CEC78" AssemblyApplication="_812194EB33914E9915661329FB7CEC78" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.dll" />
       </Component>
-      <Component Id="C__5AADC63BF8C0806AA679BAB600345EF2" Guid="{29AF9D92-B9C6-E41B-6BF0-0A12104312B0}" Win64="yes">
+      <Component Id="C__5AADC63BF8C0806AA679BAB600345EF2" Guid="{29AF9D92-B9C6-E41B-6BF0-0A12104312B0}" Win64="$(var.Win64)">
         <File Id="_5AADC63BF8C0806AA679BAB600345EF2" Name="GSF.Windows.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_5AADC63BF8C0806AA679BAB600345EF2" AssemblyApplication="_5AADC63BF8C0806AA679BAB600345EF2" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Windows.dll" />
       </Component>
-      <Component Id="C__07C1CB340A7CDBDCB132A42EA3532C6D" Guid="{18F642E2-EF66-7567-2019-38DBFDDD2699}" Win64="yes">
+      <Component Id="C__07C1CB340A7CDBDCB132A42EA3532C6D" Guid="{18F642E2-EF66-7567-2019-38DBFDDD2699}" Win64="$(var.Win64)">
         <File Id="_07C1CB340A7CDBDCB132A42EA3532C6D" Name="GSF.PhasorProtocols.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_07C1CB340A7CDBDCB132A42EA3532C6D" AssemblyApplication="_07C1CB340A7CDBDCB132A42EA3532C6D" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.dll" />
       </Component>
       <!-- Infragistics Dependencies -->
-      <Component Id="C__016CBA3FD4A8270F4DDCFCA7E19AF2A7" Guid="{08EFD466-B7EF-980E-AE9F-0CEF4A0B8AAD}" Win64="yes">
+      <Component Id="C__016CBA3FD4A8270F4DDCFCA7E19AF2A7" Guid="{08EFD466-B7EF-980E-AE9F-0CEF4A0B8AAD}" Win64="$(var.Win64)">
         <File Id="_016CBA3FD4A8270F4DDCFCA7E19AF2A7" Name="Infragistics2.Win.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_016CBA3FD4A8270F4DDCFCA7E19AF2A7" AssemblyApplication="_016CBA3FD4A8270F4DDCFCA7E19AF2A7" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.v7.2.dll" />
       </Component>
-      <Component Id="C__0B3B45F654FB3344553CA5CAB2E9BE2A" Guid="{6959C049-E411-DEC9-17AC-18EDC40968FA}" Win64="yes">
+      <Component Id="C__0B3B45F654FB3344553CA5CAB2E9BE2A" Guid="{6959C049-E411-DEC9-17AC-18EDC40968FA}" Win64="$(var.Win64)">
         <File Id="_0B3B45F654FB3344553CA5CAB2E9BE2A" Name="Infragistics2.Win.UltraWinStatusBar.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_0B3B45F654FB3344553CA5CAB2E9BE2A" AssemblyApplication="_0B3B45F654FB3344553CA5CAB2E9BE2A" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinStatusBar.v7.2.dll" />
       </Component>
-      <Component Id="C__1D4EBD1F3FF83A9461C9B341CAA91AD4" Guid="{C870A418-CC85-4041-E8C6-011D4670453C}" Win64="yes">
+      <Component Id="C__1D4EBD1F3FF83A9461C9B341CAA91AD4" Guid="{C870A418-CC85-4041-E8C6-011D4670453C}" Win64="$(var.Win64)">
         <File Id="_1D4EBD1F3FF83A9461C9B341CAA91AD4" Name="Infragistics2.Win.Misc.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_1D4EBD1F3FF83A9461C9B341CAA91AD4" AssemblyApplication="_1D4EBD1F3FF83A9461C9B341CAA91AD4" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.Misc.v7.2.dll" />
       </Component>
-      <Component Id="C__589B9672D72876F6A185DAD5D3DA4318" Guid="{730C3977-E2E9-FFF9-DC2B-67F014C6E840}" Win64="yes">
+      <Component Id="C__589B9672D72876F6A185DAD5D3DA4318" Guid="{730C3977-E2E9-FFF9-DC2B-67F014C6E840}" Win64="$(var.Win64)">
         <File Id="_589B9672D72876F6A185DAD5D3DA4318" Name="Infragistics2.Shared.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_589B9672D72876F6A185DAD5D3DA4318" AssemblyApplication="_589B9672D72876F6A185DAD5D3DA4318" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Shared.v7.2.dll" />
       </Component>
-      <Component Id="C__5F3AB8CC7322AD3E00618549A9A92945" Guid="{0C9CD411-AEE0-62B7-54D5-87A6F03ABB27}" Win64="yes">
+      <Component Id="C__5F3AB8CC7322AD3E00618549A9A92945" Guid="{0C9CD411-AEE0-62B7-54D5-87A6F03ABB27}" Win64="$(var.Win64)">
         <File Id="_5F3AB8CC7322AD3E00618549A9A92945" Name="Infragistics2.Win.UltraWinTabControl.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_5F3AB8CC7322AD3E00618549A9A92945" AssemblyApplication="_5F3AB8CC7322AD3E00618549A9A92945" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinTabControl.v7.2.dll" />
       </Component>
-      <Component Id="C__8FF764A4ED223B9850B48322AE6ACAAE" Guid="{69E18B0A-30D2-DF73-92FE-2BBFE6768C93}" Win64="yes">
+      <Component Id="C__8FF764A4ED223B9850B48322AE6ACAAE" Guid="{69E18B0A-30D2-DF73-92FE-2BBFE6768C93}" Win64="$(var.Win64)">
         <File Id="_8FF764A4ED223B9850B48322AE6ACAAE" Name="Infragistics2.Win.UltraWinMaskedEdit.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_8FF764A4ED223B9850B48322AE6ACAAE" AssemblyApplication="_8FF764A4ED223B9850B48322AE6ACAAE" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinMaskedEdit.v7.2.dll" />
       </Component>
-      <Component Id="C__B8B48A57285A6BE5A5EF9B7397FB6295" Guid="{2DDEEEB4-D3B5-AFFF-AF5F-327B6FB98E13}" Win64="yes">
+      <Component Id="C__B8B48A57285A6BE5A5EF9B7397FB6295" Guid="{2DDEEEB4-D3B5-AFFF-AF5F-327B6FB98E13}" Win64="$(var.Win64)">
         <File Id="_B8B48A57285A6BE5A5EF9B7397FB6295" Name="Infragistics2.Win.UltraWinEditors.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_B8B48A57285A6BE5A5EF9B7397FB6295" AssemblyApplication="_B8B48A57285A6BE5A5EF9B7397FB6295" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinEditors.v7.2.dll" />
       </Component>
-      <Component Id="C__BE04D40E0911F3D17EBC46F20806712C" Guid="{0B1B8895-C338-F85E-5836-0537DE9DB71D}" Win64="yes">
+      <Component Id="C__BE04D40E0911F3D17EBC46F20806712C" Guid="{0B1B8895-C338-F85E-5836-0537DE9DB71D}" Win64="$(var.Win64)">
         <File Id="_BE04D40E0911F3D17EBC46F20806712C" Name="Infragistics2.Win.UltraWinTree.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_BE04D40E0911F3D17EBC46F20806712C" AssemblyApplication="_BE04D40E0911F3D17EBC46F20806712C" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinTree.v7.2.dll" />
       </Component>
-      <Component Id="C__DC22621FEC5C4A3C81BF20F792586470" Guid="{76B538D0-FE46-D79A-5DDE-3AFB47E5781A}" Win64="yes">
+      <Component Id="C__DC22621FEC5C4A3C81BF20F792586470" Guid="{76B538D0-FE46-D79A-5DDE-3AFB47E5781A}" Win64="$(var.Win64)">
         <File Id="_DC22621FEC5C4A3C81BF20F792586470" Name="Infragistics2.Win.UltraWinChart.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_DC22621FEC5C4A3C81BF20F792586470" AssemblyApplication="_DC22621FEC5C4A3C81BF20F792586470" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinChart.v7.2.dll" />
       </Component>
       <!-- PMU Connection Tester Files -->
-      <Component Id="C__2CAA468AA9A4C657C05DD8A1F234FBC9" Guid="{8D4FA540-C69A-8993-63CB-2B370BA18AC3}" Win64="yes">
+      <Component Id="C__2CAA468AA9A4C657C05DD8A1F234FBC9" Guid="{8D4FA540-C69A-8993-63CB-2B370BA18AC3}" Win64="$(var.Win64)">
         <File Id="PMUConnectionTester.exe" Name="$(var.PMUConnectionTester.TargetFileName)" KeyPath="yes" Assembly=".net" AssemblyManifest="PMUConnectionTester.exe" AssemblyApplication="PMUConnectionTester.exe" DiskId="1"
               Source="$(var.PMUConnectionTester.TargetPath)" />
         <ProgId Id="PMU Capture File" Description="Captured data files associated with the $(var.ProductName)." Icon="PmuCapture.ico" IconIndex="0" Advertise="yes">
@@ -130,45 +130,45 @@
         <Shortcut Id="_E0B2CB3C319C4FE5A224F364E95CB553" Directory="StartMenuFolderName" Name="$(var.ProductName)" Description="openPDC $(var.SetupName)" Icon="PMUConnectionTester.ico" IconIndex="0" Show="normal" WorkingDirectory="TARGETDIR" Advertise="yes" />
       </Component>
 
-      <Component Id="C__9EB0416D5ABBB116E21DF22C99296ACB" Guid="{47E78A01-DA9B-59B3-3D53-01D34694EA81}" Win64="yes">
+      <Component Id="C__9EB0416D5ABBB116E21DF22C99296ACB" Guid="{47E78A01-DA9B-59B3-3D53-01D34694EA81}" Win64="$(var.Win64)">
         <File Id="_9EB0416D5ABBB116E21DF22C99296ACB" Name="$(var.PMUConnectionTester.TargetFileName).config" KeyPath="yes" DiskId="1"
               Source="$(var.PMUConnectionTester.TargetPath).config" />
       </Component>
-      <Component Id="C__1E7CA3EDC34387ED3324B8B6FBBFF485" Guid="{CE57E20A-C52A-E7DF-CFFD-5D499ADF508F}" Win64="yes">
+      <Component Id="C__1E7CA3EDC34387ED3324B8B6FBBFF485" Guid="{CE57E20A-C52A-E7DF-CFFD-5D499ADF508F}" Win64="$(var.Win64)">
         <File Id="_1E7CA3EDC34387ED3324B8B6FBBFF485" Name="PMUConnectionTester.chm" KeyPath="yes" DiskId="1"
               Source="$(var.PMUConnectionTester.ProjectDir)\PMUConnectionTester.chm" />
       </Component>
-      <Component Id="C__DFF74BBBE504A85F10FC6994355DEB88" Guid="{ED423562-57C3-3037-9A87-207F60178080}" Win64="yes">
+      <Component Id="C__DFF74BBBE504A85F10FC6994355DEB88" Guid="{ED423562-57C3-3037-9A87-207F60178080}" Win64="$(var.Win64)">
         <File Id="_DFF74BBBE504A85F10FC6994355DEB88" Name="Sample1344.PmuCapture" KeyPath="yes" DiskId="1"
               Source="$(var.PMUConnectionTester.ProjectDir)\Sample1344.PmuCapture" />
       </Component>
-      <Component Id="C__C58E3C5B33681014D53D4C4A7D47F8F1" Guid="{C2887755-2918-CD75-028C-3A1027EE2559}" Win64="yes">
+      <Component Id="C__C58E3C5B33681014D53D4C4A7D47F8F1" Guid="{C2887755-2918-CD75-028C-3A1027EE2559}" Win64="$(var.Win64)">
         <File Id="_C58E3C5B33681014D53D4C4A7D47F8F1" Name="LastRun.PmuConnection" KeyPath="yes" DiskId="1"
               Source="$(var.PMUConnectionTester.ProjectDir)\LastRun.PmuConnection" />
       </Component>
-      <Component Id="C__AE63F34C247E48A6BA30834B0461C66E" Guid="{E864CF9B-4F14-B073-DB58-A95B06239B35}" Win64="yes">
+      <Component Id="C__AE63F34C247E48A6BA30834B0461C66E" Guid="{E864CF9B-4F14-B073-DB58-A95B06239B35}" Win64="$(var.Win64)">
         <File Id="_AE63F34C247E48A6BA30834B0461C66E" Name="Sample1344.PmuConnection" KeyPath="yes" DiskId="1"
               Source="$(var.ProjectDir)\Sample1344.PmuConnection" />
         <Shortcut Id="_93EB12474C2649EFB606E5DB57B44E24" Directory="StartMenuFolderName" Name="Sample File-based Connection" Icon="PmuConnection.ico" IconIndex="0" Show="normal" WorkingDirectory="TARGETDIR" Advertise="yes" />
       </Component>
-      <Component Id="C__F8D8C49FF8EC45B8873F25CBD8EC10A8" Guid="{1EF54E9C-2A54-81C1-FBC3-D1A41BD4745E}" Win64="yes">
+      <Component Id="C__F8D8C49FF8EC45B8873F25CBD8EC10A8" Guid="{1EF54E9C-2A54-81C1-FBC3-D1A41BD4745E}" Win64="$(var.Win64)">
         <File Id="_F8D8C49FF8EC45B8873F25CBD8EC10A8" Name="openPDCTestStream.PmuConnection" KeyPath="yes" DiskId="1"
               Source="$(var.ProjectDir)\openPDCTestStream.PmuConnection" />
         <Shortcut Id="_B109177263AC42ED8FA111A7028D9670" Directory="StartMenuFolderName" Name="openPDC Test Stream Connection" Icon="PmuConnection.ico" IconIndex="0" Show="normal" WorkingDirectory="TARGETDIR" Advertise="yes" />
       </Component>
-      <Component Id="C__2A27B0E522104A42A0A2E2BD35BDD1D2" Guid="{DB185DF7-4115-F38B-1EC7-2443A8A9AEA3}" Win64="yes">
+      <Component Id="C__2A27B0E522104A42A0A2E2BD35BDD1D2" Guid="{DB185DF7-4115-F38B-1EC7-2443A8A9AEA3}" Win64="$(var.Win64)">
         <File Id="_2A27B0E522104A42A0A2E2BD35BDD1D2" Name="LICENSE.txt" KeyPath="yes" DiskId="1"
               Source="$(var.SolutionDir)\LICENSE.txt" />
       </Component>
-      <Component Id="C__32F6BC643EDF41B897E6E634F1121AD9" Guid="{ECA8CB0B-6F4B-139D-5A18-A288AD625981}" Win64="yes">
+      <Component Id="C__32F6BC643EDF41B897E6E634F1121AD9" Guid="{ECA8CB0B-6F4B-139D-5A18-A288AD625981}" Win64="$(var.Win64)">
         <File Id="_32F6BC643EDF41B897E6E634F1121AD9" Name="NOTICE.txt" KeyPath="yes" DiskId="1"
               Source="$(var.SolutionDir)\NOTICE.txt" />
       </Component>
-      <Component Id="C__02340CBC034B421D959B8A37F8EEF613" Guid="{5877CF84-5F94-365C-0AC6-C1340C1646F7}" Win64="yes">
+      <Component Id="C__02340CBC034B421D959B8A37F8EEF613" Guid="{5877CF84-5F94-365C-0AC6-C1340C1646F7}" Win64="$(var.Win64)">
         <File Id="_02340CBC034B421D959B8A37F8EEF613" Name="PmuCapture.ico" KeyPath="yes" DiskId="1"
               Source="$(var.ProjectDir)\PmuCapture.ico" />
       </Component>
-      <Component Id="C__A3C554204EE24CEEB17DD434FBCE08A4" Guid="{6CDFBEAE-672C-E010-EB84-C20CE4641270}" Win64="yes">
+      <Component Id="C__A3C554204EE24CEEB17DD434FBCE08A4" Guid="{6CDFBEAE-672C-E010-EB84-C20CE4641270}" Win64="$(var.Win64)">
         <File Id="_A3C554204EE24CEEB17DD434FBCE08A4" Name="PmuConnection.ico" KeyPath="yes" DiskId="1"
               Source="$(var.ProjectDir)\PmuConnection.ico" />
       </Component>
