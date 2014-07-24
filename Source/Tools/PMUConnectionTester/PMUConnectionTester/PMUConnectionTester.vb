@@ -29,6 +29,7 @@
 '
 '******************************************************************************************************
 
+Imports GSF.Units.EE
 Imports Infragistics.Win
 Imports Infragistics.Win.UltraWinTree
 Imports Infragistics.Win.UltraWinMaskedEdit
