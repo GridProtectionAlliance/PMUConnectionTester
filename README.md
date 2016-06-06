@@ -26,7 +26,7 @@ Any device that supports one of the following phasor protocols may be tested:
 
 # Documentation
 
-The documentation for PMUConnectionTester can be found [here](http://pmuconnectiontester.codeplex.com/documentation)
+The documentation for PMUConnectionTester can be found [here](http://pmuconnectiontester.codeplex.com/documentation).
 
 # Deployment
 
@@ -47,7 +47,10 @@ Download the latest stable release [here](http://pmuconnectiontester.codeplex.co
 # Contributing
 If you would like to contribute please:
 
-1. Read the [styleguide.](https://www.gridprotectionalliance.org/docs/GPA_Coding_Guidelines_2011_03.pdf)
+1. Read our [styleguide](https://www.gridprotectionalliance.org/docs/GPA_Coding_Guidelines_2011_03.pdf).
 * Fork the repository.
-* Make something amazing.
+* Work your magic.
 * Create a pull request.
+
+# License
+PMU Connection Tester is licensed for use under the [MIT License](https://opensource.org/licenses/MIT)
