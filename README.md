@@ -24,9 +24,12 @@ Any device that supports one of the following phasor protocols may be tested:
 * SEL Fast Message
 * Macrodyne (M and G starting with version 4.3)
 
-# Documentation
+# Documentation and Support
 
-The documentation for PMUConnectionTester can be found [here](http://pmuconnectiontester.codeplex.com/documentation).
+* Documentation for PMUConnectionTester can be found [here](http://pmuconnectiontester.codeplex.com/documentation).
+* Get in contact with our development team on our new [discussion board](http://discussions.gridprotectionalliance.org/c/gpa-products/pmu-connection-tester).
+* Check our [old discussion board](http://pmuconnectiontester.codeplex.com/discussions) to see if your question has already been answered.
+* Check out the [wiki](https://gridprotectionalliance.org/wiki/doku.php?id=pmuctester:overview).
 
 # Deployment
 
@@ -49,7 +52,7 @@ If you would like to contribute please:
 
 1. Read our [styleguide](https://www.gridprotectionalliance.org/docs/GPA_Coding_Guidelines_2011_03.pdf).
 * Fork the repository.
-* Work your magic.
+* Make something amazing.
 * Create a pull request.
 
 # License
