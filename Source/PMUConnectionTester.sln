@@ -50,20 +50,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WiX", "WiX", "{6AC97E3F-282
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs02
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = Tools\\PMUConnectionTester\\PMUConnectionTester\\PMUConnectionTester.vbproj
-		SccProjectTopLevelParentUniqueName1 = PMUConnectionTester.sln
-		SccProjectName1 = Tools/PMUConnectionTester/PMUConnectionTester
-		SccLocalPath1 = Tools\\PMUConnectionTester\\PMUConnectionTester
-		SccProjectUniqueName2 = Tools\\PMUConnectionTester\\PMUConnectionTesterSetup\\PMUConnectionTesterSetup.wixproj
-		SccProjectTopLevelParentUniqueName2 = PMUConnectionTester.sln
-		SccProjectName2 = Tools/PMUConnectionTester/PMUConnectionTesterSetup
-		SccLocalPath2 = Tools\\PMUConnectionTester\\PMUConnectionTesterSetup
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
