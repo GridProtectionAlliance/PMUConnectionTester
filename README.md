@@ -1,5 +1,4 @@
-![icon](http://www.gridprotectionalliance.org/images/products/icons%2064/ConnectionTester.png)![PMUConnectionTester](https://raw.githubusercontent.com/chefsteph9/PMUConnectionTester/master/CTester.png)
-
+![icon](http://www.gridprotectionalliance.org/images/products/icons%2064/ConnectionTester.png) 
 # PMUConnectionTester
 
 The PMU Connection Tester is a Windows GUI application used to validate, test and trouble‐shoot
