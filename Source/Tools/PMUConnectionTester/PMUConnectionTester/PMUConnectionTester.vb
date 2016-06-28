@@ -69,6 +69,12 @@ Public Class PMUConnectionTester
     Private Const QueuedBuffersPanel As Integer = 9
     Private Const TextFileWidth As Integer = 75
 
+    Private Class ImageQueue
+        Inherits AsyncQueue(Of EventArgs(Of FundamentalFrameType, Byte(), Integer, Integer))
+
+    End Class
+
+
     Private Enum ChartTabs
         Graph
         Settings
@@ -83,7 +89,7 @@ Public Class PMUConnectionTester
 
     ' Phasor parsing variables
     Private WithEvents m_frameParser As MultiProtocolFrameParser
-    Private WithEvents m_imageQueue As AsyncQueue(Of EventArgs(Of FundamentalFrameType, Byte(), Integer, Integer))
+    Private WithEvents m_imageQueue As ImageQueue
     Private m_configurationFrame As IConfigurationFrame
     Private m_configChangeDetected As Boolean
     Private m_configChangeTime As Long
@@ -2120,7 +2126,7 @@ Public Class PMUConnectionTester
         Try
             ButtonListen.Enabled = False
 
-            m_imageQueue = New AsyncQueue(Of EventArgs(Of FundamentalFrameType, Byte(), Integer, Integer)) With {.ProcessItemFunction = AddressOf ProcessReceivedFrameBufferImage}
+            m_imageQueue = New ImageQueue With {.ProcessItemFunction = AddressOf ProcessReceivedFrameBufferImage}
 
             With m_frameParser
                 Dim valuesAreValid As Boolean = True
