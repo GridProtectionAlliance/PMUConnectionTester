@@ -1,5 +1,4 @@
-![icon](http://www.gridprotectionalliance.org/images/products/icons%2064/ConnectionTester.png) 
-# PMUConnectionTester
+![icon](http://www.gridprotectionalliance.org/images/products/PMUConnectionTester.png) 
 
 The PMU Connection Tester is a Windows GUI application used to validate, test and trouble‐shoot
 connections and data streams from phasor measurement devices as well as graphically visualize
