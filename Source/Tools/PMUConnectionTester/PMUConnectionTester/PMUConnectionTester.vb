@@ -1605,7 +1605,12 @@ Public Class PMUConnectionTester
 
     Private Sub Connected()
 
-        If m_configurationFrame Is Nothing Then ChartDataDisplay.TitleTop.Text = "Awaiting configuration frame..."
+        If m_configurationFrame Is Nothing Then
+            ChartDataDisplay.TitleTop.Text = "Awaiting configuration frame..."
+        Else
+            ChartDataDisplay.TitleTop.Text = "Configured frame rate: " & m_configurationFrame.FrameRate & " frames/second"
+        End If
+
         AppendStatusMessage("Connected to device " & ConnectionInformation)
         TabControlChart.Tabs(ChartTabs.Graph).Selected = True
 
