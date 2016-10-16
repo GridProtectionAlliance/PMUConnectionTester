@@ -33,17 +33,19 @@ Any device that supports one of the following phasor protocols may be tested:
 
 1. Make sure your system meets all the requirements below.
 * Download the [latest stable release](#latest-stable-release) below.
-* Unzip files.
+* Unzip if necessary.
 * Start the correct installer for your system (32-bit or 64-bit).
 * Follow the wizard.
 * Enjoy.
 
 ## Requirements
 
-* .NET 4.5 or higher.
+* .NET 4.6 or higher.
 
 ## Latest Stable Release
-Download the latest stable release [here](http://pmuconnectiontester.codeplex.com/downloads/get/848421).
+
+Download the latest stable release [here](https://github.com/GridProtectionAlliance/PMUConnectionTester/releases).
+Older downloads can be found [here](https://pmuconnectiontester.codeplex.com/releases/).
 
 # Contributing
 If you would like to contribute please:

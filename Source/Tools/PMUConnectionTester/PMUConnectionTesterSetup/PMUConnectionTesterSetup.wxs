@@ -22,10 +22,9 @@
     <Binary Id="UpFldrBtn" SourceFile="$(var.ProjectDir)\Binary\UpFldrBtn" />
     <Binary Id="NewFldrBtn" SourceFile="$(var.ProjectDir)\Binary\NewFldrBtn" />
 
-    <PropertyRef Id="NETFRAMEWORK45"/>
-
-    <Condition Message='This setup requires Microsoft .NET Framework 4.5 or greater - this will need to be installed before installation can continue.'>
-      <![CDATA[Installed OR NETFRAMEWORK45]]>
+    <PropertyRef Id="WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED"/>
+    <Condition Message='This setup requires Microsoft .NET Framework 4.6 or greater - this will need to be installed before installation can continue.'>
+      <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED]]>
     </Condition>
 
     <!-- Always uninstall older versions -->
@@ -37,6 +36,7 @@
     <!-- CustomAction Id="ERRCA_CANCELNEWERVERSION" Error="[VSDVERSIONMSG]" / -->
     <CustomAction Id="ERRCA_UIANDADVERTISED" Error="[VSDUIANDADVERTISED]" />
     <CustomAction Id="VSDCA_FolderForm_AllUsers" Property="FolderForm_AllUsers" Value="ALL" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\INSTALL_LICENSE.rtf" />
 
     <CustomTable Id="_VsdLaunchCondition">
       <Column Id="Condition" PrimaryKey="yes" Type="string" Width="255" Category="Condition" Description="Expression which must evaluate to TRUE in order for install to commence." Modularize="Condition" />
