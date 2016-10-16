@@ -44,8 +44,8 @@ Any device that supports one of the following phasor protocols may be tested:
 
 ## Latest Stable Release
 
-Download the latest stable release [here](https://github.com/GridProtectionAlliance/PMUConnectionTester/releases).
-Older downloads can be found [here](https://pmuconnectiontester.codeplex.com/releases/).
+* Download the latest stable release [here](https://github.com/GridProtectionAlliance/PMUConnectionTester/releases).
+* Older downloads can be found [here](https://pmuconnectiontester.codeplex.com/releases/).
 
 # Contributing
 If you would like to contribute please:
