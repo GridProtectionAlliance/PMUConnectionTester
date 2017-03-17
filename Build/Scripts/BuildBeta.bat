@@ -1,22 +1,31 @@
 ::*******************************************************************************************************
 ::  BuildBeta.bat - Gbtc
 ::
-::  Tennessee Valley Authority, 2009
-::  No copyright is claimed pursuant to 17 USC § 105.  All Other Rights Reserved.
+::  Copyright © 2017, Grid Protection Alliance.  All Rights Reserved.
 ::
-::  This software is made freely available under the TVA Open Source Agreement (see below).
+::  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+::  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+::  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
+::  not use this file except in compliance with the License. You may obtain a copy of the License at:
+::
+::      http://opensource.org/licenses/MIT
+::
+::  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+::  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+::  License for the specific language governing permissions and limitations.
 ::
 ::  Code Modification History:
 ::  -----------------------------------------------------------------------------------------------------
-::  10/05/2009 - Pinal C. Patel
+::  03/07/2017 - Stephen C. Wills
 ::       Generated original version of source code.
-::  10/20/2009 - Pinal C. Patel
-::       Modified to force a build and suppress archives from being published to public locations.
-::  10/03/2010 - Pinal C. Patel
-::       Updated to use MSBuild 4.0.
 ::
 ::*******************************************************************************************************
 
 @ECHO OFF
-C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\msbuild.exe PMUConnectionTester.buildproj /p:ForceBuild=true /l:FileLogger,Microsoft.Build.Engine;logfile=PMUConnectionTester.output
-PAUSE
+
+SetLocal
+
+IF NOT "%1" == "" SET logflag=/l:FileLogger,Microsoft.Build.Engine;logfile=%1
+
+ECHO BuildBeta: C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\msbuild.exe PMUConnectionTester.buildproj /p:ForceBuild=true %logflag%
+"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe" PMUConnectionTester.buildproj /p:ForceBuild=true %logFlag%
