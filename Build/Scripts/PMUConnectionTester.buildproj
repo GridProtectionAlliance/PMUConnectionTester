@@ -94,7 +94,7 @@
     <ItemGroup>
       <Install64Source Include="$(BuildOutputFolder)\Tools\PMUConnectionTesterSetup\x64\PMUConnectionTesterSetup.msi"/>
       <Install32Source Include="$(BuildOutputFolder)\Tools\PMUConnectionTesterSetup\x86\PMUConnectionTesterSetup.msi"/>
-      <ReadmeSource Include="$(LocalFolder)\Source\Applications\StreamSplitterSetup\*.txt"/>
+      <ReadmeSource Include="$(LocalFolder)\Source\Tools\PMUConnectionTester\PMUConnectionTesterSetup\*.txt"/>
     </ItemGroup>
     
     <Copy SourceFiles="@(Install64Source)" DestinationFiles="$(BuildOutputFolder)\Setup\PMUConnectionTesterSetup (64-bit).msi"/>
