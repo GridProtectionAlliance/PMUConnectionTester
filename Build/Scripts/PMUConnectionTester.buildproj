@@ -92,13 +92,13 @@
 
   <Target Name="AfterBuildProjects">
     <ItemGroup>
-      <Install64Source Include="$(BuildOutputFolder)\Applications\StreamSplitter\Setup\x64\StreamSplitterSetup.msi"/>
-      <Install32Source Include="$(BuildOutputFolder)\Applications\StreamSplitter\Setup\x86\StreamSplitterSetup.msi"/>
+      <Install64Source Include="$(BuildOutputFolder)\Tools\PMUConnectionTesterSetup\x64\PMUConnectionTesterSetup.msi"/>
+      <Install32Source Include="$(BuildOutputFolder)\Tools\PMUConnectionTesterSetup\x86\PMUConnectionTesterSetup.msi"/>
       <ReadmeSource Include="$(LocalFolder)\Source\Applications\StreamSplitterSetup\*.txt"/>
     </ItemGroup>
     
-    <Copy SourceFiles="@(Install64Source)" DestinationFiles="$(BuildOutputFolder)\Setup\StreamSplitterSetup (64-bit).msi"/>
-    <Copy SourceFiles="@(Install32Source)" DestinationFiles="$(BuildOutputFolder)\Setup\StreamSplitterSetup (32-bit).msi"/>
+    <Copy SourceFiles="@(Install64Source)" DestinationFiles="$(BuildOutputFolder)\Setup\PMUConnectionTesterSetup (64-bit).msi"/>
+    <Copy SourceFiles="@(Install32Source)" DestinationFiles="$(BuildOutputFolder)\Setup\PMUConnectionTesterSetup (32-bit).msi"/>
     <Copy SourceFiles="%(ReadmeSource.FullPath)" DestinationFolder="$(BuildOutputFolder)\Setup\"/>
   </Target>
 
