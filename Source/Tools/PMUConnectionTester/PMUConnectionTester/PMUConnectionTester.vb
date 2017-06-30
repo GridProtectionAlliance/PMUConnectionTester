@@ -1481,7 +1481,7 @@ Public Class PMUConnectionTester
                         Else
                             ' Plot relative phase angles
                             For x As Integer = 0 To phasorCount - 1
-                                If m_phasorData.Columns.Count > x Then row(x) = (phasor.Angle - cell.PhasorValues(x).Angle).ToDegrees()
+                                If m_phasorData.Columns.Count > x Then row(x) = (cell.PhasorValues(x).Angle - phasor.Angle).ToRange(-Math.PI, False).ToDegrees()
                             Next
                         End If
 
