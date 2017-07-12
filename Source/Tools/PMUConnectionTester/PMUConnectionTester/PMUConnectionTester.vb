@@ -1402,7 +1402,7 @@ Public Class PMUConnectionTester
                     Next
                 Next
 
-                m_streamDebugCapture.Write("EOF")
+                m_streamDebugCapture.WriteLine("EOF")
             End If
         End If
 
