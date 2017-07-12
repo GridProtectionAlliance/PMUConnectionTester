@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{18CAC75A-26A1-443A-8049-ED5353E5C60B}"
@@ -25,8 +27,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infragistics", "Infragistic
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8BFAD476-F624-49D6-B178-E787EFB45CC5}"
 	ProjectSection(SolutionItems) = preProject
+		..\.gitattributes = ..\.gitattributes
+		..\.gitignore = ..\.gitignore
 		LICENSE.txt = LICENSE.txt
 		NOTICE.txt = NOTICE.txt
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "PMUConnectionTester", "Tools\PMUConnectionTester\PMUConnectionTester\PMUConnectionTester.vbproj", "{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}"
@@ -50,20 +55,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WiX", "WiX", "{6AC97E3F-282
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs02
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = Tools\\PMUConnectionTester\\PMUConnectionTester\\PMUConnectionTester.vbproj
-		SccProjectTopLevelParentUniqueName1 = PMUConnectionTester.sln
-		SccProjectName1 = Tools/PMUConnectionTester/PMUConnectionTester
-		SccLocalPath1 = Tools\\PMUConnectionTester\\PMUConnectionTester
-		SccProjectUniqueName2 = Tools\\PMUConnectionTester\\PMUConnectionTesterSetup\\PMUConnectionTesterSetup.wixproj
-		SccProjectTopLevelParentUniqueName2 = PMUConnectionTester.sln
-		SccProjectName2 = Tools/PMUConnectionTester/PMUConnectionTesterSetup
-		SccLocalPath2 = Tools\\PMUConnectionTester\\PMUConnectionTesterSetup
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
@@ -93,9 +84,9 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C4DB0733-6C94-4FFA-99D1-EB8828C1E1D9} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
-		{62315676-F84B-42D0-AFD5-1A13A5B99FD1} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
-		{6AC97E3F-2824-47E3-8523-76E80D70B1FC} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
 		{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
+		{62315676-F84B-42D0-AFD5-1A13A5B99FD1} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
 		{CE805F4F-885D-4BC4-89A8-F000E92500A5} = {34207C22-6EEE-48B6-AD0D-5880BCE89091}
+		{6AC97E3F-2824-47E3-8523-76E80D70B1FC} = {FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}
 	EndGlobalSection
 EndGlobal

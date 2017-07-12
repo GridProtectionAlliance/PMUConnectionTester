@@ -118,6 +118,7 @@ Partial Class PMUConnectionTester
         Dim Appearance40 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
         Dim Appearance41 As Infragistics.Win.Appearance = New Infragistics.Win.Appearance()
         Me.TabPageControl9 = New Infragistics.Win.UltraWinTabControl.UltraTabPageControl()
+        Me.TextBoxRawCommand = New Infragistics.Win.UltraWinMaskedEdit.UltraMaskedEdit()
         Me.LabelAlternateCommandChannelState = New Infragistics.Win.Misc.UltraLabel()
         Me.LabelAlternateCommandChannel = New Infragistics.Win.Misc.UltraLabel()
         Me.LabelVersion = New Infragistics.Win.Misc.UltraLabel()
@@ -137,6 +138,7 @@ Partial Class PMUConnectionTester
         Me.LabelTcpPort = New Infragistics.Win.Misc.UltraLabel()
         Me.TextBoxTcpPort = New Infragistics.Win.UltraWinMaskedEdit.UltraMaskedEdit()
         Me.TabPageControl2 = New Infragistics.Win.UltraWinTabControl.UltraTabPageControl()
+        Me.LabelReceiveFrom = New Infragistics.Win.Misc.UltraLabel()
         Me.LabelUdpNetworkInterface = New Infragistics.Win.Misc.UltraLabel()
         Me.GroupBoxRemoteUDPServer = New Infragistics.Win.Misc.UltraGroupBox()
         Me.LabelMulticastSource = New Infragistics.Win.Misc.UltraLabel()
@@ -320,6 +322,7 @@ Partial Class PMUConnectionTester
         '
         'TabPageControl9
         '
+        Me.TabPageControl9.Controls.Add(Me.TextBoxRawCommand)
         Me.TabPageControl9.Controls.Add(Me.LabelAlternateCommandChannelState)
         Me.TabPageControl9.Controls.Add(Me.LabelAlternateCommandChannel)
         Me.TabPageControl9.Controls.Add(Me.LabelVersion)
@@ -333,6 +336,19 @@ Partial Class PMUConnectionTester
         Me.TabPageControl9.Location = New System.Drawing.Point(1, 20)
         Me.TabPageControl9.Name = "TabPageControl9"
         Me.TabPageControl9.Size = New System.Drawing.Size(360, 96)
+        '
+        'TextBoxRawCommand
+        '
+        Me.TextBoxRawCommand.AutoSize = False
+        Me.TextBoxRawCommand.EditAs = Infragistics.Win.UltraWinMaskedEdit.EditAsType.UseSpecifiedMask
+        Me.TextBoxRawCommand.InputMask = "aaaaaa"
+        Me.TextBoxRawCommand.Location = New System.Drawing.Point(166, 44)
+        Me.TextBoxRawCommand.Name = "TextBoxRawCommand"
+        Me.TextBoxRawCommand.PromptChar = Global.Microsoft.VisualBasic.ChrW(32)
+        Me.TextBoxRawCommand.Size = New System.Drawing.Size(64, 20)
+        Me.TextBoxRawCommand.TabIndex = 20
+        Me.TextBoxRawCommand.Text = "513"
+
         '
         'LabelAlternateCommandChannelState
         '
@@ -401,7 +417,7 @@ Partial Class PMUConnectionTester
         Me.ComboBoxCommands.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems
         Me.ComboBoxCommands.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBoxCommands.Enabled = False
-        Me.ComboBoxCommands.Items.AddRange(New Object() {"Disable Real-time Data", "Enable Real-time Data", "Send Header Frame", "Send Config Frame 1", "Send Config Frame 2"})
+        Me.ComboBoxCommands.Items.AddRange(New Object() {"Disable Real-time Data", "Enable Real-time Data", "Send Header Frame", "Send Config Frame 1", "Send Config Frame 2", "Send Raw Command"})
         Me.ComboBoxCommands.Location = New System.Drawing.Point(6, 72)
         Me.ComboBoxCommands.Name = "ComboBoxCommands"
         Me.ComboBoxCommands.Size = New System.Drawing.Size(154, 21)
@@ -557,6 +573,25 @@ Partial Class PMUConnectionTester
         Me.TabPageControl2.Location = New System.Drawing.Point(1, 20)
         Me.TabPageControl2.Name = "TabPageControl2"
         Me.TabPageControl2.Size = New System.Drawing.Size(304, 96)
+        'LabelReceiveFrom
+        '
+        Me.LabelReceiveFrom.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Appearance42.ForeColor = System.Drawing.SystemColors.HotTrack
+        Appearance42.TextHAlignAsString = "Center"
+        Appearance42.TextVAlignAsString = "Middle"
+        Me.LabelReceiveFrom.Appearance = Appearance42
+        Me.LabelReceiveFrom.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.LabelReceiveFrom.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Appearance43.FontData.UnderlineAsString = "True"
+        Me.LabelReceiveFrom.HotTrackAppearance = Appearance43
+        Me.LabelReceiveFrom.Location = New System.Drawing.Point(5, 62)
+        Me.LabelReceiveFrom.Name = "LabelReceiveFrom"
+        Me.LabelReceiveFrom.Size = New System.Drawing.Size(105, 21)
+        Me.LabelReceiveFrom.TabIndex = 3
+        Me.LabelReceiveFrom.Text = "Receive From"
+        Me.LabelReceiveFrom.UseHotTracking = Infragistics.Win.DefaultableBoolean.[True]
+        '
+
         '
         'LabelUdpNetworkInterface
         '
@@ -2356,5 +2391,5 @@ Partial Class PMUConnectionTester
     Friend WithEvents LabelUdpNetworkInterface As Infragistics.Win.Misc.UltraLabel
     Friend WithEvents LabelMulticastSource As Infragistics.Win.Misc.UltraLabel
     Friend WithEvents LabelReceiveFrom As Infragistics.Win.Misc.UltraLabel
-
+    Friend WithEvents TextBoxRawCommand As Infragistics.Win.UltraWinMaskedEdit.UltraMaskedEdit
 End Class

@@ -1,14 +1,14 @@
 ::*******************************************************************************************************
 ::  UpdateDependencies.bat - Gbtc
 ::
-::  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+::  Copyright © 2017, Grid Protection Alliance.  All Rights Reserved.
 ::
 ::  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 ::  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-::  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+::  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 ::  not use this file except in compliance with the License. You may obtain a copy of the License at:
 ::
-::      http://www.opensource.org/licenses/eclipse-1.0.php
+::      http://opensource.org/licenses/MIT
 ::
 ::  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 ::  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -16,48 +16,72 @@
 ::
 ::  Code Modification History:
 ::  -----------------------------------------------------------------------------------------------------
-::  02/26/2011 - Pinal C. Patel
+::  03/07/2017 - Stephen C. Wills
 ::       Generated original version of source code.
-::  05/23/2014 - J. Ritchie Carroll
-::       Updated to roll-down schema files from Grid Solutions Framework.
 ::
 ::*******************************************************************************************************
 
 @ECHO OFF
 
-SET vs="%VS110COMNTOOLS%\..\IDE\devenv.com"
-SET tfs="%VS110COMNTOOLS%\..\IDE\tf.exe"
-SET source1="\\GPAWEB\NightlyBuilds\GridSolutionsFramework\Beta\Libraries\*.*"
-SET target1="..\..\Source\Dependencies\GSF"
+SETLOCAL
 
-SET solution="..\..\Source\PMUConnectionTester.sln"
-SET checkinComment="Updated dependencies."
-SET /p checkin=Check-in updates (Y or N)? 
+SET pwd=%CD%
+IF "%git%" == "" SET git=%PROGRAMFILES(X86)%\Git\cmd\git.exe
+IF "%replace%" == "" SET replace=\\GPAWEB\NightlyBuilds\Tools\ReplaceInFiles\ReplaceInFiles.exe
 
+SET defaulttarget=%LOCALAPPDATA%\Temp\PMUConnectionTester
+IF "%remote%" == "" SET remote=git@github.com:GridProtectionAlliance/pmuconnectiontester.git
+IF "%gsf%" == "" SET gsf=\\GPAWEB\NightlyBuilds\GridSolutionsFramework\Beta
+IF "%target%" == "" SET target=%defaulttarget%
+
+SET gsflibraries=%gsf%\Libraries\*.*
+SET gsfdependencies=%target%\Source\Dependencies\GSF
+SET sourcemasterbuild=%gsf%\Build Scripts\MasterBuild.buildproj
+SET targetmasterbuild=%target%\Build\Scripts
+
+ECHO.
+ECHO Entering working directory...
+IF EXIST "%target%" IF NOT EXIST "%target%"\.git RMDIR /S /Q "%target%"
+IF NOT EXIST "%target%" MKDIR "%target%"
+CD /D %target%
+
+IF NOT EXIST .git GOTO CloneRepository
+IF NOT "%target%" == "%defaulttarget%" GOTO UpdateDependencies
+GOTO UpdateRepository
+
+:CloneRepository
 ECHO.
 ECHO Getting latest version...
-%tfs% get %target1% /version:T /force /recursive /noprompt
+"%git%" clone "%remote%" .
+GOTO UpdateDependencies
 
+:UpdateRepository
 ECHO.
-ECHO Checking out dependencies...
-%tfs% checkout %target1% /recursive /noprompt
+ECHO Updating to latest version...
+"%git%" fetch
+"%git%" reset --hard origin/master
+"%git%" clean -f -d -x
+GOTO UpdateDependencies
 
+:UpdateDependencies
 ECHO.
 ECHO Updating dependencies...
-XCOPY %source1% %target1% /Y
+XCOPY "%gsflibraries%" "%gsfdependencies%\" /E /U /Y
+XCOPY "%sourcemasterbuild%" "%targetmasterbuild%\" /Y
 
+:CommitChanges
 ECHO.
-ECHO Building solution...
-%vs% %solution% /Build "Release|Any CPU"
+ECHO Committing updates to local repository...
+"%git%" add .
+"%git%" commit -m "Updated GSF dependencies."
+IF NOT "%donotpush%" == "" GOTO Finish
 
-IF /I "%checkin%" == "Y" GOTO Checkin
-GOTO Finalize
-
-:Checkin
+:PushChanges
 ECHO.
-ECHO Checking in dependencies...
-%tfs% checkin %target1% /noprompt /recursive /comment:%checkinComment%
+ECHO Pushing changes to remote repository...
+"%git%" push
+CD /D %pwd%
 
-:Finalize
+:Finish
 ECHO.
 ECHO Update complete

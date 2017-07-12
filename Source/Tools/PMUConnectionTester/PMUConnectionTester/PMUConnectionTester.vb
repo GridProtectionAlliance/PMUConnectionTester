@@ -1,14 +1,14 @@
 '******************************************************************************************************
 '  PMUConnectionTester.vb - Gbtc
 '
-'  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
+'  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
 '
 '  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 '  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-'  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+'  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 '  not use this file except in compliance with the License. You may obtain a copy of the License at:
 '
-'      http://www.opensource.org/licenses/eclipse-1.0.php
+'      http://opensource.org/licenses/MIT
 '
 '  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 '  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -69,6 +69,12 @@ Public Class PMUConnectionTester
     Private Const QueuedBuffersPanel As Integer = 9
     Private Const TextFileWidth As Integer = 75
 
+    Private Class ImageQueue
+        Inherits AsyncQueue(Of EventArgs(Of FundamentalFrameType, Byte(), Integer, Integer))
+
+    End Class
+
+
     Private Enum ChartTabs
         Graph
         Settings
@@ -83,7 +89,7 @@ Public Class PMUConnectionTester
 
     ' Phasor parsing variables
     Private WithEvents m_frameParser As MultiProtocolFrameParser
-    Private WithEvents m_imageQueue As AsyncQueue(Of EventArgs(Of FundamentalFrameType, Byte(), Integer, Integer))
+    Private WithEvents m_imageQueue As ImageQueue
     Private m_configurationFrame As IConfigurationFrame
     Private m_configChangeDetected As Boolean
     Private m_configChangeTime As Long
@@ -354,8 +360,34 @@ Public Class PMUConnectionTester
     End Sub
 
     Private Sub ButtonSendCommand_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ButtonSendCommand.Click
+        Try
+            Dim deviceCommand As DeviceCommand = CType(ComboBoxCommands.SelectedIndex + 1, DeviceCommand)
 
-        SendDeviceCommand(CType(ComboBoxCommands.SelectedIndex + 1, DeviceCommand))
+            If TextBoxRawCommand.Visible Then
+                'Hexadecimal and decimal values are both accepted.
+                'Hexadecimal values have to be prefixed with "0x"
+                Dim rawCommandValue As Int32 = 0
+                If RegularExpressions.Regex.IsMatch(TextBoxRawCommand.Text, "0[xX][0-9a-fA-F]+\b\Z") Then
+                    rawCommandValue = Convert.ToInt32(TextBoxRawCommand.Text, 16)
+                ElseIf RegularExpressions.Regex.IsMatch(TextBoxRawCommand.Text, "[0-9]") Then
+                    rawCommandValue = Convert.ToInt32(TextBoxRawCommand.Text, 10)
+                    If rawCommandValue > UShort.MaxValue Then
+                        Throw New Exception("The value entered is too big. Maximum value is 65535 (0xFFFF).")
+                        Return
+                    End If
+                Else
+                    Throw New Exception("The custom user command value is invalid")
+                End If
+
+
+
+                SendRawDeviceCommand(CType(rawCommandValue, UShort))
+            Else
+                SendDeviceCommand(CType(ComboBoxCommands.SelectedIndex + 1, DeviceCommand))
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
 
     End Sub
 
@@ -453,8 +485,8 @@ Public Class PMUConnectionTester
                     PropertyGridProtocolParameters.SelectedObject = m_frameParser.ConnectionParameters
 
                     ' Show tool tip for protocol's with extra parameters (for availability emphasis)
-                    Dim targetPoint As New Point( _
-                        Location.X + TabControlCommunications.Location.X + TabControlProtocolParameters.Location.X + 100, _
+                    Dim targetPoint As New Point(
+                        Location.X + TabControlCommunications.Location.X + TabControlProtocolParameters.Location.X + 100,
                         Location.Y + TabControlCommunications.Location.Y + TabControlProtocolParameters.Location.Y + 50)
 
                     toolTip.Enabled = DefaultableBoolean.True
@@ -487,15 +519,19 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    'Private Sub ComboBoxCommands_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs) Handles ComboBoxCommands.SelectedIndexChanged
+    Private Sub ComboBoxCommands_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs) Handles ComboBoxCommands.SelectedIndexChanged
 
-    '    ' Some protocols only support enable and disable real-time data commands...
-    '    If ComboBoxProtocols.SelectedIndex >= 4 And ComboBoxCommands.SelectedIndex > 1 Then
-    '        MsgBox("This protocol only supports enable and disable real-time data commands.", MsgBoxStyle.Exclamation Or MsgBoxStyle.OkOnly, "Invalid Command Selection")
-    '        ComboBoxCommands.SelectedIndex = 0
-    '    End If
+        'Enable and make visible TextBoxCustomCommand only when the "Send Custom Command" command is selected
+        TextBoxRawCommand.Visible = (ComboBoxCommands.SelectedIndex = 5)
+        TextBoxRawCommand.Enabled = (ComboBoxCommands.SelectedIndex = 5)
 
-    'End Sub
+        '    ' Some protocols only support enable and disable real-time data commands...
+        '    If ComboBoxProtocols.SelectedIndex >= 4 And ComboBoxCommands.SelectedIndex > 1 Then
+        '        MsgBox("This protocol only supports enable and disable real-time data commands.", MsgBoxStyle.Exclamation Or MsgBoxStyle.OkOnly, "Invalid Command Selection")
+        '        ComboBoxCommands.SelectedIndex = 0
+        '    End If
+
+    End Sub
 
     Private Sub CheckBoxEstablishTcpServer_CheckedChanged(ByVal sender As Object, ByVal e As EventArgs) Handles CheckBoxEstablishTcpServer.CheckedChanged
 
@@ -548,8 +584,8 @@ Public Class PMUConnectionTester
 
     Private Sub ButtonRestoreDefaultSettings_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ButtonRestoreDefaultSettings.Click
 
-        If MsgBox("Are you sure you want to restore the default settings?" & vbCrLf & vbCrLf & _
-                  "Note that application will be closed and you will need to restart.", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, _
+        If MsgBox("Are you sure you want to restore the default settings?" & vbCrLf & vbCrLf &
+                  "Note that application will be closed and you will need to restart.", MsgBoxStyle.YesNo Or MsgBoxStyle.Question,
                   "Restore Default Settings") = MsgBoxResult.Yes Then
             Try
                 Dim userSettingsFile As String = Path.Combine(GetApplicationDataFolder(), "Settings.xml")
@@ -680,8 +716,8 @@ Public Class PMUConnectionTester
     End Sub
 
     Private Sub TextBox_GotFocus(ByVal sender As Object, ByVal e As EventArgs) Handles _
-        TextBoxDeviceID.GotFocus, TextBoxFileCaptureName.GotFocus, TextBoxFileFrameRate.GotFocus, _
-        TextBoxSerialDataBits.GotFocus, TextBoxTcpHostIP.GotFocus, TextBoxTcpPort.GotFocus, _
+        TextBoxDeviceID.GotFocus, TextBoxFileCaptureName.GotFocus, TextBoxFileFrameRate.GotFocus,
+        TextBoxSerialDataBits.GotFocus, TextBoxTcpHostIP.GotFocus, TextBoxTcpPort.GotFocus,
         TextBoxUdpHostIP.GotFocus, TextBoxUdpLocalPort.GotFocus, TextBoxUdpRemotePort.GotFocus
 
         ' Select all text box contents upon focus or selection
@@ -706,7 +742,7 @@ Public Class PMUConnectionTester
     End Sub
 
     Private Sub TextBox_MouseClick(ByVal sender As Object, ByVal e As MouseEventArgs) Handles _
-        TextBoxDeviceID.MouseClick, TextBoxFileCaptureName.MouseClick, TextBoxFileFrameRate.MouseClick, _
+        TextBoxDeviceID.MouseClick, TextBoxFileCaptureName.MouseClick, TextBoxFileFrameRate.MouseClick,
         TextBoxSerialDataBits.MouseClick, TextBoxTcpPort.MouseClick, TextBoxUdpLocalPort.MouseClick, TextBoxUdpRemotePort.MouseClick
 
         'TextBoxUdpHostIP.MouseClick, TextBoxTcpHostIP.MouseClick
@@ -1245,8 +1281,8 @@ Public Class PMUConnectionTester
                     LabelBinaryFrameImage.Text = m_byteEncoding.GetString(binaryImage, offset, length).RemoveControlCharacters()
                 Else
                     ' For all others, we display bytes in the specified encoding format up to specified maximum display bytes
-                    LabelBinaryFrameImage.Text = _
-                        m_byteEncoding.GetString(binaryImage, offset, Min(length, m_applicationSettings.MaximumFrameDisplayBytes), " "c) & _
+                    LabelBinaryFrameImage.Text =
+                        m_byteEncoding.GetString(binaryImage, offset, Min(length, m_applicationSettings.MaximumFrameDisplayBytes), " "c) &
                         IIf(length > m_applicationSettings.MaximumFrameDisplayBytes, " ...", "")
                 End If
             End If
@@ -1445,7 +1481,7 @@ Public Class PMUConnectionTester
                         Else
                             ' Plot relative phase angles
                             For x As Integer = 0 To phasorCount - 1
-                                If m_phasorData.Columns.Count > x Then row(x) = (phasor.Angle - cell.PhasorValues(x).Angle).ToDegrees()
+                                If m_phasorData.Columns.Count > x Then row(x) = (cell.PhasorValues(x).Angle - phasor.Angle).ToRange(-Math.PI, False).ToDegrees()
                             Next
                         End If
 
@@ -1587,9 +1623,9 @@ Public Class PMUConnectionTester
 
             AppendStatusMessage("NOTE: Data stream indicates that configuration in source device has changed")
 
-            If m_frameParser.DeviceSupportsCommands AndAlso _
-                MsgBox("Data stream indicates that configuration in source device has changed." & vbCrLf & vbCrLf & _
-                      "Do you want to request a new configuration frame?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, _
+            If m_frameParser.DeviceSupportsCommands AndAlso
+                MsgBox("Data stream indicates that configuration in source device has changed." & vbCrLf & vbCrLf &
+                      "Do you want to request a new configuration frame?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question,
                       "Device Configuration Changed") = MsgBoxResult.Yes Then
                 SendDeviceCommand(DeviceCommand.SendConfigurationFrame2)
             End If
@@ -1599,7 +1635,12 @@ Public Class PMUConnectionTester
 
     Private Sub Connected()
 
-        If m_configurationFrame Is Nothing Then ChartDataDisplay.TitleTop.Text = "Awaiting configuration frame..."
+        If m_configurationFrame Is Nothing Then
+            ChartDataDisplay.TitleTop.Text = "Awaiting configuration frame..."
+        Else
+            ChartDataDisplay.TitleTop.Text = "Configured frame rate: " & m_configurationFrame.FrameRate & " frames/second"
+        End If
+
         AppendStatusMessage("Connected to device " & ConnectionInformation)
         TabControlChart.Tabs(ChartTabs.Graph).Selected = True
 
@@ -1612,7 +1653,7 @@ Public Class PMUConnectionTester
 
         If m_applicationSettings.MaximumConnectionAttempts > 0 And connectionAttempts >= m_applicationSettings.MaximumConnectionAttempts Then
             Disconnect()
-            MsgBox(ex.Message & vbCrLf & connectionAttempts & IIf(connectionAttempts > 1, " connections ", " connection ") & "attempted.", _
+            MsgBox(ex.Message & vbCrLf & connectionAttempts & IIf(connectionAttempts > 1, " connections ", " connection ") & "attempted.",
                    MsgBoxStyle.Exclamation Or MsgBoxStyle.OkOnly, "Device Connection Error")
         ElseIf connectionAttempts > 1 Then
             TabControlChart.Tabs(ChartTabs.Messages).Selected = True
@@ -1625,8 +1666,8 @@ Public Class PMUConnectionTester
         ' Connection has been terminated, but we still need to clean up display...
         Disconnect()
 
-        If MsgBox("An excessive number of exceptions have occurred on this connection - please verify the correct protocol has been selected." & vbCrLf & vbCrLf & _
-                  "Do you want to try the connection again with current settings?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, _
+        If MsgBox("An excessive number of exceptions have occurred on this connection - please verify the correct protocol has been selected." & vbCrLf & vbCrLf &
+                  "Do you want to try the connection again with current settings?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question,
                   "Exception Threshold Exceeded") = MsgBoxResult.Yes Then
             Connect()
         End If
@@ -1750,36 +1791,36 @@ Public Class PMUConnectionTester
                 Select Case TabControlCommunications.SelectedTab.Index
                     Case TransportProtocol.Tcp
                         .TransportProtocol = TransportProtocol.Tcp
-                        .ConnectionString = _
-                            "server=" & TextBoxTcpHostIP.Text & _
-                            "; port=" & TextBoxTcpPort.Text & _
-                            "; interface=" & GetNetworkInterfaceValue(m_tcpNetworkInterface) & _
+                        .ConnectionString =
+                            "server=" & TextBoxTcpHostIP.Text &
+                            "; port=" & TextBoxTcpPort.Text &
+                            "; interface=" & GetNetworkInterfaceValue(m_tcpNetworkInterface) &
                             "; islistener=" & CheckBoxEstablishTcpServer.Checked.ToString()
                     Case TransportProtocol.Udp
                         .TransportProtocol = TransportProtocol.Udp
                         If CheckBoxRemoteUdpServer.Checked Then
-                            .ConnectionString = _
-                                "localport=" & TextBoxUdpLocalPort.Text & _
-                                "; server=" & TextBoxUdpHostIP.Text & _
-                                "; remoteport=" & TextBoxUdpRemotePort.Text & _
-                                "; interface=" & GetNetworkInterfaceValue(m_udpNetworkInterface) & _
-                                ReceiveFromSourceSelector.ConnectionString & _
+                            .ConnectionString =
+                                "localport=" & TextBoxUdpLocalPort.Text &
+                                "; server=" & TextBoxUdpHostIP.Text &
+                                "; remoteport=" & TextBoxUdpRemotePort.Text &
+                                "; interface=" & GetNetworkInterfaceValue(m_udpNetworkInterface) &
+                                ReceiveFromSourceSelector.ConnectionString &
                                 MulticastSourceSelector.ConnectionString
                         Else
-                            .ConnectionString = _
-                                "localport=" & TextBoxUdpLocalPort.Text & _
-                                "; interface=" & GetNetworkInterfaceValue(m_udpNetworkInterface) & _
+                            .ConnectionString =
+                                "localport=" & TextBoxUdpLocalPort.Text &
+                                "; interface=" & GetNetworkInterfaceValue(m_udpNetworkInterface) &
                                 ReceiveFromSourceSelector.ConnectionString
                         End If
                     Case TransportProtocol.Serial
                         .TransportProtocol = TransportProtocol.Serial
-                        .ConnectionString = _
-                            "port=" & ComboBoxSerialPorts.Text & _
-                            "; baudrate=" & ComboBoxSerialBaudRates.Text & _
-                            "; parity=" & ComboBoxSerialParities.Text & _
-                            "; stopbits=" & ComboBoxSerialStopBits.Text & _
-                            "; databits=" & TextBoxSerialDataBits.Text & _
-                            "; dtrenable=" & CheckBoxSerialDTR.Checked.ToString() & _
+                        .ConnectionString =
+                            "port=" & ComboBoxSerialPorts.Text &
+                            "; baudrate=" & ComboBoxSerialBaudRates.Text &
+                            "; parity=" & ComboBoxSerialParities.Text &
+                            "; stopbits=" & ComboBoxSerialStopBits.Text &
+                            "; databits=" & TextBoxSerialDataBits.Text &
+                            "; dtrenable=" & CheckBoxSerialDTR.Checked.ToString() &
                             "; rtsenable=" & CheckBoxSerialRTS.Checked.ToString()
                     Case TransportProtocol.File
                         .TransportProtocol = TransportProtocol.File
@@ -1977,15 +2018,15 @@ Public Class PMUConnectionTester
 
         Try
             ' Add IP's for active, physical NIC's - if IPv4 is not supported, default to "::0", if IPv6 is not supported, default to "0.0.0.0"
-            networkInterfaces.AddRange(NetworkInterface.GetAllNetworkInterfaces(). _
+            networkInterfaces.AddRange(NetworkInterface.GetAllNetworkInterfaces().
                 Where(Function(nic) _
-                    nic.OperationalStatus = OperationalStatus.Up AndAlso _
-                    nic.NetworkInterfaceType <> NetworkInterfaceType.Loopback AndAlso _
-                    nic.NetworkInterfaceType <> NetworkInterfaceType.Tunnel). _
-                Select(Function(nic) New Tuple(Of String, String, String)( _
-                    nic.Description, _
+                    nic.OperationalStatus = OperationalStatus.Up AndAlso
+                    nic.NetworkInterfaceType <> NetworkInterfaceType.Loopback AndAlso
+                    nic.NetworkInterfaceType <> NetworkInterfaceType.Tunnel).
+                Select(Function(nic) New Tuple(Of String, String, String)(
+                    nic.Description,
                     nic.GetIPProperties().UnicastAddresses.FirstOrDefault(Function(info) _
-                        info.Address.AddressFamily = Sockets.AddressFamily.InterNetwork).Address.ToNonNullString("::0"), _
+                        info.Address.AddressFamily = Sockets.AddressFamily.InterNetwork).Address.ToNonNullString("::0"),
                     nic.GetIPProperties().UnicastAddresses.FirstOrDefault(Function(info) _
                         info.Address.AddressFamily = Sockets.AddressFamily.InterNetworkV6).Address.ToNonNullString("0.0.0.0"))))
         Catch
@@ -2086,6 +2127,12 @@ Public Class PMUConnectionTester
 
     End Sub
 
+    Private Sub SendRawDeviceCommand(ByVal rawCommand As UShort)
+        m_frameParser.SendRawDeviceCommand(rawCommand)
+        AppendStatusMessage("Raw Command """ & rawCommand & """ requested at " & Date.Now)
+
+    End Sub
+
     Friend Sub UpdateAlternateCommandChannelLabel()
 
         ' We update the alternate command channel label to indicate if the alternate channel is defined
@@ -2120,7 +2167,7 @@ Public Class PMUConnectionTester
         Try
             ButtonListen.Enabled = False
 
-            m_imageQueue = New AsyncQueue(Of EventArgs(Of FundamentalFrameType, Byte(), Integer, Integer)) With {.ProcessItemFunction = AddressOf ProcessReceivedFrameBufferImage}
+            m_imageQueue = New ImageQueue With {.ProcessItemFunction = AddressOf ProcessReceivedFrameBufferImage}
 
             With m_frameParser
                 Dim valuesAreValid As Boolean = True

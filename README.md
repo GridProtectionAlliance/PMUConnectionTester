@@ -1,6 +1,4 @@
-![PMUConnectionTester](https://raw.githubusercontent.com/chefsteph9/PMUConnectionTester/master/CTester.png)
-
-# PMUConnectionTester
+![icon](http://www.gridprotectionalliance.org/images/products/PMUConnectionTester.png) 
 
 The PMU Connection Tester is a Windows GUI application used to validate, test and trouble‐shoot
 connections and data streams from phasor measurement devices as well as graphically visualize
@@ -24,32 +22,37 @@ Any device that supports one of the following phasor protocols may be tested:
 * SEL Fast Message
 * Macrodyne (M and G starting with version 4.3)
 
-# Documentation
+# Documentation and Support
 
-The documentation for PMUConnectionTester can be found [here](http://pmuconnectiontester.codeplex.com/documentation).
+* Documentation for PMUConnectionTester can be found [here](https://github.com/GridProtectionAlliance/PMUConnectionTester/wiki).
+* Get in contact with our development team on our new [discussion board](http://discussions.gridprotectionalliance.org/c/gpa-products/pmu-connection-tester).
+* Check our [old discussion board](http://pmuconnectiontester.codeplex.com/discussions) to see if your question has already been answered.
+* Check out the [wiki](https://gridprotectionalliance.org/wiki/doku.php?id=pmuctester:overview).
 
 # Deployment
 
 1. Make sure your system meets all the requirements below.
 * Download the [latest stable release](#latest-stable-release) below.
-* Unzip files.
+* Unzip if necessary.
 * Start the correct installer for your system (32-bit or 64-bit).
 * Follow the wizard.
 * Enjoy.
 
 ## Requirements
 
-* .NET 4.5 or higher.
+* .NET 4.6 or higher.
 
 ## Latest Stable Release
-Download the latest stable release [here](http://pmuconnectiontester.codeplex.com/downloads/get/848421).
+
+* Download the latest stable release [here](https://github.com/GridProtectionAlliance/PMUConnectionTester/releases).
+* Older downloads can be found [here](https://pmuconnectiontester.codeplex.com/releases/).
 
 # Contributing
 If you would like to contribute please:
 
 1. Read our [styleguide](https://www.gridprotectionalliance.org/docs/GPA_Coding_Guidelines_2011_03.pdf).
 * Fork the repository.
-* Work your magic.
+* Make something amazing.
 * Create a pull request.
 
 # License
