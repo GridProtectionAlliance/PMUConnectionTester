@@ -30,8 +30,8 @@
     <PropertyGroup>
       <!-- Must-override settings. -->
       <ProjectName>PMUConnectionTester</ProjectName>
-      <GitServer Condition="'$(GitServer)' == ''">git@github.com:GridProtectionAlliance/PMUConnectionTester.git</GitServer
-      <VisualStudio Condition="'$(VisualStudio)' == ''">C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.exe</VisualStudio>
+      <GitServer Condition="'$(GitServer)' == ''">git@github.com:GridProtectionAlliance/PMUConnectionTester.git</GitServer>
+      <VisualStudio Condition="'$(VisualStudio )' == ''">C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.exe</VisualStudio>
       <VersionMajorChange>None</VersionMajorChange>
       <VersionMinorChange>None</VersionMinorChange>
       <VersionBuildChange>Increment</VersionBuildChange>
