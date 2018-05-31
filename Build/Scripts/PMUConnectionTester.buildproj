@@ -30,8 +30,8 @@
     <PropertyGroup>
       <!-- Must-override settings. -->
       <ProjectName>PMUConnectionTester</ProjectName>
-      <GitServer>git@github.com:GridProtectionAlliance/phasorsplitter.git</GitServer>
-      
+      <GitServer Condition="'$(GitServer)' == ''">git@github.com:GridProtectionAlliance/PMUConnectionTester.git</GitServer>
+      <VisualStudio Condition="'$(VisualStudio)' = ''>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe</VisualStudio>
       <VersionMajorChange>None</VersionMajorChange>
       <VersionMinorChange>None</VersionMinorChange>
       <VersionBuildChange>Increment</VersionBuildChange>
