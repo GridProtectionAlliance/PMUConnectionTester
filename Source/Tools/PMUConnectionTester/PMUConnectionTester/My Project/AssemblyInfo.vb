@@ -6,7 +6,7 @@ Imports System.Runtime.InteropServices
 
 ' Informational attributes.
 <Assembly: AssemblyCompany("Grid Protection Alliance")> 
-<Assembly: AssemblyCopyright("Copyright © 2016, All Rights Reserved.")> 
+<Assembly: AssemblyCopyright("Copyright © 2010-2018, All Rights Reserved.")> 
 <Assembly: AssemblyProduct("openPDC")> 
 
 ' Assembly manifest attributes.
