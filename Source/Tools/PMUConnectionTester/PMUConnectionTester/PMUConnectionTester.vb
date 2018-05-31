@@ -996,7 +996,7 @@ Public Class PMUConnectionTester
 
     Private Sub MenuItemOnlineHelp_Click(ByVal sender As Object, ByVal e As EventArgs) Handles MenuItemOnlineHelp.Click
 
-        Process.Start("http://openpdc.codeplex.com/wikipage?title=Connection%20Tester&referringTitle=Documentation")
+        Process.Start("https://github.com/GridProtectionAlliance/PMUConnectionTester/wiki")
 
     End Sub
 
@@ -1004,7 +1004,7 @@ Public Class PMUConnectionTester
 
         With New AboutDialog
             Dim localNamespace As String = Me.GetType.Namespace
-            .SetCompanyUrl("http://www.openpdc.com/")
+            .SetCompanyUrl("https://www.gridprotectionalliance.org/")
             .SetCompanyLogo(EntryAssembly.GetEmbeddedResource(localNamespace & ".HelpAboutLogo.png"))
             .SetCompanyDisclaimer(EntryAssembly.GetEmbeddedResource(localNamespace & ".Disclaimer.txt"))
             .ShowDialog(Me)

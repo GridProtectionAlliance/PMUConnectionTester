@@ -217,10 +217,10 @@
     <Media Id="1" Cabinet="_8D465B2DB4267EEE0AECABF6ADAFBA57" EmbedCab="yes" />
     <Property Id="VSDFrameworkVersion" Value="v4.0" />
     <Property Id="VSDAllowLaterFrameworkVersions" Value="False" />
-    <Property Id="ARPHELPLINK" Value="http://pmuconnectiontester.codeplex.com/" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/GridProtectionAlliance/PMUConnectionTester/" />
     <Property Id="ARPCONTACT" Value="GPA" />
     <Property Id="ARPCOMMENTS" Value="$(var.SetupName)" />
-    <Property Id="ARPURLINFOABOUT" Value="http://www.gridprotectionalliance.org/" />
+    <Property Id="ARPURLINFOABOUT" Value="https://www.gridprotectionalliance.org/" />
     <Property Id="ALLUSERS" Value="2" />
     <Property Id="ARPPRODUCTICON" Value="PMUConnectionTester.ico" />
     <Property Id="PREVIOUSVERSIONSINSTALLED" Secure="yes" />
