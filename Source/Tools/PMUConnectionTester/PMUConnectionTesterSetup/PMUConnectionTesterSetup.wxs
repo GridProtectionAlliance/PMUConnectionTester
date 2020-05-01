@@ -6,10 +6,12 @@
   <?if $(var.Platform) = x64 ?>
   <?define SetupName = "$(var.ProductName) v$(var.ProductVersion) (64-bit)" ?>
   <?define Win64 = "yes" ?>
+  <?define BitSize = "64-bit" ?>
   <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
   <?else ?>
   <?define SetupName = "$(var.ProductName) v$(var.ProductVersion) (32-bit)" ?>
   <?define Win64 = "no" ?>
+  <?define BitSize = "32-bit" ?>
   <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
   <?endif ?>
 
@@ -50,6 +52,18 @@
     </CustomTable>
 
     <Directory Id="TARGETDIR" Name="SourceDir">
+      <!-- Registry Settings -->
+      <Component Id="Registry" Guid="{F74C123C-C923-4B04-813B-05E81397C764}">
+        <RegistryKey Id="REG_GridProtectionAlliance" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance" ForceCreateOnInstall="yes">
+          <RegistryKey Id="REG_GridProtectionAlliance.PMUConnectionTester" Key="PMUConnectionTester" ForceCreateOnInstall="yes">
+            <RegistryValue Id="REG_GridProtectionAlliance.PMUConnectionTester.InstallPath" Name="InstallPath" Value="[TARGETDIR]" Type="string" />
+            <RegistryValue Id="REG_GridProtectionAlliance.PMUConnectionTester.Revision" Name="Revision" Value="[ProductVersion]" Type="string" />
+            <RegistryValue Id="REG_GridProtectionAlliance.PMUConnectionTester.TargetBitSize" Name="TargetBitSize" Value="$(var.BitSize)" Type="string" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+
+      
       <!-- GSF Dependencies -->
       <Component Id="C__01CA316036851AAB8FDEF3B61BE5762C" Guid="{F2BF745A-35E2-F808-B222-4DBB2BD4650B}" Win64="$(var.Win64)">
         <File Id="_01CA316036851AAB8FDEF3B61BE5762C" Name="GSF.Core.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_01CA316036851AAB8FDEF3B61BE5762C" AssemblyApplication="_01CA316036851AAB8FDEF3B61BE5762C" DiskId="1"
@@ -184,6 +198,7 @@
     </Directory>
     <Feature Id="DefaultFeature" ConfigurableDirectory="TARGETDIR" Level="1">
       <ComponentRef Id="C__016CBA3FD4A8270F4DDCFCA7E19AF2A7" Primary="yes" />
+      <ComponentRef Id="Registry" Primary="yes" />
       <ComponentRef Id="C__01CA316036851AAB8FDEF3B61BE5762C" Primary="yes" />
       <ComponentRef Id="C__02340CBC034B421D959B8A37F8EEF613" />
       <ComponentRef Id="C__07C1CB340A7CDBDCB132A42EA3532C6D" Primary="yes" />
