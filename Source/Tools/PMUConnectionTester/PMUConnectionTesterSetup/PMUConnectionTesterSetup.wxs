@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
 
   <?define ProductName = "PMU Connection Tester" ?>
   <?define ProductVersion=!(bind.FileVersion.PMUConnectionTester.exe) ?>
@@ -67,69 +67,102 @@
       <!-- GSF Dependencies -->
       <Component Id="C__01CA316036851AAB8FDEF3B61BE5762C" Guid="{F2BF745A-35E2-F808-B222-4DBB2BD4650B}" Win64="$(var.Win64)">
         <File Id="_01CA316036851AAB8FDEF3B61BE5762C" Name="GSF.Core.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_01CA316036851AAB8FDEF3B61BE5762C" AssemblyApplication="_01CA316036851AAB8FDEF3B61BE5762C" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Core.dll" />
+              Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Core.dll">
+            <netfx:NativeImage Id="ngen_GSF.Core.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+          </File>
       </Component>
       <Component Id="C__8B08DC84991A82D1DDA17C72F1B7B821" Guid="{8B55CBE9-3555-5F83-819B-1A5782BE3848}" Win64="$(var.Win64)">
         <File Id="_8B08DC84991A82D1DDA17C72F1B7B821" Name="GSF.Communication.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_8B08DC84991A82D1DDA17C72F1B7B821" AssemblyApplication="_8B08DC84991A82D1DDA17C72F1B7B821" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Communication.dll" />
+              Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Communication.dll" >
+          <netfx:NativeImage Id="ngen_GSF.Communication.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
       </Component>
       <Component Id="C__CE019C704C72268ED41580D69459FB0B" Guid="{0121C0E3-4101-E5E1-8473-EE0C80E75325}" Win64="$(var.Win64)">
         <File Id="_CE019C704C72268ED41580D69459FB0B" Name="GSF.Security.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_CE019C704C72268ED41580D69459FB0B" AssemblyApplication="_CE019C704C72268ED41580D69459FB0B" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Security.dll" />
+              Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Security.dll" >
+          <netfx:NativeImage Id="ngen_GSF.Security.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
       </Component>
       <Component Id="C__812194EB33914E9915661329FB7CEC78" Guid="{C4B2BF10-0724-1D30-20F2-E846CE0F9C87}" Win64="$(var.Win64)">
         <File Id="_812194EB33914E9915661329FB7CEC78" Name="GSF.TimeSeries.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_812194EB33914E9915661329FB7CEC78" AssemblyApplication="_812194EB33914E9915661329FB7CEC78" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.dll" />
+              Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.dll">
+          <netfx:NativeImage Id="ngen_GSF.TimeSeries.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
       </Component>
       <Component Id="C__5AADC63BF8C0806AA679BAB600345EF2" Guid="{29AF9D92-B9C6-E41B-6BF0-0A12104312B0}" Win64="$(var.Win64)">
         <File Id="_5AADC63BF8C0806AA679BAB600345EF2" Name="GSF.Windows.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_5AADC63BF8C0806AA679BAB600345EF2" AssemblyApplication="_5AADC63BF8C0806AA679BAB600345EF2" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Windows.dll" />
+              Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Windows.dll">
+          <netfx:NativeImage Id="ngen_GSF.Windows.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
       </Component>
       <Component Id="C__07C1CB340A7CDBDCB132A42EA3532C6D" Guid="{18F642E2-EF66-7567-2019-38DBFDDD2699}" Win64="$(var.Win64)">
         <File Id="_07C1CB340A7CDBDCB132A42EA3532C6D" Name="GSF.PhasorProtocols.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_07C1CB340A7CDBDCB132A42EA3532C6D" AssemblyApplication="_07C1CB340A7CDBDCB132A42EA3532C6D" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.dll" />
+              Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.dll" >
+          <netfx:NativeImage Id="ngen_GSF.PhasorPortocolls.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
+
       </Component>
       <!-- Infragistics Dependencies -->
       <Component Id="C__016CBA3FD4A8270F4DDCFCA7E19AF2A7" Guid="{08EFD466-B7EF-980E-AE9F-0CEF4A0B8AAD}" Win64="$(var.Win64)">
         <File Id="_016CBA3FD4A8270F4DDCFCA7E19AF2A7" Name="Infragistics2.Win.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_016CBA3FD4A8270F4DDCFCA7E19AF2A7" AssemblyApplication="_016CBA3FD4A8270F4DDCFCA7E19AF2A7" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.v7.2.dll" />
+              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.v7.2.dll" >
+          <netfx:NativeImage Id="ngen_Infragistics2.Win.v7.2.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
       </Component>
       <Component Id="C__0B3B45F654FB3344553CA5CAB2E9BE2A" Guid="{6959C049-E411-DEC9-17AC-18EDC40968FA}" Win64="$(var.Win64)">
         <File Id="_0B3B45F654FB3344553CA5CAB2E9BE2A" Name="Infragistics2.Win.UltraWinStatusBar.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_0B3B45F654FB3344553CA5CAB2E9BE2A" AssemblyApplication="_0B3B45F654FB3344553CA5CAB2E9BE2A" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinStatusBar.v7.2.dll" />
+              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinStatusBar.v7.2.dll" >
+          <netfx:NativeImage Id="ngen_Infragistics2.Win.UltraWinStatusBar.v7.2.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
       </Component>
       <Component Id="C__1D4EBD1F3FF83A9461C9B341CAA91AD4" Guid="{C870A418-CC85-4041-E8C6-011D4670453C}" Win64="$(var.Win64)">
         <File Id="_1D4EBD1F3FF83A9461C9B341CAA91AD4" Name="Infragistics2.Win.Misc.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_1D4EBD1F3FF83A9461C9B341CAA91AD4" AssemblyApplication="_1D4EBD1F3FF83A9461C9B341CAA91AD4" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.Misc.v7.2.dll" />
+              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.Misc.v7.2.dll" >
+          <netfx:NativeImage Id="ngen_Infragistics2.Win.Misc.v7.2.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
       </Component>
       <Component Id="C__589B9672D72876F6A185DAD5D3DA4318" Guid="{730C3977-E2E9-FFF9-DC2B-67F014C6E840}" Win64="$(var.Win64)">
         <File Id="_589B9672D72876F6A185DAD5D3DA4318" Name="Infragistics2.Shared.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_589B9672D72876F6A185DAD5D3DA4318" AssemblyApplication="_589B9672D72876F6A185DAD5D3DA4318" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Shared.v7.2.dll" />
+              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Shared.v7.2.dll" >
+          <netfx:NativeImage Id="ngen_Infragistics2.Shared.v7.2.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
       </Component>
       <Component Id="C__5F3AB8CC7322AD3E00618549A9A92945" Guid="{0C9CD411-AEE0-62B7-54D5-87A6F03ABB27}" Win64="$(var.Win64)">
         <File Id="_5F3AB8CC7322AD3E00618549A9A92945" Name="Infragistics2.Win.UltraWinTabControl.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_5F3AB8CC7322AD3E00618549A9A92945" AssemblyApplication="_5F3AB8CC7322AD3E00618549A9A92945" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinTabControl.v7.2.dll" />
+              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinTabControl.v7.2.dll" >
+          <netfx:NativeImage Id="ngen_Infragistics2.Win.UltraWinTabControl.v7.2.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
       </Component>
       <Component Id="C__8FF764A4ED223B9850B48322AE6ACAAE" Guid="{69E18B0A-30D2-DF73-92FE-2BBFE6768C93}" Win64="$(var.Win64)">
         <File Id="_8FF764A4ED223B9850B48322AE6ACAAE" Name="Infragistics2.Win.UltraWinMaskedEdit.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_8FF764A4ED223B9850B48322AE6ACAAE" AssemblyApplication="_8FF764A4ED223B9850B48322AE6ACAAE" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinMaskedEdit.v7.2.dll" />
+              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinMaskedEdit.v7.2.dll" >
+          <netfx:NativeImage Id="ngen_Infragistics2.Win.UltraWinMaskedEdit.v7.2.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
       </Component>
       <Component Id="C__B8B48A57285A6BE5A5EF9B7397FB6295" Guid="{2DDEEEB4-D3B5-AFFF-AF5F-327B6FB98E13}" Win64="$(var.Win64)">
         <File Id="_B8B48A57285A6BE5A5EF9B7397FB6295" Name="Infragistics2.Win.UltraWinEditors.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_B8B48A57285A6BE5A5EF9B7397FB6295" AssemblyApplication="_B8B48A57285A6BE5A5EF9B7397FB6295" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinEditors.v7.2.dll" />
+              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinEditors.v7.2.dll" >
+          <netfx:NativeImage Id="ngen_Infragistics2.Win.UltraWinEditors.v7.2.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
       </Component>
       <Component Id="C__BE04D40E0911F3D17EBC46F20806712C" Guid="{0B1B8895-C338-F85E-5836-0537DE9DB71D}" Win64="$(var.Win64)">
         <File Id="_BE04D40E0911F3D17EBC46F20806712C" Name="Infragistics2.Win.UltraWinTree.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_BE04D40E0911F3D17EBC46F20806712C" AssemblyApplication="_BE04D40E0911F3D17EBC46F20806712C" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinTree.v7.2.dll" />
+              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinTree.v7.2.dll" >
+          <netfx:NativeImage Id="ngen_Infragistics2.Win.UltraWinTree.v7.2.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
       </Component>
       <Component Id="C__DC22621FEC5C4A3C81BF20F792586470" Guid="{76B538D0-FE46-D79A-5DDE-3AFB47E5781A}" Win64="$(var.Win64)">
         <File Id="_DC22621FEC5C4A3C81BF20F792586470" Name="Infragistics2.Win.UltraWinChart.v7.2.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_DC22621FEC5C4A3C81BF20F792586470" AssemblyApplication="_DC22621FEC5C4A3C81BF20F792586470" DiskId="1"
-              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinChart.v7.2.dll" />
+              Source="$(var.SolutionDir)\Dependencies\Infragistics\Infragistics2.Win.UltraWinChart.v7.2.dll" >
+          <netfx:NativeImage Id="ngen_Infragistics2.Win.UltraWinChart.v7.2.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
       </Component>
       <!-- PMU Connection Tester Files -->
       <Component Id="C__2CAA468AA9A4C657C05DD8A1F234FBC9" Guid="{8D4FA540-C69A-8993-63CB-2B370BA18AC3}" Win64="$(var.Win64)">
         <File Id="PMUConnectionTester.exe" Name="$(var.PMUConnectionTester.TargetFileName)" KeyPath="yes" Assembly=".net" AssemblyManifest="PMUConnectionTester.exe" AssemblyApplication="PMUConnectionTester.exe" DiskId="1"
-              Source="$(var.PMUConnectionTester.TargetPath)" />
+              Source="$(var.PMUConnectionTester.TargetPath)" >
+          <netfx:NativeImage Id="ngen_PMUConnectionTester.exe" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
         <ProgId Id="PMU Capture File" Description="Captured data files associated with the $(var.ProductName)." Icon="PmuCapture.ico" IconIndex="0" Advertise="yes">
           <Extension Id="PmuCapture" Advertise="yes">
             <Verb Id="open" Command="&amp;Open" Argument="&quot;%1&quot;" Sequence="1" />
