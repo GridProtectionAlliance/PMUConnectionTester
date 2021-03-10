@@ -28,6 +28,7 @@ Imports GSF.Communication
 Imports GSF.Common
 Imports Infragistics.Win.UltraWinMaskedEdit
 
+' ReSharper disable RedundantQualifier
 Public Class AlternateCommandChannel
 
     Public NetworkInterface As Integer
@@ -103,7 +104,6 @@ Public Class AlternateCommandChannel
 
     Private Sub TextBox_MouseClick(ByVal sender As Object, ByVal e As MouseEventArgs) Handles _
         TextBoxFileCaptureName.MouseClick, TextBoxSerialDataBits.MouseClick, TextBoxTcpPort.MouseClick
-
         ' TextBoxTcpHostIP.MouseClick, 
 
         TextBox_GotFocus(sender, e)
@@ -122,13 +122,13 @@ Public Class AlternateCommandChannel
 
     End Sub
 
-    Public ReadOnly Property IsDefined() As Boolean
+    Public ReadOnly Property IsDefined As Boolean
         Get
             Return Not CheckBoxUndefined.Checked
         End Get
     End Property
 
-    Public Property ConnectionString() As String
+    Public Property ConnectionString As String
         Get
             If CheckBoxUndefined.Checked Then
                 Return ""
@@ -136,31 +136,31 @@ Public Class AlternateCommandChannel
                 Select Case TabControlCommunications.SelectedTab.Index
                     Case TransportProtocol.Tcp
                         Return _
-                            "; commandchannel={protocol=Tcp" & _
-                            "; server=" & TextBoxTcpHostIP.Text & _
-                            "; port=" & TextBoxTcpPort.Text & _
+                            "; commandchannel={protocol=Tcp" &
+                            "; server=" & TextBoxTcpHostIP.Text &
+                            "; port=" & TextBoxTcpPort.Text &
                             "; interface=" & PMUConnectionTester.GetNetworkInterfaceValue(NetworkInterface) & "}"
                     Case TransportProtocol.Serial - 1 ' UDP removed from tab set...
                         Return _
-                            "; commandchannel={protocol=Serial" & _
-                            "; port=" & ComboBoxSerialPorts.Text & _
-                            "; baudrate=" & ComboBoxSerialBaudRates.Text & _
-                            "; parity=" & ComboBoxSerialParities.Text & _
-                            "; stopbits=" & ComboBoxSerialStopBits.Text & _
-                            "; databits=" & TextBoxSerialDataBits.Text & _
-                            "; dtrenable=" & CheckBoxSerialDTR.Checked.ToString() & _
+                            "; commandchannel={protocol=Serial" &
+                            "; port=" & ComboBoxSerialPorts.Text &
+                            "; baudrate=" & ComboBoxSerialBaudRates.Text &
+                            "; parity=" & ComboBoxSerialParities.Text &
+                            "; stopbits=" & ComboBoxSerialStopBits.Text &
+                            "; databits=" & TextBoxSerialDataBits.Text &
+                            "; dtrenable=" & CheckBoxSerialDTR.Checked.ToString() &
                             "; rtsenable=" & CheckBoxSerialRTS.Checked.ToString() & "}"
                     Case TransportProtocol.File - 1 ' UDP removed from tab set...
                         Return _
-                            "; commandchannel={protocol=File" & _
+                            "; commandchannel={protocol=File" &
                             "; file=" & TextBoxFileCaptureName.Text & "}"
                     Case Else
                         Return ""
                 End Select
             End If
         End Get
-        Set(ByVal value As String)
-            Dim connectionData As Dictionary(Of String, String) = value.ParseKeyValuePairs()
+        Set
+            Dim connectionData As Dictionary(Of String, String) = Value.ParseKeyValuePairs()
 
             If connectionData.ContainsKey("commandchannel") Then
                 Dim protocol As TransportProtocol

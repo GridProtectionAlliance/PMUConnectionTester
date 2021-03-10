@@ -25,13 +25,13 @@ Imports GSF
 
 Public Class ReceiveFromSourceSelector
 
-    Private Sub RadioButtonSpecificSource_CheckedChanged(sender As Object, e As System.EventArgs) Handles RadioButtonSpecificSource.CheckedChanged
+    Private Sub RadioButtonSpecificSource_CheckedChanged(sender As Object, e As EventArgs) Handles RadioButtonSpecificSource.CheckedChanged
 
         TextBoxUdpSourceIP.Enabled = RadioButtonSpecificSource.Checked
 
     End Sub
 
-    Public Property ConnectionString() As String
+    Public Property ConnectionString As String
         Get
             If RadioButtonAnySource.Checked Then
                 Return ""
@@ -39,8 +39,8 @@ Public Class ReceiveFromSourceSelector
                 Return "; receiveFrom=" & TextBoxUdpSourceIP.Text
             End If
         End Get
-        Set(ByVal value As String)
-            Dim connectionData As Dictionary(Of String, String) = value.ParseKeyValuePairs()
+        Set
+            Dim connectionData As Dictionary(Of String, String) = Value.ParseKeyValuePairs()
             Dim udpSourceIP As String
 
             If connectionData.TryGetValue("receiveFrom", udpSourceIP) Then

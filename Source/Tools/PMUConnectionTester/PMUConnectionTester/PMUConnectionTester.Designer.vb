@@ -417,7 +417,7 @@ Partial Class PMUConnectionTester
         Me.ComboBoxCommands.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems
         Me.ComboBoxCommands.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBoxCommands.Enabled = False
-        Me.ComboBoxCommands.Items.AddRange(New Object() {"Disable Real-time Data", "Enable Real-time Data", "Send Header Frame", "Send Config Frame 1", "Send Config Frame 2", "Send Raw Command"})
+        Me.ComboBoxCommands.Items.AddRange(New Object() {"Disable Real-time Data", "Enable Real-time Data", "Send Header Frame", "Send Config Frame 1", "Send Config Frame 2", "Send Config Frame 3", "Send Raw Command"})
         Me.ComboBoxCommands.Location = New System.Drawing.Point(6, 72)
         Me.ComboBoxCommands.Name = "ComboBoxCommands"
         Me.ComboBoxCommands.Size = New System.Drawing.Size(154, 21)

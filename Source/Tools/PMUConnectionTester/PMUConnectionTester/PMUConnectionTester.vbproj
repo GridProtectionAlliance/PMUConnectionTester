@@ -74,6 +74,10 @@
     <Reference Include="GSF.Core">
       <HintPath>..\..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
     </Reference>
+    <Reference Include="GSF.Net, Version=2.3.411.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\GSF\GSF.Net.dll</HintPath>
+    </Reference>
     <Reference Include="GSF.PhasorProtocols">
       <HintPath>..\..\..\Dependencies\GSF\GSF.PhasorProtocols.dll</HintPath>
     </Reference>
@@ -277,7 +281,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <Target Name="AfterBuild">
-    <CallTarget Targets="SignBuild"/>
+    <CallTarget Targets="SignBuild" />
   </Target>
   <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != ''">
     <Exec Command="$(SIGNTOOL) $(TargetPath)" />

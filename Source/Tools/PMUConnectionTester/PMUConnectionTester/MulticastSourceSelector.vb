@@ -31,7 +31,7 @@ Public Class MulticastSourceSelector
 
     End Sub
 
-    Public Property ConnectionString() As String
+    Public Property ConnectionString As String
         Get
             If RadioButtonAnySource.Checked Then
                 Return ""
@@ -39,8 +39,8 @@ Public Class MulticastSourceSelector
                 Return "; multicastSource=" & TextBoxMulticastSourceIP.Text
             End If
         End Get
-        Set(ByVal value As String)
-            Dim connectionData As Dictionary(Of String, String) = value.ParseKeyValuePairs()
+        Set
+            Dim connectionData As Dictionary(Of String, String) = Value.ParseKeyValuePairs()
             Dim multicastSourceIP As String
 
             If connectionData.TryGetValue("multicastSource", multicastSourceIP) Then

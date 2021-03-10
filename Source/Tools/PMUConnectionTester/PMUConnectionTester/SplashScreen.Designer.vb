@@ -45,8 +45,8 @@ Partial Class SplashScreen
         Me.MainLayoutPanel.Location = New System.Drawing.Point(0, 0)
         Me.MainLayoutPanel.Name = "MainLayoutPanel"
         Me.MainLayoutPanel.RowCount = 2
-        Me.MainLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 213!))
-        Me.MainLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 43!))
+        Me.MainLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 198!))
+        Me.MainLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 58!))
         Me.MainLayoutPanel.Size = New System.Drawing.Size(497, 296)
         Me.MainLayoutPanel.TabIndex = 0
         '
@@ -59,7 +59,7 @@ Partial Class SplashScreen
         Me.DetailsLayoutPanel.Controls.Add(Me.Version, 0, 0)
         Me.DetailsLayoutPanel.Controls.Add(Me.Copyright, 0, 1)
         Me.DetailsLayoutPanel.Font = New System.Drawing.Font("Microsoft Sans Serif", 9!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
-        Me.DetailsLayoutPanel.Location = New System.Drawing.Point(213, 216)
+        Me.DetailsLayoutPanel.Location = New System.Drawing.Point(213, 208)
         Me.DetailsLayoutPanel.Name = "DetailsLayoutPanel"
         Me.DetailsLayoutPanel.RowCount = 2
         Me.DetailsLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle())
@@ -75,7 +75,7 @@ Partial Class SplashScreen
         Me.Version.ForeColor = System.Drawing.Color.LemonChiffon
         Me.Version.Location = New System.Drawing.Point(3, 0)
         Me.Version.Name = "Version"
-        Me.Version.Size = New System.Drawing.Size(274, 20)
+        Me.Version.Size = New System.Drawing.Size(274, 49)
         Me.Version.TabIndex = 1
         Me.Version.Text = "Version"
         Me.Version.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -86,9 +86,9 @@ Partial Class SplashScreen
         Me.Copyright.BackColor = System.Drawing.Color.Transparent
         Me.Copyright.Font = New System.Drawing.Font("Tahoma", 8.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
         Me.Copyright.ForeColor = System.Drawing.Color.LemonChiffon
-        Me.Copyright.Location = New System.Drawing.Point(112, 24)
+        Me.Copyright.Location = New System.Drawing.Point(112, 49)
         Me.Copyright.Name = "Copyright"
-        Me.Copyright.Size = New System.Drawing.Size(165, 48)
+        Me.Copyright.Size = New System.Drawing.Size(165, 28)
         Me.Copyright.TabIndex = 2
         Me.Copyright.Text = "Copyright"
         Me.Copyright.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -99,7 +99,7 @@ Partial Class SplashScreen
         Me.ApplicationTitle.BackColor = System.Drawing.Color.Transparent
         Me.ApplicationTitle.Font = New System.Drawing.Font("Tahoma", 22!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
         Me.ApplicationTitle.ForeColor = System.Drawing.Color.LemonChiffon
-        Me.ApplicationTitle.Location = New System.Drawing.Point(211, 35)
+        Me.ApplicationTitle.Location = New System.Drawing.Point(211, 28)
         Me.ApplicationTitle.Name = "ApplicationTitle"
         Me.ApplicationTitle.Size = New System.Drawing.Size(281, 142)
         Me.ApplicationTitle.TabIndex = 0

@@ -25,22 +25,22 @@ Imports GSF.Reflection.AssemblyInfo
 
 Public NotInheritable Class SplashScreen
 
-    Private Sub SplashScreen_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Private Sub SplashScreen_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
 
         With EntryAssembly
             ' Load splash screen image
-            MainLayoutPanel.BackgroundImage = New System.Drawing.Bitmap(.GetEmbeddedResource(Me.GetType.Namespace & ".SplashScreen.png"))
+            MainLayoutPanel.BackgroundImage = New Bitmap(.GetEmbeddedResource(Me.GetType.Namespace & ".SplashScreen.png"))
 
             ' Set up the dialog text at runtime according to the application's assembly information
             ApplicationTitle.Text = .Title
 
-#If DEBUG Then
-            Version.Text = "DEBUG VERSION - DO NOT DEPLOY"
-#Else
             With .Version
                 Version.Text = "Version " & .Major & "." & .Minor & "." & .Build ' & "." & .Revision
             End With
-#End If
+
+        #If DEBUG Then
+            Version.Text &= Environment.NewLine & "DEBUG VERSION - DO NOT DEPLOY"
+        #End If
 
             Copyright.Text = .Copyright
         End With

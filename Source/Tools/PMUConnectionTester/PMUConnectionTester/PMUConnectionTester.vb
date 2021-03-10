@@ -271,7 +271,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub PMUConnectionTester_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+    Private Sub PMUConnectionTester_FormClosing(ByVal sender As Object, ByVal e As FormClosingEventArgs) Handles Me.FormClosing
 
         Hide()
         Application.DoEvents()
@@ -308,7 +308,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub PMUConnectionTester_DragEnter(ByVal sender As Object, ByVal e As System.Windows.Forms.DragEventArgs) Handles Me.DragEnter
+    Private Sub PMUConnectionTester_DragEnter(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.DragEnter
 
         ' We allow file drops from explorer onto connection tester
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
@@ -319,7 +319,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub PMUConnectionTester_DragDrop(ByVal sender As Object, ByVal e As System.Windows.Forms.DragEventArgs) Handles Me.DragDrop
+    Private Sub PMUConnectionTester_DragDrop(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.DragDrop
 
         Try
             Dim fileNames As Array = TryCast(e.Data.GetData(DataFormats.FileDrop), Array)
@@ -344,7 +344,7 @@ Public Class PMUConnectionTester
                 End If
             End If
         Catch ex As Exception
-            AppendStatusMessage(String.Format("Exception occurred while dropping file name: {0}", ex.Message))
+            AppendStatusMessage($"Exception occurred while dropping file name: {ex.Message}")
         End Try
 
     End Sub
@@ -360,26 +360,23 @@ Public Class PMUConnectionTester
     End Sub
 
     Private Sub ButtonSendCommand_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ButtonSendCommand.Click
-        Try
-            Dim deviceCommand As DeviceCommand = CType(ComboBoxCommands.SelectedIndex + 1, DeviceCommand)
 
+        Try
             If TextBoxRawCommand.Visible Then
                 'Hexadecimal and decimal values are both accepted.
                 'Hexadecimal values have to be prefixed with "0x"
-                Dim rawCommandValue As Int32 = 0
+                Dim rawCommandValue As Int32
+
                 If RegularExpressions.Regex.IsMatch(TextBoxRawCommand.Text, "0[xX][0-9a-fA-F]+\b\Z") Then
                     rawCommandValue = Convert.ToInt32(TextBoxRawCommand.Text, 16)
                 ElseIf RegularExpressions.Regex.IsMatch(TextBoxRawCommand.Text, "[0-9]") Then
                     rawCommandValue = Convert.ToInt32(TextBoxRawCommand.Text, 10)
                     If rawCommandValue > UShort.MaxValue Then
                         Throw New Exception("The value entered is too big. Maximum value is 65535 (0xFFFF).")
-                        Return
                     End If
                 Else
                     Throw New Exception("The custom user command value is invalid")
                 End If
-
-
 
                 SendRawDeviceCommand(CType(rawCommandValue, UShort))
             Else
@@ -522,8 +519,8 @@ Public Class PMUConnectionTester
     Private Sub ComboBoxCommands_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs) Handles ComboBoxCommands.SelectedIndexChanged
 
         'Enable and make visible TextBoxCustomCommand only when the "Send Custom Command" command is selected
-        TextBoxRawCommand.Visible = (ComboBoxCommands.SelectedIndex = 5)
-        TextBoxRawCommand.Enabled = (ComboBoxCommands.SelectedIndex = 5)
+        TextBoxRawCommand.Visible = (ComboBoxCommands.SelectedIndex = 6)
+        TextBoxRawCommand.Enabled = (ComboBoxCommands.SelectedIndex = 6)
 
         '    ' Some protocols only support enable and disable real-time data commands...
         '    If ComboBoxProtocols.SelectedIndex >= 4 And ComboBoxCommands.SelectedIndex > 1 Then
@@ -614,7 +611,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub TabControlChart_SelectedTabChanged(ByVal sender As Object, ByVal e As Infragistics.Win.UltraWinTabControl.SelectedTabChangedEventArgs) Handles TabControlChart.SelectedTabChanged
+    Private Sub TabControlChart_SelectedTabChanged(ByVal sender As Object, ByVal e As UltraWinTabControl.SelectedTabChangedEventArgs) Handles TabControlChart.SelectedTabChanged
 
         ' We load protocol specific data attribute tree when user selects that tab...
         If e.Tab.Index = ChartTabs.ProtocolSpecific AndAlso m_attributeFrames.Count > 0 _
@@ -623,7 +620,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub TabControlProtocolParameters_SelectedTabChanged(ByVal sender As Object, ByVal e As Infragistics.Win.UltraWinTabControl.SelectedTabChangedEventArgs) Handles TabControlProtocolParameters.SelectedTabChanged
+    Private Sub TabControlProtocolParameters_SelectedTabChanged(ByVal sender As Object, ByVal e As UltraWinTabControl.SelectedTabChangedEventArgs) Handles TabControlProtocolParameters.SelectedTabChanged
 
         Select Case e.Tab.Index
             Case ProtocolTabs.Protocol
@@ -636,7 +633,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub GroupBoxProtocolParameters_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles GroupBoxProtocolParameters.Paint
+    Private Sub GroupBoxProtocolParameters_Paint(ByVal sender As Object, ByVal e As PaintEventArgs) Handles GroupBoxProtocolParameters.Paint
 
         ' Draw two short vertical lines to "complete" fake tab that displays extra connection parameters
         With e.Graphics
@@ -762,7 +759,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub PropertyGridApplicationSettings_PropertyValueChanged(ByVal s As Object, ByVal e As System.Windows.Forms.PropertyValueChangedEventArgs) Handles PropertyGridApplicationSettings.PropertyValueChanged
+    Private Sub PropertyGridApplicationSettings_PropertyValueChanged(ByVal s As Object, ByVal e As PropertyValueChangedEventArgs) Handles PropertyGridApplicationSettings.PropertyValueChanged
 
         ' Dynamically update visual elements as necessary when application settings are updated
         With e.ChangedItem.PropertyDescriptor
@@ -1530,7 +1527,7 @@ Public Class PMUConnectionTester
                 Catch ex As IndexOutOfRangeException
                     ' This can happen randomly on occasion when using a large file based input - very odd, so we just ignore it and go on...
                 Catch ex As Exception
-                    AppendStatusMessage(String.Format("Exception occurred while attempting to plot data: {0}", ex.Message))
+                    AppendStatusMessage($"Exception occurred while attempting to plot data: {ex.Message}")
                 End Try
             End If
 
@@ -1780,7 +1777,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private ReadOnly Property CurrentConnectionSettings() As ConnectionSettings
+    Private ReadOnly Property CurrentConnectionSettings As ConnectionSettings
         Get
             Dim connectionSettings As New ConnectionSettings
 
@@ -2066,12 +2063,12 @@ Public Class PMUConnectionTester
 
     End Function
 
-    Public Property ForceIPv4() As Boolean
+    Public Property ForceIPv4 As Boolean
         Get
             Return m_applicationSettings.ForceIPv4
         End Get
-        Set(ByVal value As Boolean)
-            If value Then
+        Set
+            If Value Then
                 ' Attempt to coerce address into IPv4 format then enable IPv4 masks
                 AssignHostIP(TextBoxTcpHostIP, TextBoxTcpHostIP.Text)
                 TextBoxTcpHostIP.InputMask = "nnn\.nnn\.nnn\.nnn"
@@ -2128,6 +2125,7 @@ Public Class PMUConnectionTester
     End Sub
 
     Private Sub SendRawDeviceCommand(ByVal rawCommand As UShort)
+
         m_frameParser.SendRawDeviceCommand(rawCommand)
         AppendStatusMessage("Raw Command """ & rawCommand & """ requested at " & Date.Now)
 
@@ -2148,7 +2146,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private ReadOnly Property ConnectionInformation() As String
+    Private ReadOnly Property ConnectionInformation As String
         Get
             With New StringBuilder
                 .Append(""""c)
@@ -2317,7 +2315,7 @@ Public Class PMUConnectionTester
     Private Sub Shutdown()
 
         Disconnect()
-        System.Windows.Forms.Application.Exit()
+        Application.Exit()
         End
 
     End Sub
@@ -2346,7 +2344,7 @@ Public Class PMUConnectionTester
 
     Private Function UnhandledExceptionErrorMessage() As String
 
-        Return String.Format("An unexpected exception has occurred in the PMU Connection Tester. This error may have been caused by an inconsistent system state or a programming error.  Details of this problem have been logged to an error file, it may be necessary to restart the application. Please notify us with details of this exception so they are aware of this problem: {0}", GlobalExceptionLogger.LastException.Message)
+        Return $"An unexpected exception has occurred in the PMU Connection Tester. This error may have been caused by an inconsistent system state or a programming error.  Details of this problem have been logged to an error file, it may be necessary to restart the application. Please notify us with details of this exception so they are aware of this problem: {GlobalExceptionLogger.LastException.Message}"
 
     End Function
 
@@ -2642,7 +2640,7 @@ Public Class PMUConnectionTester
 
 #Region " Attribute Tree Events "
 
-    Private Sub TreeFrameAttributes_ColumnSetGenerated(ByVal sender As Object, ByVal e As Infragistics.Win.UltraWinTree.ColumnSetGeneratedEventArgs) Handles TreeFrameAttributes.ColumnSetGenerated
+    Private Sub TreeFrameAttributes_ColumnSetGenerated(ByVal sender As Object, ByVal e As ColumnSetGeneratedEventArgs) Handles TreeFrameAttributes.ColumnSetGenerated
 
         ' Hide the ID, ParentID and Key columns since they are relational numbers that won't make sense to user
         With e.ColumnSet
@@ -2657,7 +2655,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub TreeFrameAttributes_InitializeDataNode(ByVal sender As Object, ByVal e As Infragistics.Win.UltraWinTree.InitializeDataNodeEventArgs) Handles TreeFrameAttributes.InitializeDataNode
+    Private Sub TreeFrameAttributes_InitializeDataNode(ByVal sender As Object, ByVal e As InitializeDataNodeEventArgs) Handles TreeFrameAttributes.InitializeDataNode
 
         ' Initialize data nodes - this event fires every time a node is added to the tree from a data source
         With e.Node
@@ -2702,7 +2700,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub TreeFrameAttributes_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles TreeFrameAttributes.MouseMove
+    Private Sub TreeFrameAttributes_MouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles TreeFrameAttributes.MouseMove
 
         Dim node As UltraTreeNode = TreeFrameAttributes.GetNodeFromPoint(e.X, e.Y)
 
@@ -2717,7 +2715,7 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub TreeFrameAttributes_MouseClick(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles TreeFrameAttributes.MouseClick
+    Private Sub TreeFrameAttributes_MouseClick(ByVal sender As Object, ByVal e As MouseEventArgs) Handles TreeFrameAttributes.MouseClick
 
         Dim node As UltraTreeNode = TreeFrameAttributes.GetNodeFromPoint(e.X, e.Y)
 

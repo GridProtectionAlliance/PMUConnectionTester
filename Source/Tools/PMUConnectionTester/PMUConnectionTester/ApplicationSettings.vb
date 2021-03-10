@@ -157,7 +157,7 @@ Public Class ApplicationSettings
     ' This class exposes an event notification of when then list is cleared - this is really
     ' our only signal to know when a collection has been modified in the property grid
 
-    <TypeConverter(GetType(ColorListTypeConverter))> _
+    <TypeConverter(GetType(ColorListTypeConverter))>
     Public Class ColorList
 
         Inherits Collection(Of Color)
@@ -189,46 +189,18 @@ Public Class ApplicationSettings
 
     ' Application settings
     Private m_maximumFrameDisplayBytes As Integer
-    Private m_restoreLastConnectionSettings As Boolean
-    Private m_forceIPv4 As Boolean
-    Private m_allowedParsingExceptions As Integer
-    Private m_parsingExceptionWindow As Double
-    Private m_showConfigXmlExplorerAfterSave As Boolean
-
-    ' Attribute tree settings
-    Private m_channelNodeBackgroundColor As Color
-    Private m_channelNodeForegroundColor As Color
-    Private m_initialNodeState As NodeState
-    Private m_showAttributesAsChildren As Boolean
 
     ' General chart settings
     Private m_refreshRate As Single
-    Private m_backgroundColor As Color
-    Private m_foregroundColor As Color
     Private m_trendLineWidth As Integer
-    Private m_showDataPointsOnGraphs As Boolean
-    Private m_showMessagesTabOnDataException As Boolean
 
     ' Connection settings
     Private m_maximumConnectionAttempts As Integer
-    Private m_autoStartDataParsingSequence As Boolean
-    Private m_skipDisableRealTimeData As Boolean
-    Private m_injectSimulatedTimestamp As Boolean
-    Private m_useHighResolutionInputTimer As Boolean
-    Private m_alternateInterfaces As String
-    Private m_keepCommandChannelOpen As Boolean
-
-    ' Phase angle graph settings
-    Private m_phaseAngleGraphStyle As AngleGraphStyle
-    Private m_showPhaseAngleLegend As Boolean
     Private m_phaseAnglePointsToPlot As Integer
-    Private m_legendBackgroundColor As Color
-    Private m_legendForegroundColor As Color
     Private WithEvents m_phaseAngleColors As ColorList
 
     ' Frequency graph settings
     Private m_frequencyPointsToPlot As Integer
-    Private m_frequencyColor As Color
 
     ' Other members
     Private WithEvents m_eventDelayTimer As Timers.Timer
@@ -256,418 +228,257 @@ Public Class ApplicationSettings
 
 #Region " Application Settings "
 
-    <Category(ApplicationSettingsCategory), _
-    Description("Maximum encoded bytes to display for frames in the ""Real-time Frame Detail""."), _
-    DefaultValue(DefaultMaximumFrameDisplayBytes), _
-    UserScopedSetting()> _
-    Public Property MaximumFrameDisplayBytes() As Integer
+    <Category(ApplicationSettingsCategory),
+    Description("Maximum encoded bytes to display for frames in the ""Real-time Frame Detail""."),
+    DefaultValue(DefaultMaximumFrameDisplayBytes),
+    UserScopedSetting>
+    Public Property MaximumFrameDisplayBytes As Integer
         Get
             Return m_maximumFrameDisplayBytes
         End Get
-        Set(ByVal value As Integer)
-            If value < 1 Then
+        Set
+            If Value < 1 Then
                 m_maximumFrameDisplayBytes = DefaultMaximumFrameDisplayBytes
             Else
-                m_maximumFrameDisplayBytes = value
+                m_maximumFrameDisplayBytes = Value
             End If
         End Set
     End Property
 
-    <Category(ApplicationSettingsCategory), _
-    Description("Set to True to load previous connection settings at startup."), _
-    DefaultValue(DefaultRestoreLastConnectionSettings), _
-    UserScopedSetting()> _
-    Public Property RestoreLastConnectionSettings() As Boolean
-        Get
-            Return m_restoreLastConnectionSettings
-        End Get
-        Set(ByVal value As Boolean)
-            m_restoreLastConnectionSettings = value
-        End Set
-    End Property
+    <Category(ApplicationSettingsCategory),
+    Description("Set to True to load previous connection settings at startup."),
+    DefaultValue(DefaultRestoreLastConnectionSettings),
+    UserScopedSetting>
+    Public Property RestoreLastConnectionSettings As Boolean
 
-    <Category(ApplicationSettingsCategory), _
-    Description("Set to True to force use of IPv4."), _
-    DefaultValue(DefaultForceIPv4), _
-    UserScopedSetting()> _
-    Public Property ForceIPv4() As Boolean
-        Get
-            Return m_forceIPv4
-        End Get
-        Set(ByVal value As Boolean)
-            m_forceIPv4 = value
-        End Set
-    End Property
+    <Category(ApplicationSettingsCategory),
+    Description("Set to True to force use of IPv4."),
+    DefaultValue(DefaultForceIPv4),
+    UserScopedSetting>
+    Public Property ForceIPv4 As Boolean
 
-    <Category(ApplicationSettingsCategory), _
-    Description("Defines the number of parsing exceptions allowed during ParsingExceptionWindow before connection is reset."), _
-    DefaultValue(DefaultAllowedParsingExceptions), _
-    UserScopedSetting()> _
-    Public Property AllowedParsingExceptions() As Integer
-        Get
-            Return m_allowedParsingExceptions
-        End Get
-        Set(ByVal value As Integer)
-            m_allowedParsingExceptions = value
-        End Set
-    End Property
+    <Category(ApplicationSettingsCategory),
+    Description("Defines the number of parsing exceptions allowed during ParsingExceptionWindow before connection is reset."),
+    DefaultValue(DefaultAllowedParsingExceptions),
+    UserScopedSetting>
+    Public Property AllowedParsingExceptions As Integer
 
-    <Category(ApplicationSettingsCategory), _
-    Description("Defines time duration, in seconds, to monitor parsing exceptions."), _
-    DefaultValue(DefaultParsingExceptionWindow), _
-    UserScopedSetting()> _
-    Public Property ParsingExceptionWindow() As Double
-        Get
-            Return m_parsingExceptionWindow
-        End Get
-        Set(ByVal value As Double)
-            m_parsingExceptionWindow = value
-        End Set
-    End Property
+    <Category(ApplicationSettingsCategory),
+    Description("Defines time duration, in seconds, to monitor parsing exceptions."),
+    DefaultValue(DefaultParsingExceptionWindow),
+    UserScopedSetting>
+    Public Property ParsingExceptionWindow As Double
 
-    <Category(ApplicationSettingsCategory), _
-    Description("Show the Configuration XML File in Explorer After Saving."), _
-    DefaultValue(DefaultShowConfigXmlExplorerAfterSave), _
-    UserScopedSetting()> _
-    Public Property ShowConfigXmlExplorerAfterSave() As Boolean
-        Get
-            Return m_showConfigXmlExplorerAfterSave
-        End Get
-        Set(ByVal value As Boolean)
-            m_showConfigXmlExplorerAfterSave = value
-        End Set
-    End Property
+    <Category(ApplicationSettingsCategory),
+    Description("Show the Configuration XML File in Explorer After Saving."),
+    DefaultValue(DefaultShowConfigXmlExplorerAfterSave),
+    UserScopedSetting>
+    Public Property ShowConfigXmlExplorerAfterSave As Boolean
 
 #End Region
 
 #Region " Attribute Tree Settings "
 
-    <Category(AttributeTreeCategory), _
-    Description("Defines the highlight background color for channel node entries on the attribute tree."), _
-    DefaultValue(GetType(Color), DefaultChannelNodeBackgroundColor), _
-    UserScopedSetting()> _
-    Public Property ChannelNodeBackgroundColor() As Color
-        Get
-            Return m_channelNodeBackgroundColor
-        End Get
-        Set(ByVal value As Color)
-            m_channelNodeBackgroundColor = value
-        End Set
-    End Property
+    <Category(AttributeTreeCategory),
+    Description("Defines the highlight background color for channel node entries on the attribute tree."),
+    DefaultValue(GetType(Color), DefaultChannelNodeBackgroundColor),
+    UserScopedSetting>
+    Public Property ChannelNodeBackgroundColor As Color
 
-    <Category(AttributeTreeCategory), _
-    Description("Defines the highlight foreground color for channel node entries on the attribute tree."), _
-    DefaultValue(GetType(Color), DefaultChannelNodeForegroundColor), _
-    UserScopedSetting()> _
-    Public Property ChannelNodeForegroundColor() As Color
-        Get
-            Return m_channelNodeForegroundColor
-        End Get
-        Set(ByVal value As Color)
-            m_channelNodeForegroundColor = value
-        End Set
-    End Property
+    <Category(AttributeTreeCategory),
+    Description("Defines the highlight foreground color for channel node entries on the attribute tree."),
+    DefaultValue(GetType(Color), DefaultChannelNodeForegroundColor),
+    UserScopedSetting>
+    Public Property ChannelNodeForegroundColor As Color
 
-    <Category(AttributeTreeCategory), _
-    Description("Defines the initial state for nodes when added to the attribute tree.  Note that a fully expanded tree will take much longer to initialize."), _
-    DefaultValue(GetType(NodeState), DefaultInitialNodeState), _
-    UserScopedSetting()> _
-    Public Property InitialNodeState() As NodeState
-        Get
-            Return m_initialNodeState
-        End Get
-        Set(ByVal value As NodeState)
-            m_initialNodeState = value
-        End Set
-    End Property
+    <Category(AttributeTreeCategory),
+    Description("Defines the initial state for nodes when added to the attribute tree.  Note that a fully expanded tree will take much longer to initialize."),
+    DefaultValue(GetType(NodeState), DefaultInitialNodeState),
+    UserScopedSetting>
+    Public Property InitialNodeState As NodeState
 
-    <Category(AttributeTreeCategory), _
-    Description("Set to True to show attributes as children of their channel entries."), _
-    DefaultValue(DefaultShowAttributesAsChildren), _
-    UserScopedSetting()> _
-    Public Property ShowAttributesAsChildren() As Boolean
-        Get
-            Return m_showAttributesAsChildren
-        End Get
-        Set(ByVal value As Boolean)
-            m_showAttributesAsChildren = value
-        End Set
-    End Property
+    <Category(AttributeTreeCategory),
+    Description("Set to True to show attributes as children of their channel entries."),
+    DefaultValue(DefaultShowAttributesAsChildren),
+    UserScopedSetting>
+    Public Property ShowAttributesAsChildren As Boolean
 
 #End Region
 
 #Region " General Chart Settings "
 
-    <Category(ChartSettingsCategory), _
-    Description("Chart refresh rate in seconds. Typical setting is 0.1, increase this number if app runs slow."), _
-    DefaultValue(DefaultChartRefreshRate), _
-    UserScopedSetting()> _
-    Public Property RefreshRate() As Single
+    <Category(ChartSettingsCategory),
+    Description("Chart refresh rate in seconds. Typical setting is 0.1, increase this number if app runs slow."),
+    DefaultValue(DefaultChartRefreshRate),
+    UserScopedSetting>
+    Public Property RefreshRate As Single
         Get
             Return m_refreshRate
         End Get
-        Set(ByVal value As Single)
-            If value <= 0 Then
+        Set
+            If Value <= 0 Then
                 m_refreshRate = DefaultChartRefreshRate
             Else
-                m_refreshRate = value
+                m_refreshRate = Value
             End If
         End Set
     End Property
 
-    <Category(ChartSettingsCategory), _
-    Description("Background color for graph region."), _
-    DefaultValue(GetType(Color), DefaultBackgroundColor), _
-    UserScopedSetting()> _
-    Public Property BackgroundColor() As Color
-        Get
-            Return m_backgroundColor
-        End Get
-        Set(ByVal value As Color)
-            m_backgroundColor = value
-        End Set
-    End Property
+    <Category(ChartSettingsCategory),
+    Description("Background color for graph region."),
+    DefaultValue(GetType(Color), DefaultBackgroundColor),
+    UserScopedSetting>
+    Public Property BackgroundColor As Color
 
-    <Category(ChartSettingsCategory), _
-    Description("Foreground color for graph region (axes, legend border, text, etc.)"), _
-    DefaultValue(GetType(Color), DefaultForegroundColor), _
-    UserScopedSetting()> _
-    Public Property ForegroundColor() As Color
-        Get
-            Return m_foregroundColor
-        End Get
-        Set(ByVal value As Color)
-            m_foregroundColor = value
-        End Set
-    End Property
+    <Category(ChartSettingsCategory),
+    Description("Foreground color for graph region (axes, legend border, text, etc.)"),
+    DefaultValue(GetType(Color), DefaultForegroundColor),
+    UserScopedSetting>
+    Public Property ForegroundColor As Color
 
-    <Category(ChartSettingsCategory), _
-    Description("Trend line graphing width (in pixels)."), _
-    DefaultValue(DefaultTrendLineWidth), _
-    UserScopedSetting()> _
-    Public Property TrendLineWidth() As Integer
+    <Category(ChartSettingsCategory),
+    Description("Trend line graphing width (in pixels)."),
+    DefaultValue(DefaultTrendLineWidth),
+    UserScopedSetting>
+    Public Property TrendLineWidth As Integer
         Get
             Return m_trendLineWidth
         End Get
-        Set(ByVal value As Integer)
-            If value <= 0 Then
+        Set
+            If Value <= 0 Then
                 m_trendLineWidth = DefaultTrendLineWidth
             Else
-                m_trendLineWidth = value
+                m_trendLineWidth = Value
             End If
         End Set
     End Property
 
-    <Category(ChartSettingsCategory), _
-    Description("Set to True to show data points on graphs."), _
-    DefaultValue(DefaultShowDataPointsOnGraphs), _
-    UserScopedSetting()> _
-    Public Property ShowDataPointsOnGraphs() As Boolean
-        Get
-            Return m_showDataPointsOnGraphs
-        End Get
-        Set(ByVal value As Boolean)
-            m_showDataPointsOnGraphs = value
-        End Set
-    End Property
+    <Category(ChartSettingsCategory),
+    Description("Set to True to show data points on graphs."),
+    DefaultValue(DefaultShowDataPointsOnGraphs),
+    UserScopedSetting>
+    Public Property ShowDataPointsOnGraphs As Boolean
 
-    <Category(ChartSettingsCategory), _
-    Description("Set to True to change to the Messages tab on Data Exception."), _
-    DefaultValue(DefaultShowMessagesTabOnDataException), _
-    UserScopedSetting()> _
-    Public Property ShowMessagesTabOnDataException() As Boolean
-        Get
-            Return m_showMessagesTabOnDataException
-        End Get
-        Set(ByVal value As Boolean)
-            m_showMessagesTabOnDataException = value
-        End Set
-    End Property
+    <Category(ChartSettingsCategory),
+    Description("Set to True to change to the Messages tab on Data Exception."),
+    DefaultValue(DefaultShowMessagesTabOnDataException),
+    UserScopedSetting>
+    Public Property ShowMessagesTabOnDataException As Boolean
 
 #End Region
 
 #Region " Connection Settings "
 
-    <Category(ConnectionSettingsCategory), _
-    Description("Maximum number of times to attempt connection before giving up; set to -1 to continue connection attempt indefinitely."), _
-    DefaultValue(DefaultMaximumConnectionAttempts), _
-    UserScopedSetting()> _
-    Public Property MaximumConnectionAttempts() As Integer
+    <Category(ConnectionSettingsCategory),
+    Description("Maximum number of times to attempt connection before giving up; set to -1 to continue connection attempt indefinitely."),
+    DefaultValue(DefaultMaximumConnectionAttempts),
+    UserScopedSetting>
+    Public Property MaximumConnectionAttempts As Integer
         Get
             Return m_maximumConnectionAttempts
         End Get
-        Set(ByVal value As Integer)
-            If value < 0 Then
+        Set
+            If Value < 0 Then
                 m_maximumConnectionAttempts = -1
-            ElseIf value > 0 Then
-                m_maximumConnectionAttempts = value
+            ElseIf Value > 0 Then
+                m_maximumConnectionAttempts = Value
             Else
                 m_maximumConnectionAttempts = DefaultMaximumConnectionAttempts
             End If
         End Set
     End Property
 
-    <Category(ConnectionSettingsCategory), _
-    Description("Set to True to automatically send commands for ConfigFrame2 and EnableRealTimeData."), _
-    DefaultValue(DefaultAutoStartDataParsingSequence), _
-    UserScopedSetting()> _
-    Public Property AutoStartDataParsingSequence() As Boolean
-        Get
-            Return m_autoStartDataParsingSequence
-        End Get
-        Set(ByVal value As Boolean)
-            m_autoStartDataParsingSequence = value
-        End Set
-    End Property
+    <Category(ConnectionSettingsCategory),
+    Description("Set to True to automatically send commands for ConfigFrame2 and EnableRealTimeData."),
+    DefaultValue(DefaultAutoStartDataParsingSequence),
+    UserScopedSetting>
+    Public Property AutoStartDataParsingSequence As Boolean
 
-    <Category(ConnectionSettingsCategory), _
-    Description("Defines flag to skip automatic disabling of the real-time data stream on shutdown or startup. Useful when using UDP multicast with several subscribed clients."), _
-    DefaultValue(DefaultSkipDisableRealTimeData), _
-    UserScopedSetting()> _
-    Public Property SkipDisableRealTimeData() As Boolean
-        Get
-            Return m_skipDisableRealTimeData
-        End Get
-        Set(ByVal value As Boolean)
-            m_skipDisableRealTimeData = value
-        End Set
-    End Property
+    <Category(ConnectionSettingsCategory),
+    Description("Defines flag to skip automatic disabling of the real-time data stream on shutdown or startup. Useful when using UDP multicast with several subscribed clients."),
+    DefaultValue(DefaultSkipDisableRealTimeData),
+    UserScopedSetting>
+    Public Property SkipDisableRealTimeData As Boolean
 
-    <Category(ConnectionSettingsCategory), _
-    Description("Defines flag to inject a simulated timestamp into incoming streams - this will override any existing incoming timestamp. Useful when using file based input to simulate real-time data."), _
-    DefaultValue(DefaultInjectSimulatedTimestamp), _
-    UserScopedSetting()> _
-    Public Property InjectSimulatedTimestamp() As Boolean
-        Get
-            Return m_injectSimulatedTimestamp
-        End Get
-        Set(ByVal value As Boolean)
-            m_injectSimulatedTimestamp = value
-        End Set
-    End Property
+    <Category(ConnectionSettingsCategory),
+    Description("Defines flag to inject a simulated timestamp into incoming streams - this will override any existing incoming timestamp. Useful when using file based input to simulate real-time data."),
+    DefaultValue(DefaultInjectSimulatedTimestamp),
+    UserScopedSetting>
+    Public Property InjectSimulatedTimestamp As Boolean
 
-    <Category(ConnectionSettingsCategory), _
-    Description("Defines flag that determines if a high-resolution precision timer should be used for file based input. Useful when input frames need be accurately time-aligned to the local clock to better simulate an input device and calculate downstream latencies."), _
-    DefaultValue(DefaultUseHighResolutionInputTimer), _
-    UserScopedSetting()> _
-    Public Property UseHighResolutionInputTimer() As Boolean
-        Get
-            Return m_useHighResolutionInputTimer
-        End Get
-        Set(ByVal value As Boolean)
-            m_useHighResolutionInputTimer = value
-        End Set
-    End Property
+    <Category(ConnectionSettingsCategory),
+    Description("Defines flag that determines if a high-resolution precision timer should be used for file based input. Useful when input frames need be accurately time-aligned to the local clock to better simulate an input device and calculate downstream latencies."),
+    DefaultValue(DefaultUseHighResolutionInputTimer),
+    UserScopedSetting>
+    Public Property UseHighResolutionInputTimer As Boolean
 
-    <Category(ConnectionSettingsCategory), _
-    Description("Defines alternate network interface addresses that can be used for sourcing socket connections. Use the format ""Name|IPv4Addy|IPv6Addy"" (IPv6 address specification is optional) separating multiple alternate interfaces with a semi-colon "";"""), _
-    DefaultValue(DefaultAlternateInterfaces), _
-    UserScopedSetting()> _
-    Public Property AlternateInterfaces() As String
-        Get
-            Return m_alternateInterfaces
-        End Get
-        Set(value As String)
-            m_alternateInterfaces = value
-        End Set
-    End Property
+    <Category(ConnectionSettingsCategory),
+    Description("Defines alternate network interface addresses that can be used for sourcing socket connections. Use the format ""Name|IPv4Addy|IPv6Addy"" (IPv6 address specification is optional) separating multiple alternate interfaces with a semi-colon "";"""),
+    DefaultValue(DefaultAlternateInterfaces),
+    UserScopedSetting>
+    Public Property AlternateInterfaces As String
 
-    <Category(ConnectionSettingsCategory), _
-    Description("Defines flag that determines if alternate command channel will remain open after successfully connecting device."), _
-    DefaultValue(DefaultKeepCommandChannelOpen), _
-    UserScopedSetting()> _
-    Public Property KeepCommandChannelOpen() As Boolean
-        Get
-            Return m_keepCommandChannelOpen
-        End Get
-        Set(value As Boolean)
-            m_keepCommandChannelOpen = value
-        End Set
-    End Property
+    <Category(ConnectionSettingsCategory),
+    Description("Defines flag that determines if alternate command channel will remain open after successfully connecting device."),
+    DefaultValue(DefaultKeepCommandChannelOpen),
+    UserScopedSetting>
+    Public Property KeepCommandChannelOpen As Boolean
 
 #End Region
 
 #Region " Phase Angle Graph Settings "
 
-    <Category(PhaseAngleGraphCategory), _
-    Description("Sets the phase angle graph to plot either raw or relative phase angles."), _
-    DefaultValue(GetType(AngleGraphStyle), DefaultPhaseAngleGraphStyle), _
-    UserScopedSetting()> _
-    Public Property PhaseAngleGraphStyle() As AngleGraphStyle
-        Get
-            Return m_phaseAngleGraphStyle
-        End Get
-        Set(ByVal value As AngleGraphStyle)
-            m_phaseAngleGraphStyle = value
-        End Set
-    End Property
+    <Category(PhaseAngleGraphCategory),
+    Description("Sets the phase angle graph to plot either raw or relative phase angles."),
+    DefaultValue(GetType(AngleGraphStyle), DefaultPhaseAngleGraphStyle),
+    UserScopedSetting>
+    Public Property PhaseAngleGraphStyle As AngleGraphStyle
 
-    <Category(PhaseAngleGraphCategory), _
-    Description("Set to True to show phase angle graph legend."), _
-    DefaultValue(DefaultShowPhaseAngleLegend), _
-    UserScopedSetting()> _
-    Public Property ShowPhaseAngleLegend() As Boolean
-        Get
-            Return m_showPhaseAngleLegend
-        End Get
-        Set(ByVal value As Boolean)
-            m_showPhaseAngleLegend = value
-        End Set
-    End Property
+    <Category(PhaseAngleGraphCategory),
+    Description("Set to True to show phase angle graph legend."),
+    DefaultValue(DefaultShowPhaseAngleLegend),
+    UserScopedSetting>
+    Public Property ShowPhaseAngleLegend As Boolean
 
-    <Category(PhaseAngleGraphCategory), _
-    Description("Sets the total number of phase angle points to display."), _
-    DefaultValue(DefaultPhaseAnglePointsToPlot), _
-    UserScopedSetting()> _
-    Public Property PhaseAnglePointsToPlot() As Integer
+    <Category(PhaseAngleGraphCategory),
+    Description("Sets the total number of phase angle points to display."),
+    DefaultValue(DefaultPhaseAnglePointsToPlot),
+    UserScopedSetting>
+    Public Property PhaseAnglePointsToPlot As Integer
         Get
             Return m_phaseAnglePointsToPlot
         End Get
-        Set(ByVal value As Integer)
-            If value < 2 Then
+        Set
+            If Value < 2 Then
                 m_phaseAnglePointsToPlot = DefaultPhaseAnglePointsToPlot
             Else
-                m_phaseAnglePointsToPlot = value
+                m_phaseAnglePointsToPlot = Value
             End If
         End Set
     End Property
 
-    <Category(PhaseAngleGraphCategory), _
-    Description("Background color for phase angle legend."), _
-    DefaultValue(GetType(Color), DefaultLegendBackgroundColor), _
-    UserScopedSetting()> _
-    Public Property LegendBackgroundColor() As Color
-        Get
-            Return m_legendBackgroundColor
-        End Get
-        Set(ByVal value As Color)
-            m_legendBackgroundColor = value
-        End Set
-    End Property
+    <Category(PhaseAngleGraphCategory),
+    Description("Background color for phase angle legend."),
+    DefaultValue(GetType(Color), DefaultLegendBackgroundColor),
+    UserScopedSetting>
+    Public Property LegendBackgroundColor As Color
 
-    <Category(PhaseAngleGraphCategory), _
-    Description("Foreground color for phase angle legend text."), _
-    DefaultValue(GetType(Color), DefaultLegendForegroundColor), _
-    UserScopedSetting()> _
-    Public Property LegendForegroundColor() As Color
-        Get
-            Return m_legendForegroundColor
-        End Get
-        Set(ByVal value As Color)
-            m_legendForegroundColor = value
-        End Set
-    End Property
+    <Category(PhaseAngleGraphCategory),
+    Description("Foreground color for phase angle legend text."),
+    DefaultValue(GetType(Color), DefaultLegendForegroundColor),
+    UserScopedSetting>
+    Public Property LegendForegroundColor As Color
 
-    <Category(PhaseAngleGraphCategory), _
-    Description("Possible foreground colors for phase angle trends."), _
-    DefaultValue(GetType(ColorList), DefaultPhaseAngleColors), _
-    UserScopedSetting()> _
-    Public Property PhaseAngleColors() As ColorList
+    <Category(PhaseAngleGraphCategory),
+    Description("Possible foreground colors for phase angle trends."),
+    DefaultValue(GetType(ColorList), DefaultPhaseAngleColors),
+    UserScopedSetting>
+    Public Property PhaseAngleColors As ColorList
         Get
             Return m_phaseAngleColors
         End Get
-        Set(ByVal value As ColorList)
-            m_phaseAngleColors = value
+        Set
+            m_phaseAngleColors = Value
         End Set
     End Property
 
@@ -675,35 +486,28 @@ Public Class ApplicationSettings
 
 #Region " Frequency Graph Settings "
 
-    <Category(FrequencyGraphCategory), _
-    Description("Sets the total number of frequency points to display."), _
-    DefaultValue(DefaultFrequencyPointsToPlot), _
-    UserScopedSetting()> _
-    Public Property FrequencyPointsToPlot() As Integer
+    <Category(FrequencyGraphCategory),
+    Description("Sets the total number of frequency points to display."),
+    DefaultValue(DefaultFrequencyPointsToPlot),
+    UserScopedSetting>
+    Public Property FrequencyPointsToPlot As Integer
         Get
             Return m_frequencyPointsToPlot
         End Get
-        Set(ByVal value As Integer)
-            If value < 2 Then
+        Set
+            If Value < 2 Then
                 m_frequencyPointsToPlot = DefaultFrequencyPointsToPlot
             Else
-                m_frequencyPointsToPlot = value
+                m_frequencyPointsToPlot = Value
             End If
         End Set
     End Property
 
-    <Category(FrequencyGraphCategory), _
-    Description("Foreground color for frequency trend."), _
-    DefaultValue(GetType(Color), DefaultFrequencyColor), _
-    UserScopedSetting()> _
-    Public Property FrequencyColor() As Color
-        Get
-            Return m_frequencyColor
-        End Get
-        Set(ByVal value As Color)
-            m_frequencyColor = value
-        End Set
-    End Property
+    <Category(FrequencyGraphCategory),
+    Description("Foreground color for frequency trend."),
+    DefaultValue(GetType(Color), DefaultFrequencyColor),
+    UserScopedSetting>
+    Public Property FrequencyColor As Color
 
 #End Region
 
