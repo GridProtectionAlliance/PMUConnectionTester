@@ -89,6 +89,12 @@
           <netfx:NativeImage Id="ngen_GSF.TimeSeries.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
         </File>
       </Component>
+      <Component Id="C__812194EB33914E9915661329FB7CEC79" Guid="{C4B2BF10-0724-1D30-20F2-E846CE0F9C89}" Win64="$(var.Win64)">
+        <File Id="_812194EB33914E9915661329FB7CEC79" Name="GSF.Net.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_812194EB33914E9915661329FB7CEC79" AssemblyApplication="_812194EB33914E9915661329FB7CEC79" DiskId="1"
+              Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Net.dll">
+          <netfx:NativeImage Id="ngen_GSF.Net.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
+        </File>
+      </Component>
       <Component Id="C__5AADC63BF8C0806AA679BAB600345EF2" Guid="{29AF9D92-B9C6-E41B-6BF0-0A12104312B0}" Win64="$(var.Win64)">
         <File Id="_5AADC63BF8C0806AA679BAB600345EF2" Name="GSF.Windows.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_5AADC63BF8C0806AA679BAB600345EF2" AssemblyApplication="_5AADC63BF8C0806AA679BAB600345EF2" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Windows.dll">
@@ -243,6 +249,7 @@
       <ComponentRef Id="C__5AADC63BF8C0806AA679BAB600345EF2" Primary="yes" />
       <ComponentRef Id="C__5F3AB8CC7322AD3E00618549A9A92945" Primary="yes" />
       <ComponentRef Id="C__812194EB33914E9915661329FB7CEC78" Primary="yes" />
+      <ComponentRef Id="C__812194EB33914E9915661329FB7CEC79" Primary="yes" />
       <ComponentRef Id="C__8B08DC84991A82D1DDA17C72F1B7B821" Primary="yes" />
       <ComponentRef Id="C__8FF764A4ED223B9850B48322AE6ACAAE" Primary="yes" />
       <ComponentRef Id="C__A3C554204EE24CEEB17DD434FBCE08A4" />
