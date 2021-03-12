@@ -71,9 +71,7 @@ Public Class PMUConnectionTester
 
     Private Class ImageQueue
         Inherits AsyncQueue(Of EventArgs(Of FundamentalFrameType, Byte(), Integer, Integer))
-
     End Class
-
 
     Private Enum ChartTabs
         Graph
@@ -1379,64 +1377,64 @@ Public Class PMUConnectionTester
         LabelTime.Text = frame.TimeTag.ToString()
         m_attributeFrames(frame.FrameType) = frame
 
+        ' Cache config frame reference for future use...
         If m_configurationFrame Is Nothing Then
-            ' Cache config frame reference for future use...
             m_configurationFrame = frame
+        End If
 
-            GroupBoxConfigurationFrame.Expanded = True
-            TextBoxDeviceID.Text = frame.IDCode.ToString()
-            ChartDataDisplay.TitleTop.Text = "Configured frame rate: " & frame.FrameRate & " frames/second"
+        GroupBoxConfigurationFrame.Expanded = True
+        TextBoxDeviceID.Text = frame.IDCode.ToString()
+        ChartDataDisplay.TitleTop.Text = "Configured frame rate: " & frame.FrameRate & " frames/second"
 
-            ' Load PMU list from new configuration frame
-            With ComboBoxPmus
-                With .Items
-                    .Clear()
+        ' Load PMU list from new configuration frame
+        With ComboBoxPmus
+            With .Items
+                .Clear()
 
-                    For Each cell As IConfigurationCell In frame.Cells
-                        .Add(cell.StationName.ToNonNullString(cell.IDLabel.ToNonNullString("Device " & cell.IDCode)))
-                    Next
-                End With
-
-                If .Items.Count > 0 Then .SelectedIndex = 0
+                For Each cell As IConfigurationCell In frame.Cells
+                    .Add(cell.StationName.ToNonNullString(cell.IDLabel.ToNonNullString("Device " & cell.IDCode)))
+                Next
             End With
 
-            MenuItemSaveConfigFile.Enabled = True
+            If .Items.Count > 0 Then .SelectedIndex = 0
+        End With
 
-            ' Handle debug stream if it's open
-            If m_streamDebugCapture IsNot Nothing Then
-                ' We write the header line in the file from the configuration frame
-                Dim cell As IConfigurationCell
-                Dim x, y As Integer
-                Dim station, label As String
+        MenuItemSaveConfigFile.Enabled = True
 
-                m_streamDebugCapture.Write("Timestamp,")
+        ' Handle debug stream if it's open
+        If m_streamDebugCapture IsNot Nothing Then
+            ' We write the header line in the file from the configuration frame
+            Dim cell As IConfigurationCell
+            Dim x, y As Integer
+            Dim station, label As String
 
-                For x = 0 To frame.Cells.Count - 1
-                    cell = frame.Cells(x)
-                    station = cell.StationName.RemoveControlCharacters().Trim()
+            m_streamDebugCapture.Write("Timestamp,")
 
-                    m_streamDebugCapture.Write(station & " Status,")
+            For x = 0 To frame.Cells.Count - 1
+                cell = frame.Cells(x)
+                station = cell.StationName.RemoveControlCharacters().Trim()
 
-                    For y = 0 To cell.PhasorDefinitions.Count - 1
-                        With cell.PhasorDefinitions(y)
-                            label = station & " " & GetName(GetType(PhasorType), .PhasorType) & y
-                            m_streamDebugCapture.Write(label & " Angle " & .Label & "," & label & " Magnitude " & .Label & ",")
-                        End With
-                    Next
+                m_streamDebugCapture.Write(station & " Status,")
 
-                    m_streamDebugCapture.Write(station & " Frequency," & station & " DfDt,")
-
-                    For y = 0 To cell.AnalogDefinitions.Count - 1
-                        m_streamDebugCapture.Write(station & " Analog" & y & " " & cell.AnalogDefinitions(y).Label & ",")
-                    Next
-
-                    For y = 0 To cell.DigitalDefinitions.Count - 1
-                        m_streamDebugCapture.Write(station & " Digital" & y & " " & cell.DigitalDefinitions(y).Label & ",")
-                    Next
+                For y = 0 To cell.PhasorDefinitions.Count - 1
+                    With cell.PhasorDefinitions(y)
+                        label = station & " " & GetName(GetType(PhasorType), .PhasorType) & y
+                        m_streamDebugCapture.Write(label & " Angle " & .Label & "," & label & " Magnitude " & .Label & ",")
+                    End With
                 Next
 
-                m_streamDebugCapture.WriteLine("EOF")
-            End If
+                m_streamDebugCapture.Write(station & " Frequency," & station & " DfDt,")
+
+                For y = 0 To cell.AnalogDefinitions.Count - 1
+                    m_streamDebugCapture.Write(station & " Analog" & y & " " & cell.AnalogDefinitions(y).Label & ",")
+                Next
+
+                For y = 0 To cell.DigitalDefinitions.Count - 1
+                    m_streamDebugCapture.Write(station & " Digital" & y & " " & cell.DigitalDefinitions(y).Label & ",")
+                Next
+            Next
+
+            m_streamDebugCapture.WriteLine("EOF")
         End If
 
     End Sub
@@ -1499,8 +1497,13 @@ Public Class PMUConnectionTester
                                         Dim voltagePhasor As IPhasorValue = cell.PhasorValues(selectedVoltageIndex)
                                         Dim currentPhasor As IPhasorValue = cell.PhasorValues(selectedCurrentIndex)
 
-                                        LabelPower.Text = (PhasorValueBase.CalculatePower(voltagePhasor, currentPhasor) / 1000000).ToString("0.0000") & " MW"
-                                        LabelVars.Text = (PhasorValueBase.CalculateVars(voltagePhasor, currentPhasor) / 1000000).ToString("0.0000") & " MVars"
+                                        If voltagePhasor IsNot Nothing AndAlso currentPhasor IsNot Nothing Then
+                                            LabelPower.Text = (PhasorValueBase.CalculatePower(voltagePhasor, currentPhasor) / 1000000).ToString("0.0000") & " MW"
+                                            LabelVars.Text = (PhasorValueBase.CalculateVars(voltagePhasor, currentPhasor) / 1000000).ToString("0.0000") & " MVars"
+                                        Else
+                                            LabelPower.Text = "--- MW"
+                                            LabelVars.Text = "--- MVars"
+                                        End If
                                     Catch
                                         ' Skip calculation if something is not available or fails to calculate properly
                                         LabelPower.Text = "--- MW"
@@ -1624,7 +1627,8 @@ Public Class PMUConnectionTester
                 MsgBox("Data stream indicates that configuration in source device has changed." & vbCrLf & vbCrLf &
                       "Do you want to request a new configuration frame?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question,
                       "Device Configuration Changed") = MsgBoxResult.Yes Then
-                SendDeviceCommand(DeviceCommand.SendConfigurationFrame2)
+
+                SendDeviceCommand(DeviceCommand.SendConfigurationFrame3)
             End If
         End If
 
