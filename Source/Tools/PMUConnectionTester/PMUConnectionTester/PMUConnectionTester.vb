@@ -89,7 +89,6 @@ Public Class PMUConnectionTester
     Private WithEvents m_frameParser As MultiProtocolFrameParser
     Private WithEvents m_imageQueue As ImageQueue
     Private m_configurationFrame As IConfigurationFrame
-    Private m_configChangeDetected As Boolean
     Private m_configChangeTime As Long
     Private m_selectedCell As IConfigurationCell
     Private m_lastFrameType As FundamentalFrameType
@@ -250,7 +249,7 @@ Public Class PMUConnectionTester
         ComboBoxSerialBaudRates.SelectedIndex = 0
         ComboBoxSerialParities.SelectedIndex = 0
         ComboBoxSerialStopBits.SelectedIndex = 0
-        LabelSelectedIsRefAngle.Visible = (m_applicationSettings.PhaseAngleGraphStyle = ApplicationSettings.AngleGraphStyle.Relative)
+        LabelSelectedIsRefAngle.Visible = m_applicationSettings.PhaseAngleGraphStyle = ApplicationSettings.AngleGraphStyle.Relative
 
         If Environment.GetCommandLineArgs.Length > 1 Then
             Dim commandFile As String = Environment.GetCommandLineArgs(1)
@@ -517,8 +516,8 @@ Public Class PMUConnectionTester
     Private Sub ComboBoxCommands_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs) Handles ComboBoxCommands.SelectedIndexChanged
 
         'Enable and make visible TextBoxCustomCommand only when the "Send Custom Command" command is selected
-        TextBoxRawCommand.Visible = (ComboBoxCommands.SelectedIndex = 6)
-        TextBoxRawCommand.Enabled = (ComboBoxCommands.SelectedIndex = 6)
+        TextBoxRawCommand.Visible = ComboBoxCommands.SelectedIndex = 6
+        TextBoxRawCommand.Enabled = ComboBoxCommands.SelectedIndex = 6
 
         '    ' Some protocols only support enable and disable real-time data commands...
         '    If ComboBoxProtocols.SelectedIndex >= 4 And ComboBoxCommands.SelectedIndex > 1 Then
@@ -782,7 +781,7 @@ Public Class PMUConnectionTester
                 Case ApplicationSettings.ChartSettingsCategory, ApplicationSettings.PhaseAngleGraphCategory, ApplicationSettings.FrequencyGraphCategory
                     If String.Compare(.Name, "PhaseAngleGraphStyle", True) = 0 Then
                         ' This property only changes data that is getting graphed - no need to reinitialize chart
-                        LabelSelectedIsRefAngle.Visible = (m_applicationSettings.PhaseAngleGraphStyle = ApplicationSettings.AngleGraphStyle.Relative)
+                        LabelSelectedIsRefAngle.Visible = m_applicationSettings.PhaseAngleGraphStyle = ApplicationSettings.AngleGraphStyle.Relative
                     Else
                         InitializeChart()
                     End If
@@ -1304,7 +1303,7 @@ Public Class PMUConnectionTester
 
         ' Make sure only one of each type of encountered frame is captured...
         If (m_capturedFrames And frameBit) = 0 Then
-            m_capturedFrames = (m_capturedFrames Or frameBit)
+            m_capturedFrames = m_capturedFrames Or frameBit
 
             SyncLock m_dataStreamLock
                 With m_frameSampleStream
@@ -1374,13 +1373,14 @@ Public Class PMUConnectionTester
 
     Private Sub ReceivedConfigFrame(ByVal frame As IConfigurationFrame)
 
+        If frame Is Nothing Then Return
+
         LabelTime.Text = frame.TimeTag.ToString()
         m_attributeFrames(frame.FrameType) = frame
 
         ' Cache config frame reference for future use...
-        If m_configurationFrame Is Nothing Then
-            m_configurationFrame = frame
-        End If
+        m_configChangeTime = DateTime.UtcNow.Ticks
+        m_configurationFrame = frame
 
         GroupBoxConfigurationFrame.Expanded = True
         TextBoxDeviceID.Text = frame.IDCode.ToString()
@@ -1617,16 +1617,17 @@ Public Class PMUConnectionTester
 
     Private Sub ConfigurationChanged()
 
-        If Not m_configChangeDetected Or (New Ticks(DateTime.UtcNow.Ticks - m_configChangeTime)).ToSeconds() >= 60.0 Then
-            m_configChangeDetected = True
+        If m_configurationFrame Is Nothing Then Return
+
+        If New Ticks(DateTime.UtcNow.Ticks - m_configChangeTime).ToSeconds() >= 60.0 Then
             m_configChangeTime = DateTime.UtcNow.Ticks
 
             AppendStatusMessage("NOTE: Data stream indicates that configuration in source device has changed")
 
             If m_frameParser.DeviceSupportsCommands AndAlso
                 MsgBox("Data stream indicates that configuration in source device has changed." & vbCrLf & vbCrLf &
-                      "Do you want to request a new configuration frame?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question,
-                      "Device Configuration Changed") = MsgBoxResult.Yes Then
+                        "Do you want to request a new configuration frame?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question,
+                        "Device Configuration Changed") = MsgBoxResult.Yes Then
 
                 SendDeviceCommand(DeviceCommand.SendConfigurationFrame3)
             End If
@@ -2257,7 +2258,6 @@ Public Class PMUConnectionTester
         m_frameParser.Stop()
         m_configurationFrame = Nothing
         m_selectedCell = Nothing
-        m_configChangeDetected = False
         m_configChangeTime = 0
         m_frequencyData.Rows.Clear()
         m_phasorData.Rows.Clear()
@@ -2694,7 +2694,7 @@ Public Class PMUConnectionTester
                 End If
 
                 ' Set initial tree nodes to desired state - initially expanding nodes makes tree build *much* slower
-                .Expanded = (m_applicationSettings.InitialNodeState = ApplicationSettings.NodeState.Expanded)
+                .Expanded = m_applicationSettings.InitialNodeState = ApplicationSettings.NodeState.Expanded
                 If .Expanded Then Application.DoEvents()
             Else
                 ' We hide all nodes that are not direct descendants of a channel frame
