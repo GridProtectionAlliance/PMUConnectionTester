@@ -40600,7 +40600,7 @@
             <param name="binariesDirectory">The directory containing the assemblies to be processed.</param>
             <returns>Public types that implement the specified <paramref name="type"/>.</returns>
         </member>
-        <member name="M:GSF.TypeExtensions.LoadImplementations(System.Type,System.String,System.Boolean,System.Boolean)">
+        <member name="M:GSF.TypeExtensions.LoadImplementations(System.Type,System.String,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Loads public types from assemblies in the specified <paramref name="binariesDirectory"/> that implement 
             the specified <paramref name="type"/> either through class inheritance or interface implementation.
@@ -40609,6 +40609,7 @@
             <param name="binariesDirectory">The directory containing the assemblies to be processed.</param>
             <param name="excludeAbstractTypes">true to exclude public types that are abstract; otherwise false.</param>
             <param name="validateReferences">True to validate references of loaded assemblies before attempting to instantiate types; false otherwise.</param>
+            <param name="executeStaticConstructors">True to execute static constructors of loaded implementations; false otherwise.</param>
             <returns>Public types that implement the specified <paramref name="type"/>.</returns>
         </member>
         <member name="M:GSF.TypeExtensions.IsNumeric(System.Type)">
@@ -43051,13 +43052,16 @@
             Defines extension methods related to enumerations.
             </summary>
         </member>
-        <member name="M:GSF.EnumExtensions.GetDescription(System.Enum)">
+        <member name="M:GSF.EnumExtensions.GetDescription(System.Enum,System.Boolean)">
             <summary>
             Retrieves the description of the value that this <see cref="T:System.Enum"/> represents extracted from the <see cref="T:System.ComponentModel.DescriptionAttribute"/>, or the enumeration name
             if no description is available.
             </summary>
             <param name="enumeration"><see cref="T:System.Enum"/> to operate on.</param>
-            <returns>Description of the <see cref="T:System.Enum"/> if specified, otherwise the <see cref="T:System.String"/> representation of this <paramref name="enumeration"/>.</returns>
+            <param name="defaultToName">When <c>true</c>, return enum name when no description attribute exists; otherwise, return <c>null</c>.</param>
+            <returns>
+            Description of the <see cref="T:System.Enum"/> if specified, otherwise the <see cref="T:System.String"/> representation of this <paramref name="enumeration"/> or
+            <c>null</c> if <paramref name="defaultToName"/> is <c>false</c>.</returns>
         </member>
         <member name="M:GSF.EnumExtensions.GetEnumValueOrDefault``1(System.Object,System.Object)">
             <summary>
