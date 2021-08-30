@@ -63,6 +63,7 @@ Public Class ApplicationSettings
     Private Const DefaultMaximumConnectionAttempts As Integer = 1
     Private Const DefaultAutoStartDataParsingSequence As Boolean = True
     Private Const DefaultSkipDisableRealTimeData As Boolean = False
+    Private Const DefaultDisableRealTimeDataOnStop As Boolean = True
     Private Const DefaultInjectSimulatedTimestamp As Boolean = False
     Private Const DefaultUseHighResolutionInputTimer As Boolean = False
     Friend Const DefaultAlternateInterfaces As String = "Default|0.0.0.0|::0"
@@ -395,10 +396,17 @@ Public Class ApplicationSettings
     Public Property AutoStartDataParsingSequence As Boolean
 
     <Category(ConnectionSettingsCategory),
-    Description("Defines flag to skip automatic disabling of the real-time data stream on shutdown or startup. Useful when using UDP multicast with several subscribed clients."),
+    Description("Defines flag to skip automatic disabling of the real-time data stream on shutdown or startup. Useful when using serial or UDP multicast with several subscribed clients."),
     DefaultValue(DefaultSkipDisableRealTimeData),
     UserScopedSetting>
     Public Property SkipDisableRealTimeData As Boolean
+
+
+    <Category(ConnectionSettingsCategory),
+    Description("Defines flag to control disabling of real-time data stream on shutdown. Useful when using serial or UDP multicast with several subscribed clients."),
+    DefaultValue(DefaultDisableRealTimeDataOnStop),
+    UserScopedSetting>
+    Public Property DisableRealTimeDataOnStop As Boolean
 
     <Category(ConnectionSettingsCategory),
     Description("Defines flag to inject a simulated timestamp into incoming streams - this will override any existing incoming timestamp. Useful when using file based input to simulate real-time data."),

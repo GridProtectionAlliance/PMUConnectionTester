@@ -1837,6 +1837,7 @@ Public Class PMUConnectionTester
                 If m_applicationSettings.MaximumConnectionAttempts <> 1 Then .ConnectionString &= "; maximumConnectionAttempts = " & m_applicationSettings.MaximumConnectionAttempts
                 If Not m_applicationSettings.AutoStartDataParsingSequence Then .ConnectionString &= "; autoStartDataParsingSequence = false"
                 If m_applicationSettings.SkipDisableRealTimeData Then .ConnectionString &= "; skipDisableRealTimeData = true"
+                If Not m_applicationSettings.DisableRealTimeDataOnStop Then .ConnectionString &= "; disableRealTimeDataOnStop = false"
                 If m_applicationSettings.InjectSimulatedTimestamp Then .ConnectionString &= "; simulateTimestamp = true"
                 If m_applicationSettings.UseHighResolutionInputTimer Then .ConnectionString &= "; useHighResolutionInputTimer = true"
                 If Not m_applicationSettings.KeepCommandChannelOpen Then .ConnectionString &= "; keepCommandChannelOpen = false"
@@ -1935,6 +1936,7 @@ Public Class PMUConnectionTester
             If connectionData.TryGetValue("maximumConnectionAttempts", setting) Then m_applicationSettings.MaximumConnectionAttempts = Integer.Parse(setting)
             If connectionData.TryGetValue("autoStartDataParsingSequence", setting) Then m_applicationSettings.AutoStartDataParsingSequence = setting.ParseBoolean()
             If connectionData.TryGetValue("skipDisableRealTimeData", setting) Then m_applicationSettings.SkipDisableRealTimeData = setting.ParseBoolean()
+            If connectionData.TryGetValue("disableRealTimeDataOnStop", setting) Then m_applicationSettings.DisableRealTimeDataOnStop = setting.ParseBoolean()
             If connectionData.TryGetValue("simulateTimestamp", setting) Then m_applicationSettings.InjectSimulatedTimestamp = setting.ParseBoolean()
             If connectionData.TryGetValue("useHighResolutionInputTimer", setting) Then m_applicationSettings.UseHighResolutionInputTimer = setting.ParseBoolean()
             If connectionData.TryGetValue("keepCommandChannelOpen", setting) Then m_applicationSettings.KeepCommandChannelOpen = setting.ParseBoolean()
@@ -2191,6 +2193,7 @@ Public Class PMUConnectionTester
                     .DeviceID = CUShort(currentSettings.PmuID)
                     .AutoStartDataParsingSequence = m_applicationSettings.AutoStartDataParsingSequence
                     .SkipDisableRealTimeData = m_applicationSettings.SkipDisableRealTimeData
+                    .DisableRealTimeDataOnStop = m_applicationSettings.DisableRealTimeDataOnStop
                     .AllowedParsingExceptions = m_applicationSettings.AllowedParsingExceptions
                     .InjectSimulatedTimestamp = m_applicationSettings.InjectSimulatedTimestamp
                     .UseHighResolutionInputTimer = m_applicationSettings.UseHighResolutionInputTimer
