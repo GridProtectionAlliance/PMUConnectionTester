@@ -8279,6 +8279,88 @@
             <param name="fromTable">Source table</param>
             <param name="toTable">Destination table</param>
         </member>
+        <member name="T:GSF.Data.Model.AdditionalFieldSearchAttribute">
+            <summary>
+            Defines an attribute that will allow setting a custom view a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.Condition">
+            <summary>
+            Gets the condition used to reduce the number of rows.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.AdditionalFieldTable">
+            <summary>
+            Gets Table name to use for AdditionalFields.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.PrimaryKeyField">
+            <summary>
+            Gets Field name to use for matching <see cref="T:GSF.Data.Model.PrimaryKeyAttribute"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.ValueField">
+            <summary>
+            Gets Field name to use for matching Values.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.FieldKeyField">
+            <summary>
+            Gets Field name to use for matching FieldNames.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.AdditionalFieldSearchAttribute.#ctor(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.AdditionalFieldSearchAttribute"/>.
+            </summary>
+            <param name="condition">Condition to be true for any row in the additionalFields Table to be used.</param>
+            <param name="additionalFieldsTable">SQL Table containing additional Fields.</param>
+            <param name="primaryKeyCollumn">SQL Column that will be matched to <see cref="T:GSF.Data.Model.PrimaryKeyAttribute"/>.</param>
+            <param name="valueCollumn">SQL Column that will be matched to the Value.</param>
+            <param name="fieldKeyCollumn">SQL Column that will be matched to the Field name.</param>
+        </member>
+        <member name="M:GSF.Data.Model.AdditionalFieldSearchAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.AdditionalFieldSearchAttribute"/>.
+            </summary>
+            <param name="condition">Condition to be true for any row in the additionalFields Table to be used.</param>
+            <remarks>
+            This Assumes the following View is set up:
+            CREATE VIEW AdditionalFieldSearch AS 
+            SELECT
+               AdditionalFieldValue.ParentTableID,
+               AdditionalFieldValue.Value,
+               AdditionalField.ParentTable,
+               AdditionalField.FieldName,
+               FROM
+                   AdditionalField LEFT JOIN
+                   AdditionalFieldValue ON AdditionalFieldValue.AdditionalFieldID = AdditionalField.ID
+            GO
+            </remarks>
+        </member>
+        <member name="T:GSF.Data.Model.ClaimAttribute">
+            <summary>
+            Defines an attribute that will allow setting claims for function roles for a modeled table in GSF.Web.Model.ModelController.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ClaimAttribute.Claim">
+            <summary>
+            Gets Claim to use for property.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ClaimAttribute.Verb">
+            <summary>
+            Get Verb to use for property
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.ClaimAttribute.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ClaimAttribute"/> for use in GSF.Web.Model.ModelController"/>.
+            </summary>
+            <param name="verb">HTTP verbs of GET, POST, PATCH, or DELETE.</param>
+            <param name="type">Type of claim, use specific <see cref="T:System.Security.Claims.ClaimTypes"/> .</param>
+            <param name="value">value of the claim.</param>
+        </member>
         <member name="T:GSF.Data.Model.EncryptDataAttribute">
             <summary>
             Defines an attribute that provides encryption of text field contents for a modeled table.
@@ -8314,6 +8396,148 @@
             <summary>
             Defines an attribute that will exclude a field from a CSV export.
             </summary>
+        </member>
+        <member name="T:GSF.Data.Model.DefaultSortOrderAttribute">
+            <summary>
+            Defines an attribute that will allow a default sort field in the model
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.DefaultSortOrderAttribute.Ascending">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.DefaultSortOrderAttribute.#ctor(System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.DefaultSortOrderAttribute"/>.
+            </summary>
+            <param name="ascending">Direction of sort</param>
+        </member>
+        <member name="T:GSF.Data.Model.DeleteRolesAttribute">
+            <summary>
+            Defines an attribute that will allow setting DELETE function roles for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.DeleteRolesAttribute.Roles">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.DeleteRolesAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.DeleteRolesAttribute"/>.
+            </summary>
+            <param name="roles">Comma separated string of roles allowed for DELETE functions.</param>
+        </member>
+        <member name="T:GSF.Data.Model.ReturnLimitAttribute">
+            <summary>
+            Defines an attribute that will allows a top number of results to be returned when queried
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ReturnLimitAttribute.Limit">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.ReturnLimitAttribute.#ctor(System.Int32)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ReturnLimitAttribute"/>.
+            </summary>
+            <param name="limit">Number of top records to return.</param>
+        </member>
+        <member name="T:GSF.Data.Model.ViewOnlyAttribute">
+            <summary>
+            Defines an attribute that will allow setting View only functions for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ViewOnlyAttribute.ViewOnly">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.ViewOnlyAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ViewOnlyAttribute"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.Data.Model.AllowSearchAttribute">
+            <summary>
+            Defines an attribute that will allow search functionality for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AllowSearchAttribute.AllowSearch">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.AllowSearchAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.AllowSearchAttribute"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.Data.Model.CustomViewAttribute">
+            <summary>
+            Defines an attribute that will allow setting a custom view a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.CustomViewAttribute.CustomView">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.CustomViewAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.CustomViewAttribute"/>.
+            </summary>
+            <param name="customView">SQL to generate custom view.</param>
+        </member>
+        <member name="T:GSF.Data.Model.PatchRolesAttribute">
+            <summary>
+            Defines an attribute that will allow setting PATCH function roles for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.PatchRolesAttribute.Roles">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.PatchRolesAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.PatchRolesAttribute"/>.
+            </summary>
+            <param name="roles">Comma separated string of roles allowed for PATCH functions.</param>
+        </member>
+        <member name="T:GSF.Data.Model.PostRolesAttribute">
+            <summary>
+            Defines an attribute that will allow setting POST function roles for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.PostRolesAttribute.Roles">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.PostRolesAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.PostRolesAttribute"/>.
+            </summary>
+            <param name="roles">Comma separated string of roles allowed for POST functions.</param>
+        </member>
+        <member name="T:GSF.Data.Model.ParentKeyAttribute">
+            <summary>
+            Defines an attribute that will allow a foreign key in the model to point back to parent table 
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ParentKeyAttribute.Model">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.ParentKeyAttribute.#ctor(System.Type)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ParentKeyAttribute"/>.
+            </summary>
+            <param name="model">Type of modeled table that key points back to.</param>
         </member>
         <member name="T:GSF.Data.Model.NonRecordFieldAttribute">
             <summary>
@@ -9520,6 +9744,70 @@
             </summary>
             <param name="fieldDataType">Specific <see cref="T:System.Data.DbType"/> to target for field.</param>
             <param name="targetDatabaseType">Target <see cref="T:GSF.Data.DatabaseType"/> for applying <paramref name="fieldDataType"/>.</param>
+        </member>
+        <member name="T:GSF.Data.Model.GetRolesAttribute">
+            <summary>
+            Defines an attribute that will allow setting GET function roles for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.GetRolesAttribute.Roles">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.GetRolesAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.GetRolesAttribute"/>.
+            </summary>
+            <param name="roles">Comma separated string of roles allowed for GET functions.</param>
+        </member>
+        <member name="T:GSF.Data.Model.SettingsCategoryAttribute">
+            <summary>
+            Defines an attribute that will allow a custom settings category for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.SettingsCategoryAttribute.SettingsCategory">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.SettingsCategoryAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.SettingsCategoryAttribute"/>.
+            </summary>
+            <param name="settingsCategory">Config file Settings category to use for class.</param>
+        </member>
+        <member name="T:GSF.Data.Model.ConfigFileTableNamePrefixAttribute">
+            <summary>
+            Defines an attribute that will allow a general table name prefix for a modeled table instead of using
+            the config file setting TableNamePrefix.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ConfigFileTableNamePrefixAttribute.Prefix">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.ConfigFileTableNamePrefixAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ConfigFileTableNamePrefixAttribute"/>.
+            </summary>
+            
+        </member>
+        <member name="M:GSF.Data.Model.ConfigFileTableNamePrefixAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ConfigFileTableNamePrefixAttribute"/> from the systemSettings section and <paramref name="setting"/> used in the config file.
+            </summary>
+            
+            <param name="setting">Name the setting to use out of the config file systemSettings section.</param>
+        </member>
+        <member name="M:GSF.Data.Model.ConfigFileTableNamePrefixAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ConfigFileTableNamePrefixAttribute"/> from the <paramref name="settingsCategory"/> and <paramref name="setting"/> used in the config file.
+            </summary>
+            
+            <param name="settingsCategory">Name the settings category to use out of the config file systemSettings section.</param>
+            <param name="setting">Name the setting to use out of the config file systemSettings section.</param>
         </member>
         <member name="T:GSF.Data.Model.UseEscapedNameAttribute">
             <summary>
@@ -10913,6 +11201,12 @@
             <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> on the model properties.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.GetTableName">
+            <summary>
+            Gets table name for model applying model attributes <see cref="T:GSF.Data.Model.TableNameAttribute"/>, <see cref="T:GSF.Data.Model.ConfigFileTableNamePrefixAttribute"/>, and <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>
+            </summary>
+            <returns>The table name describe using model attributes</returns>
+        </member>
         <member name="T:GSF.Data.TableType">
             <summary>
             Specifies the type of object in database
@@ -11938,7 +12232,7 @@
             Gets current UTC date-time in an implementation that is proper for the connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.
             </summary>
         </member>
-        <member name="P:GSF.Data.AdoDataConnection.DefaultIsloationLevel">
+        <member name="P:GSF.Data.AdoDataConnection.DefaultIsolationLevel">
             <summary>
             Gets the default <see cref="T:System.Data.IsolationLevel"/> for the connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.
             </summary>
@@ -14587,6 +14881,161 @@
             </para>
             </remarks>
         </member>
+        <member name="T:GSF.Diagnostics.PerformanceMonitorBase">
+            <summary>
+            Represents a base class for performance monitors, e.g., the process level <see cref="T:GSF.Diagnostics.PerformanceMonitor"/>
+            and the system level <see cref="T:GSF.Diagnostics.SystemPerformanceMonitor"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.PerformanceMonitorBase.DefaultSamplingInterval">
+            <summary>
+            Default interval for sampling the <see cref="P:GSF.Diagnostics.PerformanceMonitorBase.Counters"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.#ctor(System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Diagnostics.PerformanceMonitorBase"/> class.
+            </summary>
+            <param name="samplingInterval">Interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitorBase.Counters"/> are to be sampled.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.PerformanceMonitorBase.SamplingInterval">
+            <summary>
+            Gets or sets the interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitorBase.Counters"/> are to be sampled.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.PerformanceMonitorBase.Counters">
+            <summary>
+            Gets a read-only list of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> objects monitored by the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.PerformanceMonitorBase.Name">
+            <summary>
+            Gets the friendly name of the <see cref="T:GSF.Diagnostics.PerformanceMonitorBase"/> object.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.PerformanceMonitorBase.Status">
+            <summary>
+            Gets the current status of the <see cref="T:GSF.Diagnostics.PerformanceMonitorBase"/> object.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.PerformanceMonitorBase.LifetimeStatus">
+            <summary>
+            Gets the lifetime status statistics of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.Diagnostics.PerformanceMonitorBase"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Diagnostics.PerformanceMonitorBase"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.AddCounter(System.String,System.String,System.String)">
+            <summary>
+            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
+            </summary>
+            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
+            <param name="counterName">The name of the performance counter.</param>
+            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.AddCounter(System.String,System.String,System.String,System.String)">
+            <summary>
+            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
+            </summary>
+            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
+            <param name="counterName">The name of the performance counter.</param>
+            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
+            <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.AddCounter(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
+            </summary>
+            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
+            <param name="counterName">The name of the performance counter.</param>
+            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
+            <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
+            <param name="valueUnit">The measurement unit for the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.AddCounter(System.String,System.String,System.String,System.String,System.String,System.Single,System.Boolean,System.Func{System.Single,System.Single},System.Func{System.Single,System.Boolean})">
+            <summary>
+            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
+            </summary>
+            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
+            <param name="counterName">The name of the performance counter.</param>
+            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
+            <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
+            <param name="valueUnit">The measurement unit for the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
+            <param name="valueDivisor">The divisor to be applied to the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
+            <param name="readOnly">Flag that determines if this counter is read-only.</param>
+            <param name="sampleAdjuster">Defines a custom sample adjustment function for the counter.</param>
+            <param name="sampleFilter">Defines a custom sample filter function for the counter.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.AddCounter(GSF.Diagnostics.PerformanceCounter)">
+            <summary>
+            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
+            </summary>
+            <param name="counter">The <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object to be monitored.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.RemoveCounter(GSF.Diagnostics.PerformanceCounter)">
+            <summary>
+            Removes a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> being monitored.
+            </summary>
+            <param name="counter">The <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object to be unmonitored.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.FindCounter(System.String)">
+            <summary>
+            Returns a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object matching the specified counter name.
+            </summary>
+            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object if a match is found; otherwise null.</returns>
+            <remarks>
+            First <see cref="T:GSF.Diagnostics.PerformanceCounter"/> with matching name is returned. If same name exists within
+            multiple monitored categories, use <see cref="M:GSF.Diagnostics.PerformanceMonitorBase.FindCounter(System.String,System.String)"/> overload instead.
+            </remarks>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.FindCounter(System.String,System.String)">
+            <summary>
+            Returns a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object matching the specified counter name.
+            </summary>
+            <param name="categoryName">Category of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object if a match is found; otherwise null.</returns>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.FindCounters(System.String)">
+            <summary>
+            Returns <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array matching the specified counter name.
+            </summary>
+            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array of found matches, if any.</returns>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.FindCounters(System.String,System.String)">
+            <summary>
+            Returns <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array matching the specified counter name.
+            </summary>
+            <param name="categoryName">Category of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array of found matches, if any.</returns>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.SampleCounters">
+            <summary>
+            Sample all defined counters.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.SampleCustomCounters">
+            <summary>
+            Derived class should override this method to sample any custom counters.
+            </summary>
+        </member>
         <member name="T:GSF.Diagnostics.ProcessUtilizationCalculator">
             <summary>
             Represents a utilization calculator for a <see cref="T:System.Diagnostics.Process"/>.
@@ -14631,6 +15080,42 @@
             Starts calculating the processor utilization of the specified <paramref name="process"/>.
             </summary>
             <param name="process">The <see cref="T:System.Diagnostics.Process"/> to monitor for processor utilization.</param>
+        </member>
+        <member name="T:GSF.Diagnostics.SystemPerformanceMonitor">
+            <summary>
+            Represents a system performance monitor for system level performance statistics, e.g.,
+            CPU utilization and available memory.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.SystemPerformanceMonitor.#ctor(System.Double)">
+            <summary>
+            Creates a new <see cref="T:GSF.Diagnostics.SystemPerformanceMonitor"/>.
+            </summary>
+            <param name="samplingInterval">
+            Interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitorBase.Counters"/>
+            are to be sampled.
+            </param>
+            <remarks>
+            It is recommended to use the <see cref="P:GSF.Diagnostics.SystemPerformanceMonitor.Default"/> instance of this class
+            instead of creating a new instance where applicable.
+            </remarks>
+        </member>
+        <member name="P:GSF.Diagnostics.SystemPerformanceMonitor.CPUUsage">
+            <summary>
+            Gets the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> that monitors the processor utilization of the system.
+            </summary>
+            <remarks>This <see cref="T:GSF.Diagnostics.PerformanceCounter"/> is added by default.</remarks>
+        </member>
+        <member name="P:GSF.Diagnostics.SystemPerformanceMonitor.AvailableMemory">
+            <summary>
+            Gets the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> that monitors the remaining available memory of the system in GB.
+            </summary>
+            <remarks>This <see cref="T:GSF.Diagnostics.PerformanceCounter"/> is added by default.</remarks>
+        </member>
+        <member name="P:GSF.Diagnostics.SystemPerformanceMonitor.Default">
+            <summary>
+            Gets default reference of <see cref="T:GSF.Diagnostics.SystemPerformanceMonitor"/>.
+            </summary>
         </member>
         <member name="T:GSF.Diagnostics.ThreadPoolMonitor">
             <summary>
@@ -14810,8 +15295,16 @@
         </member>
         <member name="P:GSF.Diagnostics.PerformanceCounter.SampleAdjuster">
             <summary>
-            Gets or sets an optional custom sample adjustment function.
+            Gets or sets an optional custom sample adjustment function. Can be used to apply linear adjustments to sampled values.
             </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.PerformanceCounter.SampleFilter">
+            <summary>
+            Gets or sets an optional custom sample filter function. Can be used to skip sampled values that are unreasonable.
+            </summary>
+            <remarks>
+            Return <c>true</c> if sample should be filtered; otherwise, <c>false</c>.
+            </remarks>
         </member>
         <member name="M:GSF.Diagnostics.PerformanceCounter.Dispose">
             <summary>
@@ -14870,11 +15363,6 @@
             Name of the custom thread pool counters category.
             </summary>
         </member>
-        <member name="F:GSF.Diagnostics.PerformanceMonitor.DefaultSamplingInterval">
-            <summary>
-            Default interval for sampling the <see cref="P:GSF.Diagnostics.PerformanceMonitor.Counters"/>.
-            </summary>
-        </member>
         <member name="M:GSF.Diagnostics.PerformanceMonitor.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> class.
@@ -14884,7 +15372,7 @@
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> class.
             </summary>
-            <param name="samplingInterval">Interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitor.Counters"/> are to be sampled.</param>
+            <param name="samplingInterval">Interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitorBase.Counters"/> are to be sampled.</param>
             <param name="addDefaultCounters">Set to <c>true</c> to add default counters; otherwise <c>false</c>.</param>
         </member>
         <member name="M:GSF.Diagnostics.PerformanceMonitor.#ctor(System.String,System.Boolean)">
@@ -14899,7 +15387,7 @@
             Initializes a new instance of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> class.
             </summary>
             <param name="processName">Name of the <see cref="T:System.Diagnostics.Process"/> whose performance is to be monitored.</param>
-            <param name="samplingInterval">Interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitor.Counters"/> are to be sampled.</param>
+            <param name="samplingInterval">Interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitorBase.Counters"/> are to be sampled.</param>
             <param name="addDefaultCounters">Set to <c>true</c> to add default counters; otherwise <c>false</c>.</param>
         </member>
         <member name="M:GSF.Diagnostics.PerformanceMonitor.Finalize">
@@ -14910,16 +15398,6 @@
         <member name="P:GSF.Diagnostics.PerformanceMonitor.ProcessName">
             <summary>
             Gets or sets the name of the <see cref="T:System.Diagnostics.Process"/> to be monitored.
-            </summary>
-        </member>
-        <member name="P:GSF.Diagnostics.PerformanceMonitor.SamplingInterval">
-            <summary>
-            Gets or sets the interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitor.Counters"/> are to be sampled.
-            </summary>
-        </member>
-        <member name="P:GSF.Diagnostics.PerformanceMonitor.Counters">
-            <summary>
-            Gets a read-only list of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> objects monitored by the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
             </summary>
         </member>
         <member name="P:GSF.Diagnostics.PerformanceMonitor.CPUUsage">
@@ -14985,116 +15463,9 @@
             Gets the friendly name of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
             </summary>
         </member>
-        <member name="P:GSF.Diagnostics.PerformanceMonitor.Status">
+        <member name="M:GSF.Diagnostics.PerformanceMonitor.SampleCustomCounters">
             <summary>
-            Gets the current status of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
-            </summary>
-        </member>
-        <member name="P:GSF.Diagnostics.PerformanceMonitor.LifetimeStatus">
-            <summary>
-            Gets the lifetime status statistics of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.AddCounter(System.String,System.String,System.String)">
-            <summary>
-            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
-            </summary>
-            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
-            <param name="counterName">The name of the performance counter.</param>
-            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.AddCounter(System.String,System.String,System.String,System.String)">
-            <summary>
-            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
-            </summary>
-            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
-            <param name="counterName">The name of the performance counter.</param>
-            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
-            <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.AddCounter(System.String,System.String,System.String,System.String,System.String)">
-            <summary>
-            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
-            </summary>
-            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
-            <param name="counterName">The name of the performance counter.</param>
-            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
-            <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
-            <param name="valueUnit">The measurement unit for the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.AddCounter(System.String,System.String,System.String,System.String,System.String,System.Single,System.Boolean,System.Func{System.Single,System.Single})">
-            <summary>
-            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
-            </summary>
-            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
-            <param name="counterName">The name of the performance counter.</param>
-            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
-            <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
-            <param name="valueUnit">The measurement unit for the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
-            <param name="valueDivisor">The divisor to be applied to the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
-            <param name="readOnly">Flag that determines if this counter is read-only.</param>
-            <param name="sampleAdjuster">Defines a custom sample adjustment function for the counter.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.AddCounter(GSF.Diagnostics.PerformanceCounter)">
-            <summary>
-            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
-            </summary>
-            <param name="counter">The <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object to be monitored.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.RemoveCounter(GSF.Diagnostics.PerformanceCounter)">
-            <summary>
-            Removes a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> being monitored.
-            </summary>
-            <param name="counter">The <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object to be unmonitored.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.FindCounter(System.String)">
-            <summary>
-            Returns a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object matching the specified counter name.
-            </summary>
-            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
-            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object if a match is found; otherwise null.</returns>
-            <remarks>
-            First <see cref="T:GSF.Diagnostics.PerformanceCounter"/> with matching name is returned. If same name exists within
-            multiple monitored categories, use <see cref="M:GSF.Diagnostics.PerformanceMonitor.FindCounter(System.String,System.String)"/> overload instead.
-            </remarks>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.FindCounter(System.String,System.String)">
-            <summary>
-            Returns a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object matching the specified counter name.
-            </summary>
-            <param name="categoryName">Category of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
-            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
-            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object if a match is found; otherwise null.</returns>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.FindCounters(System.String)">
-            <summary>
-            Returns <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array matching the specified counter name.
-            </summary>
-            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
-            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array of found matches, if any.</returns>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.FindCounters(System.String,System.String)">
-            <summary>
-            Returns <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array matching the specified counter name.
-            </summary>
-            <param name="categoryName">Category of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
-            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
-            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array of found matches, if any.</returns>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.SampleCounters">
-            <summary>
-            Sample all defined counters.
+            Handle sampling of custom counters.
             </summary>
         </member>
         <member name="T:GSF.Diagnostics.LogFileWriterInMemory">
@@ -36452,6 +36823,43 @@
             </summary>
             <returns>The GNU diff string</returns>
         </member>
+        <member name="T:GSF.Threading.ManagedCancellationTokenSource">
+            <summary>
+            Implements a reference counter for <see cref="T:System.Threading.CancellationTokenSource"/> to
+            provide thread safety around <see cref="M:System.Threading.CancellationTokenSource.Dispose"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.ManagedCancellationTokenSource.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.ManagedCancellationTokenSource"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.ManagedCancellationTokenSource.#ctor(System.Func{System.Threading.CancellationTokenSource})">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.ManagedCancellationTokenSource"/> class.
+            </summary>
+            <param name="cancellationTokenSourceFactory">Factory function for instantiating the underlying <see cref="T:System.Threading.CancellationTokenSource"/>.</param>
+        </member>
+        <member name="M:GSF.Threading.ManagedCancellationTokenSource.#ctor(System.Threading.CancellationTokenSource)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.ManagedCancellationTokenSource"/> class.
+            </summary>
+            <param name="underlyingTokenSource">The <see cref="T:System.Threading.CancellationTokenSource"/> to be managed.</param>
+        </member>
+        <member name="M:GSF.Threading.ManagedCancellationTokenSource.RetrieveToken(System.Threading.CancellationToken@)">
+            <summary>
+            Retrieves the <see cref="T:System.Threading.CancellationToken"/> used to
+            check the state of cancellation.
+            </summary>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>A disposable object used to control the lifetime of the <paramref name="cancellationToken"/>.</returns>
+        </member>
+        <member name="M:GSF.Threading.ManagedCancellationTokenSource.Dispose">
+            <summary>
+            Cancels the underlying <see cref="T:System.Threading.CancellationTokenSource"/>
+            and schedules it for disposal.
+            </summary>
+        </member>
         <member name="T:GSF.Threading.WaitHandleExtensions">
             <summary>
             Defines extension functions related to manipulation wait handle objects.
@@ -40953,7 +41361,7 @@
             <param name="attributeName">Attribute name to match.</param>
             <returns>Matching sets of <see cref="T:System.Xml.Linq.XElement"/> items and associated attribute values.</returns>
             <remarks>
-            When used in conjuction with the <see cref="M:GSF.Xml.XmlExtensions.Is(System.Collections.Generic.IEnumerable{System.Tuple{System.Xml.Linq.XElement,System.String}},System.String,System.Boolean)"/> extension, allows for expressions like:
+            When used in conjunction with the <see cref="M:GSF.Xml.XmlExtensions.Is(System.Collections.Generic.IEnumerable{System.Tuple{System.Xml.Linq.XElement,System.String}},System.String,System.Boolean)"/> extension, allows for expressions like:
             <code>
             var globals = XDocument.Load(configFile)
                 .Descendants("SettingsGroup")
@@ -40970,7 +41378,7 @@
             <param name="ignoreCase">Flag that determines if attribute value match is case sensitive.</param>
             <returns><see cref="T:System.Xml.Linq.XElement"/> items that match <paramref name="attributeValue"/>.</returns>
             <remarks>
-            When used in conjuction with the <see cref="M:GSF.Xml.XmlExtensions.WhereAttribute(System.Collections.Generic.IEnumerable{System.Xml.Linq.XElement},System.String)"/> extension, allows for expressions like:
+            When used in conjunction with the <see cref="M:GSF.Xml.XmlExtensions.WhereAttribute(System.Collections.Generic.IEnumerable{System.Xml.Linq.XElement},System.String)"/> extension, allows for expressions like:
             <code>
             var globals = XDocument.Load(configFile)
                 .Descendants("SettingsGroup")
