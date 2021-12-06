@@ -299,7 +299,7 @@ Public Class PMUConnectionTester
     Private Sub TimerDelay_Tick(ByVal sender As Object, ByVal e As EventArgs) Handles TimerDelay.Tick
 
         ' We show the default IP stack label on startup only after a momentary pause - this prevents the visual side effect
-        ' of having the label's grey background stand out over a temporary white background
+        ' of having the label's gray background stand out over a temporary white background
         LabelDefaultIPStack.Visible = GroupBoxConnection.Expanded
         TimerDelay.Stop()
 
@@ -1436,6 +1436,9 @@ Public Class PMUConnectionTester
 
             m_streamDebugCapture.WriteLine("EOF")
         End If
+
+        ' Yield to UI, fixes issue where a stream has nothing but a config frame over and over
+        Application.DoEvents()
 
     End Sub
 
@@ -2731,7 +2734,7 @@ Public Class PMUConnectionTester
             If Convert.ToInt32(node.Cells("ChannelNode").Value) = -1 Then
                 If Not IsDBNull(node.Cells("AssociatedKey").Value) Then
                     ' Mouse click event needs to return thread to tree control and looking up channel node may
-                    ' be time consuming since we'll need to be exapnding nodes, so we queue this work up on a
+                    ' be time consuming since we'll need to be expanding nodes, so we queue this work up on a
                     ' different thread.  Actual work to be performed will still be on UI thread via Invoke, but
                     ' this event completes and returns thread control to the tree.  This step also allows calls
                     ' to DoEvents which could otherwise cause problems if called within the local event context.
