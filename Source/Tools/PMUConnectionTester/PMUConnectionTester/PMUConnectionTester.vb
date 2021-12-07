@@ -29,7 +29,6 @@
 '
 '******************************************************************************************************
 
-Imports GSF.Units.EE
 Imports Infragistics.Win
 Imports Infragistics.Win.UltraWinTree
 Imports Infragistics.Win.UltraWinMaskedEdit
@@ -56,6 +55,7 @@ Imports GSF.PhasorProtocols
 Imports GSF.Reflection.AssemblyInfo
 Imports GSF.Threading
 Imports GSF.Units
+Imports GSF.Units.EE
 Imports GSF.Windows.Forms
 
 #Disable Warning LocalizableElement
@@ -2733,6 +2733,18 @@ Public Class PMUConnectionTester
             .Columns("RootElement").Visible = False
             .NodeTextColumn = .Columns("Attribute")
         End With
+
+    End Sub
+
+    Private Sub TreeFrameAttributes_BeforeDataNodesCollectionPopulated(sender As Object, e As BeforeDataNodesCollectionPopulatedEventArgs) Handles TreeFrameAttributes.BeforeDataNodesCollectionPopulated
+
+        If e.Nodes.ParentNode Is Nothing Then Cursor = Cursors.WaitCursor
+
+    End Sub
+
+    Private Sub TreeFrameAttributes_AfterDataNodesCollectionPopulated(sender As Object, e As AfterDataNodesCollectionPopulatedEventArgs) Handles TreeFrameAttributes.AfterDataNodesCollectionPopulated
+
+        If e.Nodes.ParentNode Is Nothing Then Cursor = Cursors.Default
 
     End Sub
 
