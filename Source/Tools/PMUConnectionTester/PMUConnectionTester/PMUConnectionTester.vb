@@ -37,7 +37,6 @@ Imports Infragistics.UltraChart.Shared.Styles
 Imports Infragistics.UltraChart.Resources.Appearance
 Imports Infragistics.UltraChart.Core.Layers
 Imports System.Collections.Concurrent
-Imports System.Drawing
 Imports System.IO
 Imports System.Net
 Imports System.Net.NetworkInformation
@@ -55,8 +54,11 @@ Imports GSF.IO.FilePath
 Imports GSF.Parsing
 Imports GSF.PhasorProtocols
 Imports GSF.Reflection.AssemblyInfo
+Imports GSF.Threading
 Imports GSF.Units
 Imports GSF.Windows.Forms
+
+#Disable Warning LocalizableElement
 
 Public Class PMUConnectionTester
 
@@ -88,7 +90,10 @@ Public Class PMUConnectionTester
     ' Phasor parsing variables
     Private WithEvents m_frameParser As MultiProtocolFrameParser
     Private WithEvents m_imageQueue As ImageQueue
+    Private m_processConfigFrame As ShortSynchronizedOperation
+    Private m_updatedConfigFrame As IConfigurationFrame
     Private m_configurationFrame As IConfigurationFrame
+    Private m_lastConfigProcessedTime As Long
     Private m_configChangeTime As Long
     Private m_selectedCell As IConfigurationCell
     Private m_lastFrameType As FundamentalFrameType
@@ -142,6 +147,10 @@ Public Class PMUConnectionTester
 
         ' Create a new multi-protocol frame parser
         m_frameParser = New MultiProtocolFrameParser
+
+        ' Create a synchronized operation for processing configuration frames
+        m_processConfigFrame = New ShortSynchronizedOperation(New Action(AddressOf PaceConfigFrameProcessing),
+            Sub(ex) AppendStatusMessage($"Exception occurred while attempting to process configuration frame: {ex.Message}"))
 
         ' Initialize attribute tree variables
         m_attributeFrames = New ConcurrentDictionary(Of FundamentalFrameType, IChannelFrame)
@@ -840,8 +849,11 @@ Public Class PMUConnectionTester
 
                     Try
                         m_configurationFrame = Nothing
-                        ReceivedConfigFrame(CType(.Deserialize(configFile), IConfigurationFrame))
-                        If m_frameParser IsNot Nothing Then m_frameParser.ConfigurationFrame = m_configurationFrame
+
+                        SyncLock m_processConfigFrame
+                            m_updatedConfigFrame = CType(.Deserialize(configFile), IConfigurationFrame)
+                            m_processConfigFrame.RunOnceAsync()
+                        End SyncLock
                     Catch ex As Exception
                         MsgBox("Failed to deserialize configuration frame: " & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Exclamation)
                     End Try
@@ -1146,7 +1158,10 @@ Public Class PMUConnectionTester
 
     Private Sub m_frameParser_ReceivedConfigurationFrame(ByVal sender As Object, ByVal e As EventArgs(Of IConfigurationFrame)) Handles m_frameParser.ReceivedConfigurationFrame
 
-        BeginInvoke(New Action(Of IConfigurationFrame)(AddressOf ReceivedConfigFrame), e.Argument)
+        SyncLock m_processConfigFrame
+            m_updatedConfigFrame = e.Argument
+            m_processConfigFrame.RunOnceAsync()
+        End SyncLock
 
     End Sub
 
@@ -1371,9 +1386,62 @@ Public Class PMUConnectionTester
 
     End Sub
 
-    Private Sub ReceivedConfigFrame(ByVal frame As IConfigurationFrame)
+    Private Sub UpdateChartTitle(ByVal message As String)
 
-        If frame Is Nothing Then Return
+        If InvokeRequired Then
+            Invoke(Sub() UpdateChartTitle(message))
+        Else
+            ChartDataDisplay.TitleTop.Text = message
+            ChartDataDisplay.Refresh()
+            Application.DoEvents()
+        End If
+
+    End Sub
+
+    Private Sub PaceConfigFrameProcessing()
+
+        Const MinConfigProcessingDelay As Integer = 1000
+
+        If m_frameParser Is Nothing Or Not m_frameParser.Enabled Then Return
+
+        Dim timeSinceLastConfig As UShort = CUShort(New Ticks(DateTime.UtcNow.Ticks - m_lastConfigProcessedTime).ToMilliseconds Mod UShort.MaxValue)
+
+        If timeSinceLastConfig < MinConfigProcessingDelay Then
+            ' Do not process back-to-back configuration frames too quickly, UI needs time to process and react to detail loading
+            Thread.Sleep(MinConfigProcessingDelay - timeSinceLastConfig)
+            If m_frameParser Is Nothing Or Not m_frameParser.Enabled Then Return
+        End If
+
+        UpdateChartTitle("Loading configuration frame...")
+        Invoke(Sub() ReceivedConfigFrame())
+
+        m_lastConfigProcessedTime = DateTime.UtcNow.Ticks
+
+    End Sub
+
+    Private Sub ReceivedConfigFrame()
+
+        Dim frame As IConfigurationFrame
+
+        SyncLock m_processConfigFrame
+            frame = m_updatedConfigFrame
+        End SyncLock
+
+        If m_frameParser Is Nothing Or Not m_frameParser.Enabled Then
+            UpdateChartTitle("")
+            Return
+        End If
+
+        If m_frameParser.ConfigurationFrame IsNot frame Then
+            m_frameParser.ConfigurationFrame = frame
+        End If
+
+        ComboBoxPmus.Items.Clear()
+
+        If frame Is Nothing Then
+            UpdateChartTitle("No configuration frame loaded")
+            Return
+        End If
 
         LabelTime.Text = frame.TimeTag.ToString()
         m_attributeFrames(frame.FrameType) = frame
@@ -1384,13 +1452,10 @@ Public Class PMUConnectionTester
 
         GroupBoxConfigurationFrame.Expanded = True
         TextBoxDeviceID.Text = frame.IDCode.ToString()
-        ChartDataDisplay.TitleTop.Text = "Configured frame rate: " & frame.FrameRate & " frames/second"
 
         ' Load PMU list from new configuration frame
         With ComboBoxPmus
             With .Items
-                .Clear()
-
                 For Each cell As IConfigurationCell In frame.Cells
                     .Add(cell.StationName.ToNonNullString(cell.IDLabel.ToNonNullString("Device " & cell.IDCode)))
                 Next
@@ -1437,8 +1502,7 @@ Public Class PMUConnectionTester
             m_streamDebugCapture.WriteLine("EOF")
         End If
 
-        ' Yield to UI, fixes issue where a stream has nothing but a config frame over and over
-        Application.DoEvents()
+        UpdateChartTitle("Configured frame rate: " & frame.FrameRate & " frames/second")
 
     End Sub
 
@@ -1641,9 +1705,9 @@ Public Class PMUConnectionTester
     Private Sub Connected()
 
         If m_configurationFrame Is Nothing Then
-            ChartDataDisplay.TitleTop.Text = "Awaiting configuration frame..."
+            UpdateChartTitle("Awaiting configuration frame...")
         Else
-            ChartDataDisplay.TitleTop.Text = "Configured frame rate: " & m_configurationFrame.FrameRate & " frames/second"
+            UpdateChartTitle("Configured frame rate: " & m_configurationFrame.FrameRate & " frames/second")
         End If
 
         AppendStatusMessage("Connected to device " & ConnectionInformation)
@@ -1653,7 +1717,7 @@ Public Class PMUConnectionTester
 
     Private Sub ConnectionException(ByVal ex As Exception, ByVal connectionAttempts As Integer)
 
-        ChartDataDisplay.TitleTop.Text = "Connection attempt failed..."
+        UpdateChartTitle("Connection attempt failed...")
         AppendStatusMessage("Device connection error: " & ex.Message)
 
         If m_applicationSettings.MaximumConnectionAttempts > 0 And connectionAttempts >= m_applicationSettings.MaximumConnectionAttempts Then
@@ -1694,7 +1758,7 @@ Public Class PMUConnectionTester
 
     Private Sub ServerStarted()
 
-        ChartDataDisplay.TitleTop.Text = "Listening for connection..."
+        UpdateChartTitle("Listening for connection...")
         AppendStatusMessage("Local server started.  Listening for connection on " & ConnectionInformation)
 
     End Sub
@@ -2220,10 +2284,10 @@ Public Class PMUConnectionTester
                     ButtonListen.Text = "Dis&connect"
 
                     If .DataChannelIsServerBased Then
-                        ChartDataDisplay.TitleTop.Text = "Listening for connection..."
+                        UpdateChartTitle("Listening for connection...")
                         AppendStatusMessage("Listening for connection on " & ConnectionInformation)
                     Else
-                        ChartDataDisplay.TitleTop.Text = "Attempting connection..."
+                        UpdateChartTitle("Attempting connection...")
                         AppendStatusMessage("Attempting connection to " & ConnectionInformation)
                     End If
 
@@ -2265,6 +2329,7 @@ Public Class PMUConnectionTester
         m_configurationFrame = Nothing
         m_selectedCell = Nothing
         m_configChangeTime = 0
+        m_lastConfigProcessedTime = 0
         m_frequencyData.Rows.Clear()
         m_phasorData.Rows.Clear()
         m_lastRefresh = 0
@@ -2364,163 +2429,169 @@ Public Class PMUConnectionTester
 
     Private Sub InitializeAttributeTree()
 
-        m_associatedNodes.Clear()
-        TreeFrameAttributes.Refresh()
+        Try
+            Cursor = Cursors.WaitCursor
 
-        Dim attributeTreeDataSet As DataSet = CreateAttributeTreeDataSet()
-        Dim attributeTable As DataTable = attributeTreeDataSet.Tables("Attributes")
-        Dim attributeFrames As List(Of IChannelFrame)
-        Dim lastNodeID, lastCellNodeID, currentNodeID As Integer
-        Dim frame, associatedFrame As IChannelFrame
+            m_associatedNodes.Clear()
+            TreeFrameAttributes.Refresh()
 
-        ' Get a copy of the current frame set
-        attributeFrames = New List(Of IChannelFrame)(m_attributeFrames.Values)
+            Dim attributeTreeDataSet As DataSet = CreateAttributeTreeDataSet()
+            Dim attributeTable As DataTable = attributeTreeDataSet.Tables("Attributes")
+            Dim attributeFrames As List(Of IChannelFrame)
+            Dim lastNodeID, lastCellNodeID, currentNodeID As Integer
+            Dim frame, associatedFrame As IChannelFrame
 
-        ' For consistency in display, we make sure frames are in desired order
-        attributeFrames.Sort(AddressOf CompareByFrameType)
+            ' Get a copy of the current frame set
+            attributeFrames = New List(Of IChannelFrame)(m_attributeFrames.Values)
 
-        ' Tag configuration channel nodes by assigning a unique key that will allow virtual associations between nodes
-        For Each frame In attributeFrames
-            If frame.FrameType = FundamentalFrameType.ConfigurationFrame Then
-                Dim configFrame As IConfigurationFrame = DirectCast(frame, IConfigurationFrame)
+            ' For consistency in display, we make sure frames are in desired order
+            attributeFrames.Sort(AddressOf CompareByFrameType)
 
-                configFrame.Tag = System.Guid.NewGuid().ToString()
-
-                ' Tag frame cells collection
-                configFrame.Cells.Tag = System.Guid.NewGuid().ToString()
-
-                ' Tag each frame cell item
-                For Each cellNode As IConfigurationCell In configFrame.Cells
-                    cellNode.Tag = System.Guid.NewGuid().ToString()
-
-                    For Each phasorDefinition As IPhasorDefinition In cellNode.PhasorDefinitions
-                        phasorDefinition.Tag = System.Guid.NewGuid().ToString()
-                    Next
-
-                    cellNode.FrequencyDefinition.Tag = System.Guid.NewGuid().ToString()
-
-                    For Each analogDefinition As IAnalogDefinition In cellNode.AnalogDefinitions
-                        analogDefinition.Tag = System.Guid.NewGuid().ToString()
-                    Next
-
-                    For Each digitalDefinition As IDigitalDefinition In cellNode.DigitalDefinitions
-                        digitalDefinition.Tag = System.Guid.NewGuid().ToString()
-                    Next
-                Next
-
-                ' Only configuration nodes need tagging since they will be the destination of all "links"
-                Exit For
-            End If
-        Next
-
-        ' We bind tree before there's any data because this makes the data fill very fast
-        With TreeFrameAttributes
-            .Override.ShowExpansionIndicator = ShowExpansionIndicator.CheckOnDisplay
-            .SetDataBinding(attributeTreeDataSet, "Attributes")
-        End With
-
-        ' We hard code column widths because the auto-size function is extremely slow
-        For Each column As UltraTreeNodeColumn In TreeFrameAttributes.Nodes.ColumnSetResolved.Columns
-            column.LayoutInfo.MinimumCellSize = New Size(200, 15)
-        Next
-
-        ' We use fundamental frame type as ID for frames so they are easy to identify - this
-        ' is also useful later when we want to determine root node associations to frames
-        currentNodeID = FundamentalFrameType.Undetermined + 1
-
-        For Each frame In attributeFrames
-            ' Data frames have an associated configuration frame
-            If frame.FrameType = FundamentalFrameType.DataFrame Then
-                ' See if frame can be cast as a data frame (could be a partially parsed frame, e.g. a common frame header)
-                Dim dataFrame As IDataFrame = TryCast(frame, IDataFrame)
-
-                If dataFrame Is Nothing Then
-                    associatedFrame = Nothing
-                Else
-                    associatedFrame = dataFrame.ConfigurationFrame
-                End If
-            Else
-                associatedFrame = Nothing
-            End If
-
-            ' Add frame to tree root using its frame type value as the ID
-            lastNodeID = AddChannelNode(attributeTable, frame.FrameType + 1, currentNodeID, frame, CDate(frame.Timestamp).ToString("yyyy-MM-dd HH:mm:ss.fff"), associatedFrame)
-
-            ' We add extra detail for non partial configuration and data frames...
-            Select Case frame.FrameType
-                Case FundamentalFrameType.ConfigurationFrame
+            ' Tag configuration channel nodes by assigning a unique key that will allow virtual associations between nodes
+            For Each frame In attributeFrames
+                If frame.FrameType = FundamentalFrameType.ConfigurationFrame Then
                     Dim configFrame As IConfigurationFrame = DirectCast(frame, IConfigurationFrame)
 
-                    ' Add frame cells collection object to frame item
-                    lastNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, configFrame.Cells, Nothing, Nothing)
+                    configFrame.Tag = System.Guid.NewGuid().ToString()
 
-                    ' Add each frame cell item to the list
+                    ' Tag frame cells collection
+                    configFrame.Cells.Tag = System.Guid.NewGuid().ToString()
+
+                    ' Tag each frame cell item
                     For Each cellNode As IConfigurationCell In configFrame.Cells
-                        lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, cellNode, cellNode.StationName, Nothing)
+                        cellNode.Tag = System.Guid.NewGuid().ToString()
 
                         For Each phasorDefinition As IPhasorDefinition In cellNode.PhasorDefinitions
-                            AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, phasorDefinition, phasorDefinition.Label, Nothing)
+                            phasorDefinition.Tag = System.Guid.NewGuid().ToString()
                         Next
 
-                        AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, cellNode.FrequencyDefinition, Nothing, Nothing)
+                        cellNode.FrequencyDefinition.Tag = System.Guid.NewGuid().ToString()
 
                         For Each analogDefinition As IAnalogDefinition In cellNode.AnalogDefinitions
-                            AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, analogDefinition, analogDefinition.Label, Nothing)
+                            analogDefinition.Tag = System.Guid.NewGuid().ToString()
                         Next
 
                         For Each digitalDefinition As IDigitalDefinition In cellNode.DigitalDefinitions
-                            AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, digitalDefinition, digitalDefinition.Label, Nothing)
+                            digitalDefinition.Tag = System.Guid.NewGuid().ToString()
                         Next
                     Next
-                Case FundamentalFrameType.DataFrame
-                    Dim dataFrame As IDataFrame = DirectCast(frame, IDataFrame)
 
-                    ' Add frame cells collection object to frame item
-                    If dataFrame.ConfigurationFrame IsNot Nothing Then
-                        lastNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, dataFrame.Cells, Nothing, dataFrame.ConfigurationFrame.Cells)
+                    ' Only configuration nodes need tagging since they will be the destination of all "links"
+                    Exit For
+                End If
+            Next
 
-                        ' Add each frame cell item to the list
-                        For Each cellNode As IDataCell In dataFrame.Cells
-                            lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, cellNode, cellNode.StationName, cellNode.ConfigurationCell)
+            ' We bind tree before there's any data because this makes the data fill very fast
+            With TreeFrameAttributes
+                .Override.ShowExpansionIndicator = ShowExpansionIndicator.CheckOnDisplay
+                .SetDataBinding(attributeTreeDataSet, "Attributes")
+            End With
 
-                            For Each phasorValue As IPhasorValue In cellNode.PhasorValues
-                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, phasorValue, phasorValue.Label, phasorValue.Definition)
-                            Next
+            ' We hard code column widths because the auto-size function is extremely slow
+            For Each column As UltraTreeNodeColumn In TreeFrameAttributes.Nodes.ColumnSetResolved.Columns
+                column.LayoutInfo.MinimumCellSize = New Size(200, 15)
+            Next
 
-                            AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, cellNode.FrequencyValue, Nothing, cellNode.FrequencyValue.Definition)
+            ' We use fundamental frame type as ID for frames so they are easy to identify - this
+            ' is also useful later when we want to determine root node associations to frames
+            currentNodeID = FundamentalFrameType.Undetermined + 1
 
-                            For Each analogValue As IAnalogValue In cellNode.AnalogValues
-                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, analogValue, analogValue.Label, analogValue.Definition)
-                            Next
+            For Each frame In attributeFrames
+                ' Data frames have an associated configuration frame
+                If frame.FrameType = FundamentalFrameType.DataFrame Then
+                    ' See if frame can be cast as a data frame (could be a partially parsed frame, e.g. a common frame header)
+                    Dim dataFrame As IDataFrame = TryCast(frame, IDataFrame)
 
-                            For Each digitalValue As IDigitalValue In cellNode.DigitalValues
-                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, digitalValue, digitalValue.Label, digitalValue.Definition)
-                            Next
-                        Next
+                    If dataFrame Is Nothing Then
+                        associatedFrame = Nothing
                     Else
-                        lastNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, dataFrame.Cells, Nothing, Nothing)
+                        associatedFrame = dataFrame.ConfigurationFrame
+                    End If
+                Else
+                    associatedFrame = Nothing
+                End If
+
+                ' Add frame to tree root using its frame type value as the ID
+                lastNodeID = AddChannelNode(attributeTable, frame.FrameType + 1, currentNodeID, frame, CDate(frame.Timestamp).ToString("yyyy-MM-dd HH:mm:ss.fff"), associatedFrame)
+
+                ' We add extra detail for non partial configuration and data frames...
+                Select Case frame.FrameType
+                    Case FundamentalFrameType.ConfigurationFrame
+                        Dim configFrame As IConfigurationFrame = DirectCast(frame, IConfigurationFrame)
+
+                        ' Add frame cells collection object to frame item
+                        lastNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, configFrame.Cells, Nothing, Nothing)
 
                         ' Add each frame cell item to the list
-                        For Each cellNode As IDataCell In dataFrame.Cells
+                        For Each cellNode As IConfigurationCell In configFrame.Cells
                             lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, cellNode, cellNode.StationName, Nothing)
 
-                            For Each phasorValue As IPhasorValue In cellNode.PhasorValues
-                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, phasorValue, phasorValue.Label, Nothing)
+                            For Each phasorDefinition As IPhasorDefinition In cellNode.PhasorDefinitions
+                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, phasorDefinition, phasorDefinition.Label, Nothing)
                             Next
 
-                            AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, cellNode.FrequencyValue, Nothing, Nothing)
+                            AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, cellNode.FrequencyDefinition, Nothing, Nothing)
 
-                            For Each analogValue As IAnalogValue In cellNode.AnalogValues
-                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, analogValue, analogValue.Label, Nothing)
+                            For Each analogDefinition As IAnalogDefinition In cellNode.AnalogDefinitions
+                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, analogDefinition, analogDefinition.Label, Nothing)
                             Next
 
-                            For Each digitalValue As IDigitalValue In cellNode.DigitalValues
-                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, digitalValue, digitalValue.Label, Nothing)
+                            For Each digitalDefinition As IDigitalDefinition In cellNode.DigitalDefinitions
+                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, digitalDefinition, digitalDefinition.Label, Nothing)
                             Next
                         Next
-                    End If
-            End Select
-        Next
+                    Case FundamentalFrameType.DataFrame
+                        Dim dataFrame As IDataFrame = DirectCast(frame, IDataFrame)
+
+                        ' Add frame cells collection object to frame item
+                        If dataFrame.ConfigurationFrame IsNot Nothing Then
+                            lastNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, dataFrame.Cells, Nothing, dataFrame.ConfigurationFrame.Cells)
+
+                            ' Add each frame cell item to the list
+                            For Each cellNode As IDataCell In dataFrame.Cells
+                                lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, cellNode, cellNode.StationName, cellNode.ConfigurationCell)
+
+                                For Each phasorValue As IPhasorValue In cellNode.PhasorValues
+                                    AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, phasorValue, phasorValue.Label, phasorValue.Definition)
+                                Next
+
+                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, cellNode.FrequencyValue, Nothing, cellNode.FrequencyValue.Definition)
+
+                                For Each analogValue As IAnalogValue In cellNode.AnalogValues
+                                    AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, analogValue, analogValue.Label, analogValue.Definition)
+                                Next
+
+                                For Each digitalValue As IDigitalValue In cellNode.DigitalValues
+                                    AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, digitalValue, digitalValue.Label, digitalValue.Definition)
+                                Next
+                            Next
+                        Else
+                            lastNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, dataFrame.Cells, Nothing, Nothing)
+
+                            ' Add each frame cell item to the list
+                            For Each cellNode As IDataCell In dataFrame.Cells
+                                lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, currentNodeID, cellNode, cellNode.StationName, Nothing)
+
+                                For Each phasorValue As IPhasorValue In cellNode.PhasorValues
+                                    AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, phasorValue, phasorValue.Label, Nothing)
+                                Next
+
+                                AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, cellNode.FrequencyValue, Nothing, Nothing)
+
+                                For Each analogValue As IAnalogValue In cellNode.AnalogValues
+                                    AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, analogValue, analogValue.Label, Nothing)
+                                Next
+
+                                For Each digitalValue As IDigitalValue In cellNode.DigitalValues
+                                    AddChannelNode(attributeTable, lastCellNodeID, currentNodeID, digitalValue, digitalValue.Label, Nothing)
+                                Next
+                            Next
+                        End If
+                End Select
+            Next
+        Finally
+            Cursor = Cursors.Default
+        End Try
 
     End Sub
 
