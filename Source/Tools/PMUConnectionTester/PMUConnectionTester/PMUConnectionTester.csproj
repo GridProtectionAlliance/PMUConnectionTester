@@ -5,9 +5,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{AB9A5D8C-38C2-4393-93D9-BC548ED0AB38}</ProjectGuid>
+    <ProjectGuid>{19BEDCE7-F49A-0C62-1181-762AEC479F98}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <StartupObject>ConnectionTester.My.MyApplication</StartupObject>
+    <StartupObject>ConnectionTester.Program</StartupObject>
     <RootNamespace>ConnectionTester</RootNamespace>
     <AssemblyName>PMUConnectionTester</AssemblyName>
     <MyType>WindowsForms</MyType>
@@ -39,6 +39,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
     <LangVersion>latest</LangVersion>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(ProjectDir)**\*.vb</DefaultItemExcludes>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,12 +47,13 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>..\..\..\..\Build\Output\Debug\Tools\PMUConnectionTester\</OutputPath>
-    <DocumentationFile>PMUConnectionTester.xml</DocumentationFile>
-    <NoWarn>42030,42104,42108,42109,42353,42354,42355</NoWarn>
+    <DocumentationFile>..\..\..\..\Build\Output\Debug\Tools\PMUConnectionTester\PMUConnectionTester.xml</DocumentationFile>
+    <NoWarn>42030,42104,42108,42109,42353,42354,42355,CS1591,IDE1006</NoWarn>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+    <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -59,14 +61,14 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\..\Build\Output\Release\Tools\PMUConnectionTester\</OutputPath>
-    <DocumentationFile>PMUConnectionTester.xml</DocumentationFile>
-    <NoWarn>42030,42104,42108,42109,42353,42354,42355</NoWarn>
+    <DocumentationFile>..\..\..\..\Build\Output\Release\Tools\PMUConnectionTester\PMUConnectionTester.xml</DocumentationFile>
+    <NoWarn>42030,42104,42108,42109,42353,42354,42355,CS1591,IDE1006</NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GSF.Communication">
@@ -153,105 +155,89 @@
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlternateCommandChannel.Designer.vb">
-      <DependentUpon>AlternateCommandChannel.vb</DependentUpon>
+    <Compile Include="Properties\SingletonForms.cs" />
+    <Compile Include="AlternateCommandChannel.Designer.cs">
+      <DependentUpon>AlternateCommandChannel.cs</DependentUpon>
     </Compile>
-    <Compile Include="AlternateCommandChannel.vb">
+    <Compile Include="AlternateCommandChannel.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ApplicationSettings.vb" />
-    <Compile Include="ReceiveFromSelector.Designer.vb">
-      <DependentUpon>ReceiveFromSelector.vb</DependentUpon>
+    <Compile Include="ApplicationSettings.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ReceiveFromSelector.Designer.cs">
+      <DependentUpon>ReceiveFromSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="ReceiveFromSelector.vb">
+    <Compile Include="ReceiveFromSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MulticastSourceSelector.Designer.vb">
-      <DependentUpon>MulticastSourceSelector.vb</DependentUpon>
+    <Compile Include="MulticastSourceSelector.Designer.cs">
+      <DependentUpon>MulticastSourceSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="MulticastSourceSelector.vb">
+    <Compile Include="MulticastSourceSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="My Project\Resources.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
+    <Compile Include="NetworkInterfaceSelector.Designer.cs">
+      <DependentUpon>NetworkInterfaceSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="NetworkInterfaceSelector.Designer.vb">
-      <DependentUpon>NetworkInterfaceSelector.vb</DependentUpon>
-    </Compile>
-    <Compile Include="NetworkInterfaceSelector.vb">
+    <Compile Include="NetworkInterfaceSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PMUConnectionTester.vb">
+    <Compile Include="PMUConnectionTester.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PMUConnectionTester.Designer.vb">
-      <DependentUpon>PMUConnectionTester.vb</DependentUpon>
+    <Compile Include="PMUConnectionTester.Designer.cs">
+      <DependentUpon>PMUConnectionTester.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="My Project\AssemblyInfo.vb" />
-    <Compile Include="My Project\Application.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Application.myapp</DependentUpon>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SplashScreen.Designer.cs">
+      <DependentUpon>SplashScreen.cs</DependentUpon>
     </Compile>
-    <Compile Include="SplashScreen.Designer.vb">
-      <DependentUpon>SplashScreen.vb</DependentUpon>
-    </Compile>
-    <Compile Include="SplashScreen.vb">
+    <Compile Include="SplashScreen.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ReceiveFromSelector.resx">
-      <DependentUpon>ReceiveFromSelector.vb</DependentUpon>
+      <DependentUpon>ReceiveFromSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MulticastSourceSelector.resx">
-      <DependentUpon>MulticastSourceSelector.vb</DependentUpon>
+      <DependentUpon>MulticastSourceSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NetworkInterfaceSelector.resx">
-      <DependentUpon>NetworkInterfaceSelector.vb</DependentUpon>
+      <DependentUpon>NetworkInterfaceSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PMUConnectionTester.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>PMUConnectionTester.vb</DependentUpon>
+      <DependentUpon>PMUConnectionTester.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="My Project\app.manifest" />
-    <None Include="My Project\Application.myapp">
-      <Generator>MyApplicationCodeGenerator</Generator>
-      <LastGenOutput>Application.Designer.vb</LastGenOutput>
-    </None>
+    <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AlternateCommandChannel.resx">
-      <DependentUpon>AlternateCommandChannel.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="My Project\Resources.resx">
-      <CustomToolNamespace>My.Resources</CustomToolNamespace>
-      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <DependentUpon>AlternateCommandChannel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SplashScreen.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>SplashScreen.vb</DependentUpon>
+      <DependentUpon>SplashScreen.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="CommandChannel.ico" />
-    <EmbeddedResource Include="Embedded Resources\Disclaimer.txt" />
+    <EmbeddedResource Include="Disclaimer.txt" />
     <Content Include="LastRun.PmuConnection">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="PMUConnectionTester.ico" />
-    <EmbeddedResource Include="Embedded Resources\HelpAboutLogo.png" />
+    <EmbeddedResource Include="HelpAboutLogo.png" />
     <Content Include="PMUConnectionTester.chm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Sample1344.PmuCapture">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <EmbeddedResource Include="Embedded Resources\SplashScreen.png" />
+    <EmbeddedResource Include="SplashScreen.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -280,7 +266,8 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
     <CallTarget Targets="SignBuild" />
   </Target>
