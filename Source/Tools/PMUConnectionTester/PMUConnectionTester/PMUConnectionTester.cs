@@ -296,17 +296,13 @@ public partial class PMUConnectionTester
             switch (Path.GetExtension(commandFile).ToLower().Trim())
             {
                 case ".pmuconnection":
-                    {
-                        LoadConnectionSettings(commandFile);
-                        break;
-                    }
+                    LoadConnectionSettings(commandFile);
+                    break;
 
                 case ".pmucapture":
-                    {
-                        TextBoxFileCaptureName.Text = commandFile;
-                        TabControlCommunications.Tabs[(int)TransportProtocol.File].Selected = true;
-                        break;
-                    }
+                    TextBoxFileCaptureName.Text = commandFile;
+                    TabControlCommunications.Tabs[(int)TransportProtocol.File].Selected = true;
+                    break;
             }
         }
         else if (m_applicationSettings.RestoreLastConnectionSettings && File.Exists(m_lastConnectionFileName))
@@ -354,7 +350,7 @@ public partial class PMUConnectionTester
         Forms.SplashScreen.Hide();
 
         if (!m_formLoaded)
-            BeginInvoke(new Action(() => ComboBoxProtocols_SelectedIndexChanged(sender, e)));
+            BeginInvoke(new Action(() => ExtraParametersToolTipVisible(m_frameParser.ConnectionParameters is not null)));
 
         m_formLoaded = true;
     }
@@ -519,10 +515,8 @@ public partial class PMUConnectionTester
 
     private void ComboBoxProtocols_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (m_frameParser is not null && m_formLoaded)
+        if (m_frameParser is not null)
         {
-            UltraToolTipManager extraParameters = ToolTipManagerForExtraParameters;
-            UltraToolTipInfo toolTip = extraParameters.GetUltraToolTip(TabControlProtocolParameters);
 
             // Assign new protocol selection to frame parser - this will retrieve a default set of connection
             // parameters for the protocol if any are available
@@ -535,8 +529,7 @@ public partial class PMUConnectionTester
                 PropertyGridProtocolParameters.SelectedObject = null;
 
                 // Hide tool tip for protocol's with no extra parameters
-                toolTip.Enabled = DefaultableBoolean.False;
-                extraParameters.SetUltraToolTip(TabControlProtocolParameters, toolTip);
+                ExtraParametersToolTipVisible(false);
             }
             else
             {
@@ -544,11 +537,9 @@ public partial class PMUConnectionTester
                 TabControlProtocolParameters.Tabs[(int)ProtocolTabs.ExtraParameters].Visible = true;
                 PropertyGridProtocolParameters.SelectedObject = m_frameParser.ConnectionParameters;
 
+
                 // Show tool tip for protocol's with extra parameters (for availability emphasis)
-                Point targetPoint = new(Location.X + TabControlCommunications.Location.X + TabControlProtocolParameters.Location.X + 100, Location.Y + TabControlCommunications.Location.Y + TabControlProtocolParameters.Location.Y + 50);
-                toolTip.Enabled = DefaultableBoolean.True;
-                extraParameters.SetUltraToolTip(TabControlProtocolParameters, toolTip);
-                extraParameters.ShowToolTip(TabControlProtocolParameters, true, targetPoint);
+                ExtraParametersToolTipVisible(true);
             }
         }
 
@@ -1830,6 +1821,28 @@ public partial class PMUConnectionTester
     #endregion
 
     #region [ Interface / Data Layer Functions ]
+
+    private void ExtraParametersToolTipVisible(bool show)
+    {
+        if (!m_formLoaded)
+            return;
+
+        UltraToolTipManager extraParameters = ToolTipManagerForExtraParameters;
+        UltraToolTipInfo toolTip = extraParameters.GetUltraToolTip(TabControlProtocolParameters);
+
+        if (show)
+        {
+            Point targetPoint = new(Location.X + TabControlCommunications.Location.X + TabControlProtocolParameters.Location.X + 100, Location.Y + TabControlCommunications.Location.Y + TabControlProtocolParameters.Location.Y + 50);
+            toolTip.Enabled = DefaultableBoolean.True;
+            extraParameters.SetUltraToolTip(TabControlProtocolParameters, toolTip);
+            extraParameters.ShowToolTip(TabControlProtocolParameters, true, targetPoint);
+        }
+        else
+        {
+            toolTip.Enabled = DefaultableBoolean.False;
+            extraParameters.SetUltraToolTip(TabControlProtocolParameters, toolTip);
+        }
+    }
 
     private void LoadConnectionSettings(string filename)
     {
