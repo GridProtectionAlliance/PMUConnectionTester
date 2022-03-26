@@ -350,9 +350,10 @@ public partial class PMUConnectionTester
         Forms.SplashScreen.Hide();
 
         if (!m_formLoaded)
-            BeginInvoke(new Action(() => ExtraParametersToolTipVisible(m_frameParser.ConnectionParameters is not null)));
-
-        m_formLoaded = true;
+        {
+            m_formLoaded = true;
+            BeginInvoke(new Action(() => ExtraParametersToolTipVisible(m_frameParser?.ConnectionParameters is not null)));
+        }
     }
 
     // We allow file drops from explorer onto connection tester
