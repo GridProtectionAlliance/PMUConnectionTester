@@ -26,99 +26,98 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace ConnectionTester
+namespace ConnectionTester;
+
+internal class SingletonForms
 {
-    internal class SingletonForms
+    [ThreadStatic]
+    private static HashSet<Type> s_formBeingCreated;
+
+    private static T CreateInstance<T>() where T : Form, new()
     {
-        [ThreadStatic]
-        private static HashSet<Type> s_formBeingCreated;
+        if ((s_formBeingCreated ??= new()).Contains(typeof(T)))
+            throw new InvalidOperationException("WinForms_RecursiveFormCreate");
 
-        private static T CreateInstance<T>() where T : Form, new()
+        s_formBeingCreated.Add(typeof(T));
+
+        try
         {
-            if ((s_formBeingCreated ??= new()).Contains(typeof(T)))
-                throw new InvalidOperationException("WinForms_RecursiveFormCreate");
-
-            s_formBeingCreated.Add(typeof(T));
-
-            try
-            {
-                return new T();
-            }
-            catch (TargetInvocationException ex) when (ex.InnerException is not null)
-            {
-                throw new InvalidOperationException(ex.InnerException.Message, ex.InnerException);
-            }
-            finally
-            {
-                s_formBeingCreated.Remove(typeof(T));
-            }
+            return new T();
         }
-
-        private static void DisposeInstance<T>(ref T instance) where T : Form
+        catch (TargetInvocationException ex) when (ex.InnerException is not null)
         {
-            instance.Dispose();
-            instance = null;
+            throw new InvalidOperationException(ex.InnerException.Message, ex.InnerException);
         }
-
-        private static void SetInstance<T>(T value, ref T instance) where T : Form
+        finally
         {
-            if (ReferenceEquals(value, instance))
-                return;
-
-            if (value is not null)
-                throw new ArgumentException("Property can only be set to null");
-
-            DisposeInstance(ref instance);
+            s_formBeingCreated.Remove(typeof(T));
         }
+    }
 
-        internal new Type GetType() => typeof(SingletonForms);
+    private static void DisposeInstance<T>(ref T instance) where T : Form
+    {
+        instance.Dispose();
+        instance = null;
+    }
 
-        private PMUConnectionTester m_pmuConnectionTester;
+    private static void SetInstance<T>(T value, ref T instance) where T : Form
+    {
+        if (ReferenceEquals(value, instance))
+            return;
 
-        public PMUConnectionTester PMUConnectionTester
-        {
-            get => m_pmuConnectionTester ??= CreateInstance<PMUConnectionTester>();
-            set => SetInstance(value, ref m_pmuConnectionTester);
-        }
+        if (value is not null)
+            throw new ArgumentException("Property can only be set to null");
 
-        private AlternateCommandChannel m_alternateCommandChannel;
+        DisposeInstance(ref instance);
+    }
 
-        public AlternateCommandChannel AlternateCommandChannel
-        {
-            get => m_alternateCommandChannel ??= CreateInstance<AlternateCommandChannel>();
-            set => SetInstance(value, ref m_alternateCommandChannel);
-        }
+    internal new Type GetType() => typeof(SingletonForms);
 
-        private MulticastSourceSelector m_multicastSourceSelector;
+    private PMUConnectionTester m_pmuConnectionTester;
 
-        public MulticastSourceSelector MulticastSourceSelector
-        {
-            get => m_multicastSourceSelector ??= CreateInstance<MulticastSourceSelector>();
-            set => SetInstance(value, ref m_multicastSourceSelector);
-        }
+    public PMUConnectionTester PMUConnectionTester
+    {
+        get => m_pmuConnectionTester ??= CreateInstance<PMUConnectionTester>();
+        set => SetInstance(value, ref m_pmuConnectionTester);
+    }
 
-        private NetworkInterfaceSelector m_networkInterfaceSelector;
+    private AlternateCommandChannel m_alternateCommandChannel;
 
-        public NetworkInterfaceSelector NetworkInterfaceSelector
-        {
-            get => m_networkInterfaceSelector ??= CreateInstance<NetworkInterfaceSelector>();
-            set => SetInstance(value, ref m_networkInterfaceSelector);
-        }
+    public AlternateCommandChannel AlternateCommandChannel
+    {
+        get => m_alternateCommandChannel ??= CreateInstance<AlternateCommandChannel>();
+        set => SetInstance(value, ref m_alternateCommandChannel);
+    }
 
-        private ReceiveFromSourceSelector m_receiveFromSourceSelector;
+    private MulticastSourceSelector m_multicastSourceSelector;
 
-        public ReceiveFromSourceSelector ReceiveFromSourceSelector
-        {
-            get => m_receiveFromSourceSelector ??= CreateInstance<ReceiveFromSourceSelector>();
-            set => SetInstance(value, ref m_receiveFromSourceSelector);
-        }
+    public MulticastSourceSelector MulticastSourceSelector
+    {
+        get => m_multicastSourceSelector ??= CreateInstance<MulticastSourceSelector>();
+        set => SetInstance(value, ref m_multicastSourceSelector);
+    }
 
-        private SplashScreen m_splashScreen;
+    private NetworkInterfaceSelector m_networkInterfaceSelector;
 
-        public SplashScreen SplashScreen
-        {
-            get => m_splashScreen ??= CreateInstance<SplashScreen>();
-            set => SetInstance(value, ref m_splashScreen);
-        }
+    public NetworkInterfaceSelector NetworkInterfaceSelector
+    {
+        get => m_networkInterfaceSelector ??= CreateInstance<NetworkInterfaceSelector>();
+        set => SetInstance(value, ref m_networkInterfaceSelector);
+    }
+
+    private ReceiveFromSourceSelector m_receiveFromSourceSelector;
+
+    public ReceiveFromSourceSelector ReceiveFromSourceSelector
+    {
+        get => m_receiveFromSourceSelector ??= CreateInstance<ReceiveFromSourceSelector>();
+        set => SetInstance(value, ref m_receiveFromSourceSelector);
+    }
+
+    private SplashScreen m_splashScreen;
+
+    public SplashScreen SplashScreen
+    {
+        get => m_splashScreen ??= CreateInstance<SplashScreen>();
+        set => SetInstance(value, ref m_splashScreen);
     }
 }

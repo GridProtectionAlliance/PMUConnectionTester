@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Windows.Forms;
 using GSF;
 using GSF.Communication;
@@ -44,14 +45,17 @@ public partial class AlternateCommandChannel
         InitializeComponent();
 
         // Initialize serial port selection lists
-        foreach (string port in System.IO.Ports.SerialPort.GetPortNames())
+        foreach (string port in SerialPort.GetPortNames())
             ComboBoxSerialPorts.Items.Add(port);
 
-        foreach (string parity in Enum.GetNames(typeof(System.IO.Ports.Parity)))
+        foreach (string parity in Enum.GetNames(typeof(Parity)))
             ComboBoxSerialParities.Items.Add(parity);
 
-        foreach (string stopbit in Enum.GetNames(typeof(System.IO.Ports.StopBits)))
-            ComboBoxSerialStopBits.Items.Add(stopbit);
+        foreach (string stopbit in Enum.GetNames(typeof(StopBits)))
+        {
+            if (!stopbit.Equals("None", StringComparison.OrdinalIgnoreCase))
+                ComboBoxSerialStopBits.Items.Add(stopbit);
+        }
 
         // Default to TCP tab
         TabControlCommunications.Tabs[(int)TransportProtocol.Tcp].Selected = true;
@@ -135,8 +139,8 @@ public partial class AlternateCommandChannel
                 connectionData = connectionData["commandchannel"].ParseKeyValuePairs();
                 TransportProtocol protocol = (TransportProtocol)Enum.Parse(typeof(TransportProtocol), connectionData["protocol"], true);
 
-                // Load remaining connection settings
-                TabControlCommunications.Tabs[Common.IIf(protocol > TransportProtocol.Tcp, (int)protocol - 1, (int)protocol)].Selected = true;
+                // Load remaining connection settings - only tabs are TCP, Serial and File (no UDP)
+                TabControlCommunications.Tabs[protocol > TransportProtocol.Tcp ? (int)protocol - 1 : (int)protocol].Selected = true;
                     
                 switch (protocol)
                 {

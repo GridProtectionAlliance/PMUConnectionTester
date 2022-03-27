@@ -41,21 +41,11 @@ public partial class MulticastSourceSelector
 
     public string ConnectionString
     {
-        get
-        {
-            if (RadioButtonAnySource.Checked)
-            {
-                return "";
-            }
-            else
-            {
-                return $"; multicastSource={TextBoxMulticastSourceIP.Text}";
-            }
-        }
-
+        get => RadioButtonAnySource.Checked ? "" : $"; multicastSource={TextBoxMulticastSourceIP.Text}";
         set
         {
             Dictionary<string, string> connectionData = value.ParseKeyValuePairs();
+
             if (connectionData.TryGetValue("multicastSource", out string multicastSourceIP))
             {
                 RadioButtonSpecificSource.Checked = true;

@@ -41,6 +41,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -205,26 +206,29 @@ public partial class PMUConnectionTester
         if (!File.Exists(m_lastConnectionFileName))
             File.Copy(GetAbsolutePath("LastRun.PmuConnection"), m_lastConnectionFileName);
 
-    #if DEBUG
+#if DEBUG
         LabelVersion.Text = "DEBUG VERSION";
-    #else
+#else
         var version = EntryAssembly.Version;
         LabelVersion.Text = $"Version {version.Major}.{version.Minor}.{version.Build}"; // + "." & version.Revision;
-    #endif
+#endif
 
         // Initialize phasor protocol selection list
         foreach (PhasorProtocol protocol in Enum.GetValues(typeof(PhasorProtocol)).Cast<PhasorProtocol>())
             ComboBoxProtocols.Items.Add(protocol.GetFormattedProtocolName());
 
         // Initialize serial port selection lists
-        foreach (string port in System.IO.Ports.SerialPort.GetPortNames())
+        foreach (string port in SerialPort.GetPortNames())
             ComboBoxSerialPorts.Items.Add(port);
 
-        foreach (string parity in Enum.GetNames(typeof(System.IO.Ports.Parity)))
+        foreach (string parity in Enum.GetNames(typeof(Parity)))
             ComboBoxSerialParities.Items.Add(parity);
 
-        foreach (string stopbit in Enum.GetNames(typeof(System.IO.Ports.StopBits)))
-            ComboBoxSerialStopBits.Items.Add(stopbit);
+        foreach (string stopbit in Enum.GetNames(typeof(StopBits)))
+        {
+            if (!stopbit.Equals("None", StringComparison.OrdinalIgnoreCase))
+                ComboBoxSerialStopBits.Items.Add(stopbit);
+        }
 
         // Properly position extra connection parameters group box.  Since it's
         // a top-most control we move it off to the side at design time
@@ -337,7 +341,7 @@ public partial class PMUConnectionTester
         Shutdown();
     }
 
-    private void PMUConnectionTester_Shown(object sender, EventArgs e) => 
+    private void PMUConnectionTester_Shown(object sender, EventArgs e) =>
         TimerDelay.Start();
 
     private void TimerDelay_Tick(object sender, EventArgs e)
@@ -357,7 +361,7 @@ public partial class PMUConnectionTester
     }
 
     // We allow file drops from explorer onto connection tester
-    private void PMUConnectionTester_DragEnter(object sender, DragEventArgs e) => 
+    private void PMUConnectionTester_DragEnter(object sender, DragEventArgs e) =>
         e.Effect = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
 
     private void PMUConnectionTester_DragDrop(object sender, DragEventArgs e)
@@ -732,10 +736,10 @@ public partial class PMUConnectionTester
         Forms.NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex = -1;
     }
 
-    private void LabelMulticastSource_Click(object sender, EventArgs e) => 
+    private void LabelMulticastSource_Click(object sender, EventArgs e) =>
         Forms.MulticastSourceSelector.ShowDialog(this);
 
-    private void LabelReceiveFrom_Click(object sender, EventArgs e) => 
+    private void LabelReceiveFrom_Click(object sender, EventArgs e) =>
         Forms.ReceiveFromSourceSelector.ShowDialog(this);
 
     private void LabelAlternateCommandChannel_Click(object sender, EventArgs e)
@@ -784,11 +788,8 @@ public partial class PMUConnectionTester
         }
     }
 
-    private void TextBox_MouseClick(object sender, MouseEventArgs e)
-    {
-        // TextBoxUdpHostIP.MouseClick, TextBoxTcpHostIP.MouseClick
+    private void TextBox_MouseClick(object sender, MouseEventArgs e) => 
         TextBox_GotFocus(sender, e);
-    }
 
     private void TextBoxFileCaptureName_TextChanged(object sender, EventArgs e)
     {
@@ -1076,13 +1077,13 @@ public partial class PMUConnectionTester
         }
     }
 
-    private void MenuItemCancelSampleFrameCapture_Click(object sender, EventArgs e) => 
+    private void MenuItemCancelSampleFrameCapture_Click(object sender, EventArgs e) =>
         CloseSampleCapture();
 
-    private void MenuItemLocalHelp_Click(object sender, EventArgs e) => 
+    private void MenuItemLocalHelp_Click(object sender, EventArgs e) =>
         Help.ShowHelp(this, GetAbsolutePath("PMUConnectionTester.chm"));
 
-    private void MenuItemOnlineHelp_Click(object sender, EventArgs e) => 
+    private void MenuItemOnlineHelp_Click(object sender, EventArgs e) =>
         Process.Start("https://github.com/GridProtectionAlliance/PMUConnectionTester/wiki");
 
     private void MenuItemAbout_Click(object sender, EventArgs e)
@@ -1095,10 +1096,10 @@ public partial class PMUConnectionTester
         aboutDialog.ShowDialog(this);
     }
 
-    private void MenuItemExit_Click(object sender, EventArgs e) => 
+    private void MenuItemExit_Click(object sender, EventArgs e) =>
         Close();
 
-    private void MenuItemRefresh_Click(object sender, EventArgs e) => 
+    private void MenuItemRefresh_Click(object sender, EventArgs e) =>
         InitializeAttributeTree();
 
     private void MenuItemExpandAll_Click(object sender, EventArgs e)
@@ -1130,11 +1131,11 @@ public partial class PMUConnectionTester
 
     #region [ Control Resizing Event Code ]
 
-    private void PMUConnectionTester_Resize(object sender, EventArgs e) => 
+    private void PMUConnectionTester_Resize(object sender, EventArgs e) =>
         UpdateApplicationTitle(null);
 
     private void GroupBoxStatus_ExpandedStateChanged(object sender, EventArgs e) =>
-        ToolTipManager.GetUltraToolTip(GroupBoxStatus).Enabled = 
+        ToolTipManager.GetUltraToolTip(GroupBoxStatus).Enabled =
             GroupBoxStatus.Expanded ? DefaultableBoolean.False : DefaultableBoolean.True;
 
     private void GroupBoxStatus_ExpandedStateChanging(object sender, CancelEventArgs e)
@@ -1233,47 +1234,47 @@ public partial class PMUConnectionTester
         }
     }
 
-    private void m_frameParser_ReceivedDataFrame(object sender, EventArgs<IDataFrame> e) => 
+    private void m_frameParser_ReceivedDataFrame(object sender, EventArgs<IDataFrame> e) =>
         BeginInvoke(new Action<IDataFrame>(ReceivedDataFrame), e.Argument);
 
-    private void m_frameParser_ReceivedHeaderFrame(object sender, EventArgs<IHeaderFrame> e) => 
+    private void m_frameParser_ReceivedHeaderFrame(object sender, EventArgs<IHeaderFrame> e) =>
         BeginInvoke(new Action<IHeaderFrame>(ReceivedHeaderFrame), e.Argument);
 
     // Note we use the same function to handle both sent and received command frames...
-    private void m_frameParser_ReceivedCommandFrame(object sender, EventArgs<ICommandFrame> e) => 
+    private void m_frameParser_ReceivedCommandFrame(object sender, EventArgs<ICommandFrame> e) =>
         BeginInvoke(new Action<ICommandFrame>(ReceivedCommandFrame), e.Argument);
 
-    private void m_frameParser_ReceivedUndeterminedFrame(object sender, EventArgs<IChannelFrame> e) => 
+    private void m_frameParser_ReceivedUndeterminedFrame(object sender, EventArgs<IChannelFrame> e) =>
         BeginInvoke(new Action<IChannelFrame>(ReceivedUndeterminedFrame), e.Argument);
 
-    private void m_frameParser_DataStreamException(object sender, EventArgs<Exception> e) => 
+    private void m_frameParser_DataStreamException(object sender, EventArgs<Exception> e) =>
         BeginInvoke(new Action<Exception>(DataStreamException), e.Argument);
 
-    private void m_frameParser_ConfigurationChanged(object sender, EventArgs e) => 
+    private void m_frameParser_ConfigurationChanged(object sender, EventArgs e) =>
         BeginInvoke(new Action(ConfigurationChanged));
 
-    private void m_frameParser_Connected(object sender, EventArgs e) => 
+    private void m_frameParser_Connected(object sender, EventArgs e) =>
         BeginInvoke(new Action(Connected));
 
-    private void m_frameParser_ConnectionException(object sender, EventArgs<Exception, int> e) => 
+    private void m_frameParser_ConnectionException(object sender, EventArgs<Exception, int> e) =>
         BeginInvoke(new Action<Exception, int>(ConnectionException), e.Argument1, e.Argument2);
 
-    private void m_frameParser_ExceededParsingExceptionThreshold(object sender, EventArgs e) => 
+    private void m_frameParser_ExceededParsingExceptionThreshold(object sender, EventArgs e) =>
         BeginInvoke(new EventHandler(ExceededParsingExceptionThreshold), sender, e);
 
-    private void m_frameParser_Disconnected(object sender, EventArgs e) => 
+    private void m_frameParser_Disconnected(object sender, EventArgs e) =>
         BeginInvoke(new Action(Disconnected));
 
-    private void m_frameParser_ServerStarted(object sender, EventArgs e) => 
+    private void m_frameParser_ServerStarted(object sender, EventArgs e) =>
         BeginInvoke(new Action(ServerStarted));
 
-    private void m_frameParser_ServerStopped(object sender, EventArgs e) => 
+    private void m_frameParser_ServerStopped(object sender, EventArgs e) =>
         BeginInvoke(new Action(ServerStopped));
 
-    private void m_imageQueue_ProcessException(object sender, EventArgs<Exception> e) => 
+    private void m_imageQueue_ProcessException(object sender, EventArgs<Exception> e) =>
         BeginInvoke(new Action<Exception>(DataStreamException), e.Argument);
 
-    private void m_chartSettings_PhaseAngleColorsChanged() => 
+    private void m_chartSettings_PhaseAngleColorsChanged() =>
         BeginInvoke(new Action(PhaseAngleColorsChanged));
 
     #endregion
@@ -1347,7 +1348,7 @@ public partial class PMUConnectionTester
 
     private void CaptureFrameImage(FundamentalFrameType frameType, byte[] binaryImage, int offset, int length)
     {
-        byte frameBit = (byte)Math.Round(Math.Pow(2d, (double)frameType));
+        byte frameBit = (byte)Math.Pow(2.0D, (double)frameType);
 
         // Make sure only one of each type of encountered frame is captured...
         if ((m_capturedFrames & frameBit) != 0)
@@ -1361,25 +1362,25 @@ public partial class PMUConnectionTester
             m_frameSampleStream.WriteLine($"   Frame Image Size: {length} bytes");
             m_frameSampleStream.WriteLine();
             m_frameSampleStream.WriteLine(">> Decimal Image:");
-            
+
             foreach (string currentRow in ByteEncoding.Decimal.GetString(binaryImage, offset, length, ' ').GetSegments(TextFileWidth / 4 * 4))
                 m_frameSampleStream.WriteLine(currentRow);
 
             m_frameSampleStream.WriteLine();
             m_frameSampleStream.WriteLine(">> Hexadecimal Image:");
-            
+
             foreach (string currentRow in ByteEncoding.Hexadecimal.GetString(binaryImage, offset, length, ' ').GetSegments(TextFileWidth / 3 * 3))
                 m_frameSampleStream.WriteLine(currentRow);
 
             m_frameSampleStream.WriteLine();
             m_frameSampleStream.WriteLine(">> Big Endian Binary Image:");
-            
+
             foreach (string currentRow in ByteEncoding.BigEndianBinary.GetString(binaryImage, offset, length, ' ').GetSegments(TextFileWidth / 9 * 9))
                 m_frameSampleStream.WriteLine(currentRow);
 
             m_frameSampleStream.WriteLine();
             m_frameSampleStream.WriteLine(">> ASCII Character Extraction:");
-            
+
             foreach (string currentRow in Encoding.ASCII.GetString(binaryImage, offset, length).RemoveControlCharacters().GetSegments(TextFileWidth))
                 m_frameSampleStream.WriteLine(currentRow);
 
@@ -1505,7 +1506,7 @@ public partial class PMUConnectionTester
             {
                 string station = cell.StationName.RemoveControlCharacters().Trim();
                 m_streamDebugCapture.Write($"{station} Status,");
-                
+
                 for (int i = 0; i < cell.PhasorDefinitions.Count; i++)
                 {
                     IPhasorDefinition definition = cell.PhasorDefinitions[i];
@@ -1514,7 +1515,7 @@ public partial class PMUConnectionTester
                 }
 
                 m_streamDebugCapture.Write($"{station} Frequency,{station} DfDt,");
-                
+
                 for (int i = 0; i < cell.AnalogDefinitions.Count; i++)
                     m_streamDebugCapture.Write($"{station} Analog{i} {cell.AnalogDefinitions[i].Label},");
 
@@ -1649,6 +1650,7 @@ public partial class PMUConnectionTester
                 catch (IndexOutOfRangeException)
                 {
                 }
+
                 catch (Exception ex)
                 {
                     AppendStatusMessage($"Exception occurred while attempting to plot data: {ex.Message}");
@@ -1672,7 +1674,7 @@ public partial class PMUConnectionTester
             foreach (IDataCell cell in frame.Cells)
             {
                 m_streamDebugCapture.Write($"{cell.StatusFlags:x},");
-                
+
                 foreach (IPhasorValue phasorValue in cell.PhasorValues)
                     m_streamDebugCapture.Write($"{phasorValue.Angle.ToDegrees()},{phasorValue.Magnitude},");
 
@@ -1717,6 +1719,7 @@ public partial class PMUConnectionTester
     private void DataStreamException(Exception ex)
     {
         AppendStatusMessage($"Exception: {ex.Message}");
+
         if (m_applicationSettings.ShowMessagesTabOnDataException)
         {
             TabControlChart.Tabs[(int)ChartTabs.Messages].Selected = true;
@@ -1727,27 +1730,22 @@ public partial class PMUConnectionTester
     {
         if (m_configurationFrame is null)
             return;
+
         if (new Ticks(DateTime.UtcNow.Ticks - m_configChangeTime).ToSeconds() >= 60.0d)
         {
             m_configChangeTime = DateTime.UtcNow.Ticks;
             AppendStatusMessage("NOTE: Data stream indicates that configuration in source device has changed");
+
             if (m_frameParser.DeviceSupportsCommands && MessageBox.Show(this, $"Data stream indicates that configuration in source device has changed.{Environment.NewLine}{Environment.NewLine}Do you want to request a new configuration frame?", "Device Configuration Changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
                 SendDeviceCommand(DeviceCommand.SendConfigurationFrame3);
-            }
         }
     }
 
     private void Connected()
     {
-        if (m_configurationFrame is null)
-        {
-            UpdateChartTitle("Awaiting configuration frame...");
-        }
-        else
-        {
-            UpdateChartTitle($"Configured frame rate: {m_configurationFrame.FrameRate} frames/second");
-        }
+        UpdateChartTitle(m_configurationFrame is null ? 
+            "Awaiting configuration frame..." : 
+            $"Configured frame rate: {m_configurationFrame.FrameRate} frames/second");
 
         AppendStatusMessage($"Connected to device {ConnectionInformation}");
         TabControlChart.Tabs[(int)ChartTabs.Graph].Selected = true;
@@ -1757,6 +1755,7 @@ public partial class PMUConnectionTester
     {
         UpdateChartTitle("Connection attempt failed...");
         AppendStatusMessage($"Device connection error: {ex.Message}");
+
         if (m_applicationSettings.MaximumConnectionAttempts > 0 & connectionAttempts >= m_applicationSettings.MaximumConnectionAttempts)
         {
             Disconnect();
@@ -1774,9 +1773,7 @@ public partial class PMUConnectionTester
         Disconnect();
 
         if (MessageBox.Show(this, $"An excessive number of exceptions have occurred on this connection - please verify the correct protocol has been selected.{Environment.NewLine}{Environment.NewLine}Do you want to try the connection again with current settings?", "Exception Threshold Exceeded", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-        {
             Connect();
-        }
     }
 
     private void Disconnected()
@@ -1800,10 +1797,8 @@ public partial class PMUConnectionTester
         AppendStatusMessage($"Local server started.  Listening for connection on {ConnectionInformation}");
     }
 
-    private void ServerStopped()
-    {
+    private void ServerStopped() => 
         AppendStatusMessage("Local server stopped.");
-    }
 
     private void PhaseAngleColorsChanged()
     {
@@ -2162,7 +2157,6 @@ public partial class PMUConnectionTester
 
     public void InitializeNetworkInterfaces()
     {
-
         // Load network interfaces
         List<Tuple<string, string, string>> networkInterfaces = new();
 
@@ -2176,31 +2170,30 @@ public partial class PMUConnectionTester
             switch (elem.Length)
             {
                 case 2:
-                    {
-                        string ipV6Address = "::0";
+                    string ipV6Address = "::0";
 
-                        try
+                    try
+                    {
+                        foreach (IPAddress address in Dns.GetHostEntry(elem[1]).AddressList)
                         {
-                            foreach (IPAddress address in Dns.GetHostEntry(elem[1]).AddressList)
+                            // Check to see if address has an IPv6 style address
+                            if (address.AddressFamily == AddressFamily.InterNetworkV6)
                             {
-                                // Check to see if address has an IPv6 style address
-                                if (address.AddressFamily == AddressFamily.InterNetworkV6)
-                                {
-                                    // Attempt to assign IP address
-                                    ipV6Address = address.ToString();
-                                    break;
-                                }
+                                // Attempt to assign IP address
+                                ipV6Address = address.ToString();
+                                break;
                             }
                         }
-                        catch
-                        {
-                            // If all else fails, just assign a loopback address
-                            ipV6Address = "::0";
-                        }
-
-                        networkInterfaces.Add(new(elem[0], elem[1], ipV6Address));
-                        break;
                     }
+                    catch
+                    {
+                        // If all else fails, just assign a loopback address
+                        ipV6Address = "::0";
+                    }
+
+                    networkInterfaces.Add(new(elem[0], elem[1], ipV6Address));
+                    break;
+
                 case 3:
                     networkInterfaces.Add(new(elem[0], elem[1], elem[2]));
                     break;
@@ -2233,7 +2226,10 @@ public partial class PMUConnectionTester
     {
         if (index < 0 || index > m_networkInterfaces.Length - 1)
             index = 0;
-        return GSF.Common.IIf(m_applicationSettings.ForceIPv4, m_networkInterfaces[index].Item2, m_networkInterfaces[index].Item3);
+
+        return m_applicationSettings.ForceIPv4 ? 
+            m_networkInterfaces[index].Item2 : 
+            m_networkInterfaces[index].Item3;
     }
 
     public int GetNetworkInterfaceIndex(string ipValue)
@@ -2529,26 +2525,26 @@ public partial class PMUConnectionTester
         Environment.Exit(0);
     }
 
-    private void ClearStatusMessages() => 
+    private void ClearStatusMessages() =>
         TextBoxMessages.Text = "";
 
     private void AppendStatusMessage(string message)
     {
         StringBuilder status = new();
-        
+
         status.Append(TextBoxMessages.Text);
         status.Append(message);
         status.Append(Environment.NewLine);
-        
+
         TextBoxMessages.Text = status.ToString().SubstringEnd(TextBoxMessages.MaxLength);
 
         TextBox messages = TextBoxMessages;
-        
+
         messages.SelectionStart = messages.TextLength;
         messages.ScrollToCaret();
     }
 
-    private string UnhandledExceptionErrorMessage() => 
+    private string UnhandledExceptionErrorMessage() =>
         $"An unexpected exception has occurred in the PMU Connection Tester. This error may have been caused by an inconsistent system state or a programming error.  Details of this problem have been logged to an error file, it may be necessary to restart the application. Please notify us with details of this exception so they are aware of this problem: {GlobalExceptionLogger.LastException.Message}";
 
     #endregion
@@ -2588,15 +2584,15 @@ public partial class PMUConnectionTester
                     foreach (IConfigurationCell cellNode in configFrame.Cells)
                     {
                         cellNode.Tag = Guid.NewGuid().ToString();
-                        
+
                         foreach (IPhasorDefinition phasorDefinition in cellNode.PhasorDefinitions)
                             phasorDefinition.Tag = Guid.NewGuid().ToString();
-                        
+
                         cellNode.FrequencyDefinition.Tag = Guid.NewGuid().ToString();
-                        
+
                         foreach (IAnalogDefinition analogDefinition in cellNode.AnalogDefinitions)
                             analogDefinition.Tag = Guid.NewGuid().ToString();
-                        
+
                         foreach (IDigitalDefinition digitalDefinition in cellNode.DigitalDefinitions)
                             digitalDefinition.Tag = Guid.NewGuid().ToString();
                     }
@@ -2618,7 +2614,7 @@ public partial class PMUConnectionTester
             // We use fundamental frame type as ID for frames so they are easy to identify - this
             // is also useful later when we want to determine root node associations to frames
             int currentNodeID = (int)FundamentalFrameType.Undetermined + 1;
-            
+
             foreach (IChannelFrame frame in attributeFrames)
             {
                 // Data frames have an associated configuration frame
@@ -2652,15 +2648,15 @@ public partial class PMUConnectionTester
                         foreach (IConfigurationCell cellNode in configFrame.Cells)
                         {
                             lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, ref currentNodeID, cellNode, cellNode.StationName, null);
-                            
+
                             foreach (IPhasorDefinition phasorDefinition in cellNode.PhasorDefinitions)
                                 AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, phasorDefinition, phasorDefinition.Label, null);
-                            
+
                             AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, cellNode.FrequencyDefinition, null, null);
-                            
+
                             foreach (IAnalogDefinition analogDefinition in cellNode.AnalogDefinitions)
                                 AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, analogDefinition, analogDefinition.Label, null);
-                            
+
                             foreach (IDigitalDefinition digitalDefinition in cellNode.DigitalDefinitions)
                                 AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, digitalDefinition, digitalDefinition.Label, null);
                         }
@@ -2975,7 +2971,7 @@ public partial class PMUConnectionTester
     }
 
     // UI work must be invoked on UI thread
-    private void LookupAssociatedChannelNode(object state) => 
+    private void LookupAssociatedChannelNode(object state) =>
         BeginInvoke(new Action<string>(LookupAssociatedChannelNode), state);
 
     private void LookupAssociatedChannelNode(string associatedKey)
@@ -3106,7 +3102,7 @@ public partial class PMUConnectionTester
         ChartArea phaseAngleChartArea = new()
         {
             BoundsMeasureType = MeasureType.Percentage,
-            Bounds = new(0, 50, GSF.Common.IIf(m_applicationSettings.ShowPhaseAngleLegend, 80, 100), 50),
+            Bounds = new(0, 50, m_applicationSettings.ShowPhaseAngleLegend ? 80 : 100, 50),
             Border =
             {
                 Thickness = 0

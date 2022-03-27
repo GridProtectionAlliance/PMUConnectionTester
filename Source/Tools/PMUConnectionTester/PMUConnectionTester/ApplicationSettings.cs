@@ -481,7 +481,6 @@ public class ApplicationSettings : CategorizedSettingsBase
 
     private void m_phaseAngleColors_ListContentCleared()
     {
-
         // Updates to a collection from a PropertyGrid don't get a normal "PropertyValueChanged" notification,
         // so you're stuck with detecting a call to "Clear" in your personal collection.  However, the update
         // is not complete until a call to "Add" for each updated item, so we need to wait for a moment to
@@ -495,5 +494,4 @@ public class ApplicationSettings : CategorizedSettingsBase
     }
 
     #endregion
-
 }
