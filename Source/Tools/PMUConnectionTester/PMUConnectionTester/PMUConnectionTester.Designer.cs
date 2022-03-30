@@ -354,8 +354,6 @@ namespace ConnectionTester
             LabelDefaultIPStack = new Infragistics.Win.Misc.UltraLabel();
             TimerDelay = new Timer(components);
             TimerDelay.Tick += new EventHandler(TimerDelay_Tick);
-            LabelReceiveFrom = new Infragistics.Win.Misc.UltraLabel();
-            LabelReceiveFrom.Click += new EventHandler(LabelReceiveFrom_Click);
             TabPageControl9.SuspendLayout();
             TabPageControl1.SuspendLayout();
             TabPageControl2.SuspendLayout();
@@ -454,7 +452,7 @@ namespace ConnectionTester
             Appearance2.TextVAlignAsString = "Middle";
             LabelAlternateCommandChannel.Appearance = Appearance2;
             LabelAlternateCommandChannel.Cursor = Cursors.Hand;
-            LabelAlternateCommandChannel.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, default(byte));
+            LabelAlternateCommandChannel.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, 0);
             Appearance3.FontData.UnderlineAsString = "True";
             LabelAlternateCommandChannel.HotTrackAppearance = Appearance3;
             LabelAlternateCommandChannel.Location = new Point(246, 49);
@@ -578,7 +576,7 @@ namespace ConnectionTester
             Appearance36.TextVAlignAsString = "Middle";
             LabelTcpNetworkInterface.Appearance = Appearance36;
             LabelTcpNetworkInterface.Cursor = Cursors.Hand;
-            LabelTcpNetworkInterface.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, default(byte));
+            LabelTcpNetworkInterface.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, 0);
             Appearance37.FontData.UnderlineAsString = "True";
             LabelTcpNetworkInterface.HotTrackAppearance = Appearance37;
             LabelTcpNetworkInterface.Location = new Point(63, 72);
@@ -660,7 +658,7 @@ namespace ConnectionTester
             Appearance42.TextVAlignAsString = "Middle";
             LabelReceiveFrom.Appearance = Appearance42;
             LabelReceiveFrom.Cursor = Cursors.Hand;
-            LabelReceiveFrom.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, default(byte));
+            LabelReceiveFrom.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, 0);
             Appearance43.FontData.UnderlineAsString = "True";
             LabelReceiveFrom.HotTrackAppearance = Appearance43;
             LabelReceiveFrom.Location = new Point(5, 62);
@@ -680,7 +678,7 @@ namespace ConnectionTester
             Appearance42.TextVAlignAsString = "Middle";
             LabelUdpNetworkInterface.Appearance = Appearance42;
             LabelUdpNetworkInterface.Cursor = Cursors.Hand;
-            LabelUdpNetworkInterface.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, default(byte));
+            LabelUdpNetworkInterface.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, 0);
             Appearance43.FontData.UnderlineAsString = "True";
             LabelUdpNetworkInterface.HotTrackAppearance = Appearance43;
             LabelUdpNetworkInterface.Location = new Point(8, 41);
@@ -712,7 +710,7 @@ namespace ConnectionTester
             LabelMulticastSource.Appearance = Appearance44;
             LabelMulticastSource.Cursor = Cursors.Hand;
             LabelMulticastSource.Enabled = false;
-            LabelMulticastSource.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, default(byte));
+            LabelMulticastSource.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, 0);
             Appearance45.FontData.UnderlineAsString = "True";
             LabelMulticastSource.HotTrackAppearance = Appearance45;
             LabelMulticastSource.Location = new Point(128, 58);
@@ -1199,7 +1197,7 @@ namespace ConnectionTester
             GroupBoxPowerVarCalculations.Controls.Add(LabelCurrentPhasor);
             GroupBoxPowerVarCalculations.Controls.Add(ComboBoxVoltagePhasors);
             GroupBoxPowerVarCalculations.Controls.Add(LabelVoltagePhasor);
-            GroupBoxPowerVarCalculations.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, default(byte));
+            GroupBoxPowerVarCalculations.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, 0);
             GroupBoxPowerVarCalculations.Location = new Point(5, 6);
             GroupBoxPowerVarCalculations.Name = "GroupBoxPowerVarCalculations";
             GroupBoxPowerVarCalculations.Size = new Size(147, 121);
@@ -1271,7 +1269,7 @@ namespace ConnectionTester
             // TextBoxMessages
             // 
             TextBoxMessages.Dock = DockStyle.Fill;
-            TextBoxMessages.Font = new Font("Courier New", 9.0f, FontStyle.Regular, GraphicsUnit.Point, default(byte));
+            TextBoxMessages.Font = new Font("Courier New", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
             TextBoxMessages.Location = new Point(0, 0);
             TextBoxMessages.MaxLength = 262144;
             TextBoxMessages.Multiline = true;
@@ -1693,7 +1691,7 @@ namespace ConnectionTester
             GroupBoxHeaderFrame.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
             GroupBoxHeaderFrame.Controls.Add(GroupBoxPanelHeaderFrame);
             GroupBoxHeaderFrame.ExpandedSize = new Size(165, 209);
-            GroupBoxHeaderFrame.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, default(byte));
+            GroupBoxHeaderFrame.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, 0);
             Appearance28.Image = resources.GetObject("Appearance28.Image");
             GroupBoxHeaderFrame.HeaderAppearance = Appearance28;
             GroupBoxHeaderFrame.HeaderPosition = Infragistics.Win.Misc.GroupBoxHeaderPosition.RightOnBorder;
@@ -1899,7 +1897,7 @@ namespace ConnectionTester
             // 
             // LabelSelectedIsRefAngle
             // 
-            LabelSelectedIsRefAngle.Font = new Font("Microsoft Sans Serif", 6.75f, FontStyle.Regular, GraphicsUnit.Point, default(byte));
+            LabelSelectedIsRefAngle.Font = new Font("Microsoft Sans Serif", 6.75f, FontStyle.Regular, GraphicsUnit.Point, 0);
             LabelSelectedIsRefAngle.Location = new Point(43, 52);
             LabelSelectedIsRefAngle.Name = "LabelSelectedIsRefAngle";
             LabelSelectedIsRefAngle.Size = new Size(135, 23);
@@ -2121,7 +2119,7 @@ namespace ConnectionTester
             GroupBoxRealTimePowerVars.Controls.Add(LabelVarsLabel);
             GroupBoxRealTimePowerVars.Controls.Add(LabelPower);
             GroupBoxRealTimePowerVars.Controls.Add(LabelPowerLabel);
-            GroupBoxRealTimePowerVars.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, default(byte));
+            GroupBoxRealTimePowerVars.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, 0);
             GroupBoxRealTimePowerVars.Location = new Point(10, 343);
             GroupBoxRealTimePowerVars.Name = "GroupBoxRealTimePowerVars";
             GroupBoxRealTimePowerVars.Size = new Size(178, 66);
@@ -2220,7 +2218,7 @@ namespace ConnectionTester
             Appearance40.TextVAlignAsString = "Middle";
             LabelReceiveFrom.Appearance = Appearance40;
             LabelReceiveFrom.Cursor = Cursors.Hand;
-            LabelReceiveFrom.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, default(byte));
+            LabelReceiveFrom.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, 0);
             Appearance41.FontData.UnderlineAsString = "True";
             LabelReceiveFrom.HotTrackAppearance = Appearance41;
             LabelReceiveFrom.Location = new Point(5, 62);

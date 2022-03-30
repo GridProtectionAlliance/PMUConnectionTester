@@ -120,7 +120,7 @@ namespace ConnectionTester
             Appearance1.TextVAlignAsString = "Middle";
             LabelTcpNetworkInterface.Appearance = Appearance1;
             LabelTcpNetworkInterface.Cursor = Cursors.Hand;
-            LabelTcpNetworkInterface.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, default(byte));
+            LabelTcpNetworkInterface.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, 0);
             Appearance2.FontData.UnderlineAsString = "True";
             LabelTcpNetworkInterface.HotTrackAppearance = Appearance2;
             LabelTcpNetworkInterface.Location = new Point(63, 72);

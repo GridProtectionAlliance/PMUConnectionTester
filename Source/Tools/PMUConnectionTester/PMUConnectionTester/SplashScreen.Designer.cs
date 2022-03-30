@@ -70,7 +70,7 @@ namespace ConnectionTester
             DetailsLayoutPanel.ColumnStyles.Add(new ColumnStyle());
             DetailsLayoutPanel.Controls.Add(Version, 0, 0);
             DetailsLayoutPanel.Controls.Add(Copyright, 0, 1);
-            DetailsLayoutPanel.Font = new Font("Microsoft Sans Serif", 9f, FontStyle.Bold, GraphicsUnit.Point, default(byte));
+            DetailsLayoutPanel.Font = new Font("Microsoft Sans Serif", 9f, FontStyle.Bold, GraphicsUnit.Point, 0);
             DetailsLayoutPanel.Location = new Point(213, 208);
             DetailsLayoutPanel.Name = "DetailsLayoutPanel";
             DetailsLayoutPanel.RowCount = 2;
@@ -83,7 +83,7 @@ namespace ConnectionTester
             // 
             Version.Anchor = AnchorStyles.None;
             Version.BackColor = Color.Transparent;
-            Version.Font = new Font("Tahoma", 9f, FontStyle.Bold, GraphicsUnit.Point, default(byte));
+            Version.Font = new Font("Tahoma", 9f, FontStyle.Bold, GraphicsUnit.Point, 0);
             Version.ForeColor = Color.LemonChiffon;
             Version.Location = new Point(3, 0);
             Version.Name = "Version";
@@ -96,7 +96,7 @@ namespace ConnectionTester
             // 
             Copyright.Anchor = AnchorStyles.Right;
             Copyright.BackColor = Color.Transparent;
-            Copyright.Font = new Font("Tahoma", 8.75f, FontStyle.Bold, GraphicsUnit.Point, default(byte));
+            Copyright.Font = new Font("Tahoma", 8.75f, FontStyle.Bold, GraphicsUnit.Point, 0);
             Copyright.ForeColor = Color.LemonChiffon;
             Copyright.Location = new Point(112, 49);
             Copyright.Name = "Copyright";
@@ -109,7 +109,7 @@ namespace ConnectionTester
             // 
             ApplicationTitle.Anchor = AnchorStyles.None;
             ApplicationTitle.BackColor = Color.Transparent;
-            ApplicationTitle.Font = new Font("Tahoma", 22f, FontStyle.Bold, GraphicsUnit.Point, default(byte));
+            ApplicationTitle.Font = new Font("Tahoma", 22f, FontStyle.Bold, GraphicsUnit.Point, 0);
             ApplicationTitle.ForeColor = Color.LemonChiffon;
             ApplicationTitle.Location = new Point(211, 28);
             ApplicationTitle.Name = "ApplicationTitle";
