@@ -162,7 +162,7 @@ True</span>/False]: Set to True to automatically send commands for ConfigFrame2 
 </li><li><strong>ExecuteParseOnSeparateThread</strong> [Range: True/<span style="text-decoration:underline">False</span>]: Allows frame parsing to be executed on a separate thread (other than communications thread) - typically only needed when data frames are very
  large. This change will happen dynamically, even if a connection is active. </li><li><strong>MaximumConnectionAttempts</strong> [Range: 1-n]: Maximum number of times to attempt connection before giving up. Set the value to -1 to continue connection attempt indefinitely.
 </li><li><strong>MaximumFrameDisplayBytes</strong> [Range: 1-n]: Maximum encoded bytes to display for frames in the
-<a href="#realtime-frame-detail">Real-time Frame Detail</a>. </li><li><strong>RestoreLastConnectionSettings</strong> [Range: <span style="text-decoration:underline">
+<a href="#real-time-frame-detail">Real-time Frame Detail</a>. </li><li><strong>RestoreLastConnectionSettings</strong> [Range: <span style="text-decoration:underline">
 True</span>/False]: Set to True to load previous connection settings at startup. </li></ul>
 
 ### Attribute Tree
