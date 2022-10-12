@@ -28,7 +28,7 @@ Any device that supports one of the following phasor protocols may be tested:
 
 ## Documentation and Support
 
-* Documentation for PMUConnectionTester can be found [here](http://gridprotectionalliance.github.io/PMUConnectionTester/HELP).
+* Documentation for PMUConnectionTester can be found [here](https://pmuconnectiontester.info//HELP).
 * Get in contact with our development team on our new [discussion board](http://discussions.gridprotectionalliance.org/c/gpa-products/pmu-connection-tester).
 
 ## Deployment
