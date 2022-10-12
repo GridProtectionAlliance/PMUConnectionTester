@@ -1084,7 +1084,7 @@ public partial class PMUConnectionTester
         Help.ShowHelp(this, GetAbsolutePath("PMUConnectionTester.chm"));
 
     private void MenuItemOnlineHelp_Click(object sender, EventArgs e) =>
-        Process.Start("https://github.com/GridProtectionAlliance/PMUConnectionTester/wiki");
+        Process.Start("http://gridprotectionalliance.github.io/PMUConnectionTester/HELP");
 
     private void MenuItemAbout_Click(object sender, EventArgs e)
     {
