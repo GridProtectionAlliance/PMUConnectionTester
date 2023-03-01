@@ -20,7 +20,7 @@
     <OldToolsVersion>4.0</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <OptionStrict>On</OptionStrict>
     <PublishUrl>http://localhost/PMUConnectionTester/</PublishUrl>
@@ -48,7 +48,7 @@
     <DefineTrace>true</DefineTrace>
     <OutputPath>..\..\..\..\Build\Output\Debug\Tools\PMUConnectionTester\</OutputPath>
     <DocumentationFile>..\..\..\..\Build\Output\Debug\Tools\PMUConnectionTester\PMUConnectionTester.xml</DocumentationFile>
-    <NoWarn>42030,42104,42108,42109,42353,42354,42355,CS1591,IDE1006</NoWarn>
+    <NoWarn>42030,42104,42108,42109,42353,42354,42355,CS1591,IDE1006,CS0649</NoWarn>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -62,7 +62,7 @@
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\..\Build\Output\Release\Tools\PMUConnectionTester\</OutputPath>
     <DocumentationFile>..\..\..\..\Build\Output\Release\Tools\PMUConnectionTester\PMUConnectionTester.xml</DocumentationFile>
-    <NoWarn>42030,42104,42108,42109,42353,42354,42355,CS1591,IDE1006</NoWarn>
+    <NoWarn>42030,42104,42108,42109,42353,42354,42355,CS1591,IDE1006,CS0649</NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
