@@ -18299,6 +18299,30 @@
             <param name="propertyName">Name of the active directory property whose value is to be retrieved.</param>
             <returns><see cref="T:System.String"/> value for the specified active directory property.</returns>
         </member>
+        <member name="F:GSF.Identity.UserInfo.BuiltInGroupName">
+            <summary>
+            Localized version of Windows "BUILTIN" local permissions group name.
+            </summary>
+            <remarks>
+            For non-English based OS languages, this name may be different. For example, on a German OS this is "VORDEFINIERT".
+            </remarks>
+        </member>
+        <member name="F:GSF.Identity.UserInfo.NTAuthorityGroupName">
+            <summary>
+            Localized version of Windows "NT AUTHORITY" local permissions group name.
+            </summary>
+            <remarks>
+            For non-English based OS languages, this name may be different. For example, on a French OS this is "NT-AUTORITÄT".
+            </remarks>
+        </member>
+        <member name="F:GSF.Identity.UserInfo.NTServiceGroupName">
+            <summary>
+            Localized version of Windows "NT SERVICE" local Windows services group name.
+            </summary>
+            <remarks>
+            For non-English based OS languages, this name may be different.
+            </remarks>
+        </member>
         <member name="P:GSF.Identity.UserInfo.CurrentUserID">
             <summary>
             Gets the ID name of the current user.
@@ -18364,7 +18388,7 @@
                      string password = "password";
                     
                      // Authenticate user credentials.
-                     if ((object)UserInfo.AuthenticateUser(domain, username, password) != null)
+                     if (UserInfo.AuthenticateUser(domain, username, password) is not null)
                          Console.WriteLine("Successfully authenticated user \"{0}\\{1}\".", domain, username);
                      else
                          Console.WriteLine("Failed to authenticate user \"{0}\\{1}\".", domain, username);
@@ -18400,7 +18424,7 @@
                      string errorMessage;
             
                      // Authenticate user credentials.
-                     if ((object)UserInfo.AuthenticateUser(domain, username, password, out errorMessage) != null)
+                     if (UserInfo.AuthenticateUser(domain, username, password, out errorMessage) is not null)
                          Console.WriteLine("Successfully authenticated user \"{0}\\{1}\".", domain, username);
                      else
                          Console.WriteLine("Failed to authenticate user \"{0}\\{1}\" due to exception: {2}", domain, username, errorMessage);
@@ -26435,6 +26459,76 @@
             architectures.
             </remarks>
         </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.SByte)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.Byte)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.Int16)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.UInt16)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(GSF.Int24)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(GSF.UInt24)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.Int32)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.UInt32)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.Int64)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.UInt64)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
         <member name="T:GSF.BitwiseCast">
             <summary>Defines specialized bitwise integer data type conversion functions</summary>
             <remarks>
@@ -30892,6 +30986,15 @@
             that is generated by this certificate generator.
             </summary>
         </member>
+        <member name="P:GSF.Net.Security.CertificateGenerator.ValidYears">
+            <summary>
+            Gets or sets the number of years self-signed generated
+            certificates should be valid.
+            </summary>
+            <remarks>
+            Defaults to 1.
+            </remarks>
+        </member>
         <member name="P:GSF.Net.Security.CertificateGenerator.DebugLog">
             <summary>
             Gets a list of detailed log messages
@@ -31346,6 +31449,72 @@
             <param name="regressionInterval">Time span over which to calculate slope.</param>
             <param name="estimatedRefreshInterval">Estimated data points per second.</param>
         </member>
+        <member name="T:GSF.NumericalAnalysis.Spline">
+            <summary>
+            One piece of a piecewise polynomial function.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.Spline.XValue">
+            <summary>
+            The starting value for the dependent
+            variable at which the spline was computed.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.Spline.Coefficients">
+            <summary>
+            The coefficients of each term in the polynomial.
+            </summary>
+            <remarks>
+            <para>The array index matches the exponent to which the x-value is raised.</para>
+            
+            <code>term[i] = Coefficients[i] * Math.Pow(x - XValue, i);</code>
+            </remarks>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Spline.#ctor(System.Double,System.Double[])">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.NumericalAnalysis.Spline"/> class.
+            </summary>
+            <param name="xValue">The starting value for the dependent variable at which the spline was computed.</param>
+            <param name="coefficients">The coefficients of each term in the polynomial.</param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Spline.CalculateY(System.Double)">
+            <summary>
+            Calculates the y-value of the polynomial at the given x-value.
+            </summary>
+            <param name="x">The x-value at which the polynomial should be used to calculate a y-value.</param>
+            <returns>The y-value of the polynomial at the given x-value.</returns>
+        </member>
+        <member name="T:GSF.NumericalAnalysis.SplineFit">
+            <summary>
+            A collection of splines computed through spline interpolation.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.SplineFit.Splines">
+            <summary>
+            The collection of splines used to interpolate a curve.
+            </summary>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.SplineFit.#ctor(GSF.NumericalAnalysis.Spline[])">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.NumericalAnalysis.SplineFit"/> class.
+            </summary>
+            <param name="splines">The collection of splines.</param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.SplineFit.CalculateY(System.Double)">
+            <summary>
+            Calculates the interpolated y-value at the given x-value using the appropriate spline.
+            </summary>
+            <param name="x">The x-value from which to calculate the interpolated y-value.</param>
+            <returns>The interpolated y-value at the given x-value.</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.SplineFit.ComputeCubicSplines(System.Collections.Generic.IList{System.Double},System.Collections.Generic.IList{System.Double})">
+            <summary>
+            Computes a cubic spline for interpolating values from the given data set.
+            </summary>
+            <param name="xValues">The x-values of each sampled data point.</param>
+            <param name="yValues">The y-values of each sampled data point.</param>
+            <returns>A <see cref="T:GSF.NumericalAnalysis.SplineFit"/> representing the collection of splines to be used for interpolation.</returns>
+        </member>
         <member name="T:GSF.NumericalAnalysis.SineWave">
             <summary>
             Represents a sine wave of the form <c>y=A*sin(ω*t+Φ)+δ</c>.
@@ -31396,6 +31565,206 @@
             <param name="tValues">The time values of the data points, in seconds.</param>
             <param name="frequency">The frequency of the sine wave, in Hz.</param>
             <returns>A <see cref="T:GSF.NumericalAnalysis.SineWave"/> approximated from the given data points.</returns>
+        </member>
+        <member name="T:GSF.NumericalAnalysis.FFT">
+            <summary>
+            Contains implementation of a Fast Fourier Transform (FFT)
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.FFT.ComplexMagnitude">
+            <summary>
+            The complex result of the FFT.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.FFT.Frequency">
+            <summary>
+            The Center of the Frequency Bins used by the FFT.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.FFT.FrequencyBinWidth">
+            <summary>
+            The width of the Frequency bins used by the FFT.
+            </summary>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.FFT.#ctor(System.Collections.Generic.IReadOnlyList{System.Double})">
+            <summary>
+            Creates a new <see cref="T:GSF.NumericalAnalysis.FFT"/>.
+            </summary>
+            <remarks>
+            https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
+            </remarks>
+        </member>
+        <member name="T:GSF.NumericalAnalysis.AnalogFilter">
+            <summary>
+            Contains an implementation of an analog LTI Filter.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.AnalogFilter.InputCoefficients">
+            <summary>
+            The Input coefficients used to multiply the input signal and it's derivatives.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.AnalogFilter.OutputCoefficients">
+            <summary>
+            The output coefficients used to multiply the output signal and it's derivatives.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.AnalogFilter.Order">
+            <summary>
+            The order of the filter.
+            </summary>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.#ctor(System.Numerics.Complex[],System.Numerics.Complex[],System.Double)">
+            <summary>
+            Creates a new <see cref="T:GSF.NumericalAnalysis.AnalogFilter"/> based on continuous design.
+            </summary>
+            <param name="poles">The continuous poles</param>
+            <param name="zeros"> The continuous zeros</param>
+            <param name="gain">The continuous gain</param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.ContinuousToDiscrete(System.Double,System.Double)">
+            <summary>
+            Transforms continuous poles and zeros into discrete poles and zeros.
+            this uses the biLinear transformation/ Tustin Approximation
+            If necessary Prewarping is supported via fp.
+            </summary>
+            <param name="fs"> Sampling Frequency </param>
+            <param name="fp"> pre-warp frequency</param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.Filter(System.Double,System.Double,GSF.NumericalAnalysis.FilterState,GSF.NumericalAnalysis.FilterState@)">
+            <summary>
+            Computes the output of the filter for the given single input and <see cref="T:GSF.NumericalAnalysis.FilterState"/>.
+            </summary>
+            <param name="value"> The input value </param>
+            <param name="fs"> The sampling Frequency of the signal</param>
+            <param name="initialState">The initial state of the filter </param>
+            <param name="finalState"> The final State of the Filter</param>
+            <returns> the value of the filtered signal</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.Filter(System.Double[],System.Double)">
+            <summary>
+            applies this filter to an evenly sampled signal f(t).
+            </summary>
+            <param name="signal"> f(t) for the signal</param>
+            <param name="fs"> sampling frquency of the signal </param>
+            <returns>The output of the filter y(t)</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.PolesToPolynomial(System.Numerics.Complex[])">
+            <summary>
+            Turns poles into Polynomial coefficients.
+            </summary>
+            <param name="poles">The complex poles</param>
+            <returns> the polynomial coeffcients for the given poles</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.LP2HP">
+            <summary>
+            Turns the <see cref="T:GSF.NumericalAnalysis.AnalogFilter"/> from Low Pass Filter into an High Pass Filter.
+            </summary>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.Scale(System.Double)">
+            <summary>
+            Scale the <see cref="T:GSF.NumericalAnalysis.AnalogFilter"/> such that Gain at Corner frequency is -3dB.
+            </summary>
+            <param name="fc"> Corner Frequency</param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.NormalButter(System.Int32)">
+            <summary>
+            Generates a normal Butterworth Filter of Nth order.
+            </summary>
+            <param name="order"> order of the Filter</param>
+            <returns> the <see cref="T:GSF.NumericalAnalysis.AnalogFilter"/></returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.HPButterworth(System.Double,System.Int32)">
+            <summary>
+            Generates a High Pass Butterworth Filter.
+            </summary>
+            <param name="fc"> corner frequency in Hz</param>
+            <param name="order"> Order of the Filter </param>
+            <returns> the <see cref="T:GSF.NumericalAnalysis.AnalogFilter"/></returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.LPButterworth(System.Double,System.Int32)">
+            <summary>
+            Generates a Low Pass Butterworth Filter.
+            </summary>
+            <param name="fc"> corner frequency in Hz</param>
+            <param name="order"> Order of the Filter </param>
+            <returns> the <see cref="T:GSF.NumericalAnalysis.AnalogFilter"/></returns>
+        </member>
+        <member name="T:GSF.NumericalAnalysis.FilterState">
+            <summary>
+            Represents the internal state of a <see cref="T:GSF.NumericalAnalysis.DigitalFilter"/> or <see cref="T:GSF.NumericalAnalysis.AnalogFilter"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.FilterState.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.NumericalAnalysis.FilterState"/> with all internal states set to 0.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.FilterState.StateValue">
+            <summary>
+            Gets or sets state value for the filter.
+            </summary>
+        </member>
+        <member name="T:GSF.NumericalAnalysis.DigitalFilter">
+            <summary>
+            Contains an implementation of a digital LTI Filter.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.DigitalFilter.InputCoefficients">
+            <summary>
+            The input coefficients used to multiply the input signal.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.DigitalFilter.OutputCoefficients">
+            <summary>
+            The output coefficients used to multiply the output signal.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.DigitalFilter.Order">
+            <summary>
+            The order of the filter.
+            </summary>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.DigitalFilter.#ctor(System.Double[],System.Double[])">
+            <summary>
+            Creates a new <see cref="T:GSF.NumericalAnalysis.DigitalFilter"/> based on the coefficients of
+            a[0] y[k] + a[1] y[k-1].... = b[0] x[k] + b[1] x[k-1]... b[n] x[k-n]
+            </summary>
+            <param name="a"> the output coefficients (a[0] through a[n])</param>
+            <param name="b"> the input coefficients (b[0] through b[n])</param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.DigitalFilter.#ctor(System.Double[],System.Double[],System.Double)">
+            <summary>
+            Creates a new <see cref="T:GSF.NumericalAnalysis.DigitalFilter"/> based on coeficents and gain
+            a[0] y[k] + a[1] y[k-1].... = K * (b[0] x[k] + b[1] x[k-1]... b[n] x[k-n]).
+            </summary>
+            <param name="a">The output coefficients (a[0] through a[n])</param>
+            <param name="b">The input coefficients (b[0] through b[n])</param>
+            <param name="k">The gain of the filter</param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.DigitalFilter.Filter(System.Double[])">
+            <summary>
+            Applies this filter to an evenly sampled signal f(t).
+            </summary>
+            <param name="signal"> f(t) for the signal</param>
+            <returns>The output of the filter y(t)</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.DigitalFilter.Filter(System.Double,GSF.NumericalAnalysis.FilterState,GSF.NumericalAnalysis.FilterState@)">
+            <summary>
+            Computes the output of the filter for the given single input and <see cref="T:GSF.NumericalAnalysis.FilterState"/>.
+            </summary>
+            <param name="value"> The input value </param>
+            <param name="initialState">The initial state of the filter </param>
+            <param name="finalState"> The final State of the Filter</param>
+            <returns> the value of the filtered signal</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.DigitalFilter.FiltFilt(System.Double[])">
+            <summary>
+            Applies the filter to a signal and reverse signal to remove any Phasor shift
+            </summary>
+            <param name="signal"> f(t) for the signal</param>
+            <returns>The output of the filter y(t)</returns>
+            <remarks>This is the equivalent of MatLab <c>FiltFilt</c>.</remarks>
         </member>
         <member name="T:GSF.NumericalAnalysis.Euclidean">
             <summary>
@@ -34396,6 +34765,43 @@
             </summary>
             <param name="other">The other mergeable object.</param>
             <returns>The result of merging this object with another.</returns>
+        </member>
+        <member name="T:GSF.Security.Cryptography.DataProtection">
+            <summary>
+            Provides methods for encrypting and decrypting data.
+            </summary>
+            <remarks>
+            This is a safety wrapper around the <see cref="T:System.Security.Cryptography.ProtectedData"/> class such that it can be used with
+            <c>LocalMachine</c> scope regardless of current user. This is especially important for applications
+            that may be running as user account that has no association to the current user, e.g., an Azure AD
+            user or database account when authenticated using <c>AdoSecurityProvider</c>.
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.DataProtection.Protect(System.Byte[],System.Byte[],System.Security.Cryptography.DataProtectionScope)">
+            <summary>
+            Encrypts the data in a specified byte array and returns a byte array that contains the encrypted data.
+            </summary>
+            <returns>A byte array representing the encrypted data.</returns>
+            <param name="userData">A byte array that contains data to encrypt.</param>
+            <param name="optionalEntropy">An optional additional byte array used to increase the complexity of the encryption, or null for no additional complexity.</param>
+            <param name="scope">One of the enumeration values that specifies the scope of encryption.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="userData"/> parameter is null.</exception>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The encryption failed.</exception>
+            <exception cref="T:System.NotSupportedException">The operating system does not support this method. </exception>
+            <exception cref="T:System.OutOfMemoryException">The system ran out of memory while encrypting the data.</exception>
+        </member>
+        <member name="M:GSF.Security.Cryptography.DataProtection.Unprotect(System.Byte[],System.Byte[],System.Security.Cryptography.DataProtectionScope)">
+            <summary>
+            Decrypts the data in a specified byte array and returns a byte array that contains the decrypted data.
+            </summary>
+            <returns>A byte array representing the decrypted data.</returns>
+            <param name="encryptedData">A byte array containing data encrypted using the <see cref="M:GSF.Security.Cryptography.DataProtection.Protect(System.Byte[],System.Byte[],System.Security.Cryptography.DataProtectionScope)"/> method.</param>
+            <param name="optionalEntropy">An optional additional byte array that was used to encrypt the data, or null if the additional byte array was not used.</param>
+            <param name="scope">One of the enumeration values that specifies the scope of data protection that was used to encrypt the data.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="encryptedData"/> parameter is null.</exception>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The decryption failed.</exception>
+            <exception cref="T:System.NotSupportedException">The operating system does not support this method. </exception>
+            <exception cref="T:System.OutOfMemoryException">Out of memory.</exception>
         </member>
         <member name="T:GSF.Security.Cryptography.X509.CertificateMaker">
             <summary>
@@ -40178,6 +40584,22 @@
             </summary>
             <returns>true if the <see cref="T:GSF.Scheduling.Schedule"/> is due at the present system time; otherwise false.</returns>
         </member>
+        <member name="M:GSF.Scheduling.Schedule.PreviousTimeDue(System.DateTime)">
+            <summary>
+            Determines the nearest timestamp older than
+            the given timestamp that matches the schedule.
+            </summary>
+            <param name="targetDateTime">The target timestamp</param>
+            <returns>The timestamp prior to the target that the schedule was previously due</returns>
+        </member>
+        <member name="M:GSF.Scheduling.Schedule.NextTimeDue(System.DateTime)">
+            <summary>
+            Determines the nearest timestamp past the
+            given timestamp that matches the schedule.
+            </summary>
+            <param name="targetDateTime">The target timestamp</param>
+            <returns>The timestamp past the target that the schedule will next be due</returns>
+        </member>
         <member name="M:GSF.Scheduling.Schedule.GetHashCode">
             <summary>
             Gets a hash code for the <see cref="T:GSF.Scheduling.Schedule"/>.
@@ -41775,14 +42197,32 @@
             Represents a radix value codec for conversion of base-10 integer values to and from other base values.
             </summary>
             <remarks>
-            The primary use case of this class is to provide compact string encodings of integer values.
-            The encodings produced by this class do not manage arbitrary sized bytes arrays, nor do they
-            include padding - as a result, encodings are not intended to comply with RFC 3548.
+            <para>
+            The primary use case of this class is to provide compact string-based encodings of integer values, e.g.,
+            storing an unsigned 32-bit integer value in a string-based database field that only holds 6 characters;
+            the maximum <see cref="T:System.UInt32"/> value of 4294967295 requires 10 characters of storage as a string.
+            </para>
+            <para>
+            </para>
+            The codec algorithm for <see cref="T:GSF.RadixCodec"/> works much like base-64 encoding but with variable base
+            sizes and an integer source data focus, not a byte-array. The encoded base value strings are not intended
+            to provide binary compression, many of the radix value encodings of integers produced by this class will
+            have a byte-size that is greater than native bytes that make up integer. Since the encodings produced by
+            this class do not manage arbitrary sized bytes arrays nor do they include padding, the encodings are not
+            intended to comply with RFC 3548.
             </remarks>
         </member>
         <member name="F:GSF.RadixCodec.Digits">
             <summary>
             Defines the available digits for a radix value codec.
+            </summary>
+            <remarks>
+            Characters must be unique. Length determines radix, i.e., target base value.
+            </remarks>
+        </member>
+        <member name="P:GSF.RadixCodec.Radix">
+            <summary>
+            Gets the radix, i.e., target base value, for this <see cref="T:GSF.RadixCodec"/>.
             </summary>
         </member>
         <member name="M:GSF.RadixCodec.#ctor(System.String,System.Boolean)">
@@ -41790,7 +42230,10 @@
             Creates a new <see cref="T:GSF.RadixCodec"/>.
             </summary>
             <param name="digits">Digits to use for radix values.</param>
-            <param name="caseSensitive">Determines if alphabetic radix characters are case sensitive.</param>
+            <param name="caseSensitive">Determines if alphabetic radix <paramref name="digits"/> are case sensitive.</param>
+            <remarks>
+            Length of <paramref name="digits"/> will be radix, i.e., target base value.
+            </remarks>
         </member>
         <member name="M:GSF.RadixCodec.Encode(System.Int16)">
             <summary>
@@ -41936,7 +42379,7 @@
             <exception cref="T:System.OverflowException">Decoded radix value overflowed integer type.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">Only integer types Int16, UInt16, Int24, UInt24, Int32, UInt32, Int64 and UInt64 are supported.</exception>
         </member>
-        <member name="F:GSF.RadixCodec.Radix2">
+        <member name="P:GSF.RadixCodec.Radix2">
             <summary>
             Gets a radix-2 value (binary) encoding.
             </summary>
@@ -41947,9 +42390,9 @@
             long.MaxValue encodes to "111111111111111111111111111111111111111111111111111111111111111", 63 characters
             long.MinValue encodes to "-1000000000000000000000000000000000000000000000000000000000000000", 65 characters
             ulong.MaxValue encodes to "1111111111111111111111111111111111111111111111111111111111111111", 64 characters
-            </remarks>                                                            12
+            </remarks>                                                  12
         </member>
-        <member name="F:GSF.RadixCodec.Radix8">
+        <member name="P:GSF.RadixCodec.Radix8">
             <summary>
             Gets a radix-8 value (octal) encoding.
             </summary>
@@ -41960,9 +42403,9 @@
             long.MaxValue encodes to "777777777777777777777", 21 characters
             long.MinValue encodes to "-1000000000000000000000", 23 characters
             ulong.MaxValue encodes to "1777777777777777777777", 22 characters
-            </remarks>                                                            12345678
+            </remarks>                                                  12345678
         </member>
-        <member name="F:GSF.RadixCodec.Radix16">
+        <member name="P:GSF.RadixCodec.Radix16">
             <summary>
             Gets a radix-16 value (hex) encoding.
             </summary>
@@ -41973,9 +42416,9 @@
             long.MaxValue encodes to "7FFFFFFFFFFFFFFF", 16 characters
             long.MinValue encodes to "-8000000000000000", 17 characters
             ulong.MaxValue encodes to "FFFFFFFFFFFFFFFF", 16 characters
-            </remarks>                                                               1234567890123456
+            </remarks>                                                    1234567890123456
         </member>
-        <member name="F:GSF.RadixCodec.Radix32">
+        <member name="P:GSF.RadixCodec.Radix32">
             <summary>
             Gets a radix-32 value encoding.
             </summary>
@@ -41986,22 +42429,22 @@
             long.MaxValue encodes to "7VVVVVVVVVVVV", 13 characters
             long.MinValue encodes to "-8000000000000", 14 characters
             ulong.MaxValue encodes to "FVVVVVVVVVVVV", 13 characters
-            </remarks>                                                               12345678901234567890123456789012
+            </remarks>                                                    12345678901234567890123456789012
         </member>
-        <member name="F:GSF.RadixCodec.Radix36">
+        <member name="P:GSF.RadixCodec.Radix36">
             <summary>
             Gets a radix-36 value encoding.
             </summary>
             <remarks>
-            int.MaxValue encodes to "ZIK0ZJ", 6 characters -- ideal int size with reduced digit set
+            int.MaxValue encodes to "ZIK0ZJ", 6 characters -- ideal 32-bit integer size for minimal case insensitive digit set
             int.MinValue encodes to "-ZIK0ZK", 7 characters
             uint.MaxValue encodes to "1Z141Z3", 7 characters
             long.MaxValue encodes to "1Y2P0IJ32E8E7", 13 characters
             long.MinValue encodes to "-1Y2P0IJ32E8E8", 14 characters
             ulong.MaxValue encodes to "3W5E11264SGSF", 13 characters
-            </remarks>                                                               123456789012345678901234567890123456
+            </remarks>                                                    123456789012345678901234567890123456
         </member>
-        <member name="F:GSF.RadixCodec.Radix64">
+        <member name="P:GSF.RadixCodec.Radix64">
             <summary>
             Gets a radix-64 value encoding.
             </summary>
@@ -42012,20 +42455,59 @@
             long.MaxValue encodes to "7//////////", 11 characters
             long.MinValue encodes to "-80000000000", 12 characters
             ulong.MaxValue encodes to "F//////////", 11 characters
-            </remarks>                                                               1234567890123456789012345678901234567890123456789012345678901234
+            </remarks>                                                    1234567890123456789012345678901234567890123456789012345678901234
         </member>
-        <member name="F:GSF.RadixCodec.Radix86">
+        <member name="P:GSF.RadixCodec.Radix64B">
+            <summary>
+            Gets a radix-64 value encoding with the standard Base64 character sequence (results are unpadded).
+            </summary>
+            <remarks>
+            int.MaxValue encodes to "B/////", 6 characters
+            int.MinValue encodes to "-CAAAAA", 7 characters
+            uint.MaxValue encodes to "D/////", 6 characters
+            long.MaxValue encodes to "H//////////", 11 characters
+            long.MinValue encodes to "-IAAAAAAAAAA", 12 characters
+            ulong.MaxValue encodes to "P//////////", 11 characters
+            </remarks>                                                      1234567890123456789012345678901234567890123456789012345678901234
+        </member>
+        <member name="P:GSF.RadixCodec.Radix86">
             <summary>
             Gets a radix-86 value encoding.
             </summary>
             <remarks>
-            int.MaxValue encodes to "$S2Jx", 5 characters -- base 86 reduces int size to 5
-            int.MinValue encodes to "-$S2Jy", 6 characters
+            int.MaxValue encodes to "$S2Jx", 5 characters
+            int.MinValue encodes to "-$S2Jy", 6 characters -- base 86 reduces 32-bit integer sizes to a maximum of 6 characters
             uint.MaxValue encodes to "1qu4dh", 6 characters
             long.MaxValue encodes to "1X2qL^UmlIt", 11 characters
             long.MinValue encodes to "-1X2qL^UmlIu", 12 characters
             ulong.MaxValue encodes to "2&amp;5Sh]zLIbZ", 11 characters
-            </remarks>                                                               1234567890123456789012345678901234567890123456789012345678901234567890123456
+            </remarks>                                                    1234567890123456789012345678901234567890123456789012345678901234567890123456
+        </member>
+        <member name="P:GSF.RadixCodec.Radix256">
+            <summary>
+            Gets a radix-256 value encoding.
+            </summary>
+            <remarks>
+            int.MaxValue encodes to "Āƀƀƀ", 4 characters
+            int.MinValue encodes to "-ā000", 5 characters -- base 256 reduces 32-bit integer sizes to a maximum of 5 characters
+            uint.MaxValue encodes to "ƀƀƀƀ", 4 characters -- base 256 reduces 32-bit unsigned integer sizes to a maximum of 4 characters
+            long.MaxValue encodes to "Āƀƀƀƀƀƀƀ", 8 characters
+            long.MinValue encodes to "-ā0000000", 9 characters
+            ulong.MaxValue encodes to "ƀƀƀƀƀƀƀƀ", 8 characters
+            </remarks>
+        </member>
+        <member name="P:GSF.RadixCodec.Radix65535">
+            <summary>
+            Gets a radix-65535 value encoding. This is the largest supported radix.
+            </summary>
+            <remarks>
+            int.MaxValue encodes to "魴魳", 2 characters
+            int.MinValue encodes to "-魴魴", 3 characters -- base 65535 reduces 32-bit integer sizes to a maximum of 3 characters (not 3 bytes)
+            uint.MaxValue encodes to "120", 3 characters
+            long.MaxValue encodes to "魵魶魵魳", 4 characters
+            long.MinValue encodes to "-魵魶魵魴", 5 characters
+            ulong.MaxValue encodes to "14640", 5 characters
+            </remarks>
         </member>
         <member name="T:GSF.BigEndian">
             <summary>
