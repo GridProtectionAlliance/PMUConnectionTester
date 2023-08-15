@@ -165,11 +165,11 @@ public partial class PMUConnectionTester
         GlobalExceptionLogger.ErrorTextMethod = UnhandledExceptionErrorMessage;
 
         // Make sure application settings exist
-        m_applicationSettings = new();
+        m_applicationSettings = new ApplicationSettings();
         m_applicationSettings.PhaseAngleColorsChanged += m_chartSettings_PhaseAngleColorsChanged;
 
         // Create a new multi-protocol frame parser
-        m_frameParser = new();
+        m_frameParser = new MultiProtocolFrameParser();
         m_frameParser.ReceivedFrameBufferImage += m_frameParser_ReceivedFrameBufferImage;
         m_frameParser.ReceivedConfigurationFrame += m_frameParser_ReceivedConfigurationFrame;
         m_frameParser.ReceivedDataFrame += m_frameParser_ReceivedDataFrame;
@@ -187,12 +187,12 @@ public partial class PMUConnectionTester
         m_frameParser.ServerStopped += m_frameParser_ServerStopped;
 
         // Create a synchronized operation for processing configuration frames
-        m_processConfigFrame = new(PaceConfigFrameProcessing, ex => AppendStatusMessage($"Exception occurred while attempting to process configuration frame: {ex.Message}"));
+        m_processConfigFrame = new ShortSynchronizedOperation(PaceConfigFrameProcessing, ex => AppendStatusMessage($"Exception occurred while attempting to process configuration frame: {ex.Message}"));
 
         // Initialize attribute tree variables
-        m_attributeFrames = new();
-        m_associatedNodes = new();
-        m_dataStreamLock = new();
+        m_attributeFrames = new ConcurrentDictionary<FundamentalFrameType, IChannelFrame>();
+        m_associatedNodes = new ConcurrentDictionary<string, UltraTreeNode>();
+        m_dataStreamLock = new object();
 
         // Make sure a folder exists for PMU Connection Tester files
         string personalDataFolder = AddPathSuffix(GetApplicationDataFolder());
@@ -232,7 +232,7 @@ public partial class PMUConnectionTester
 
         // Properly position extra connection parameters group box.  Since it's
         // a top-most control we move it off to the side at design time
-        GroupBoxProtocolParameters.Location = new(198, 63);
+        GroupBoxProtocolParameters.Location = new Point(198, 63);
 
         // Adjust size of comments area of extra connection parameters properties grid
         PropertyGridProtocolParameters.AdjustCommentAreaHeight(6);
@@ -426,11 +426,11 @@ public partial class PMUConnectionTester
                     rawCommandValue = Convert.ToInt32(TextBoxRawCommand.Text, 10);
 
                     if (rawCommandValue > ushort.MaxValue)
-                        throw new("The value entered is too big. Maximum value is 65535 (0xFFFF).");
+                        throw new Exception("The value entered is too big. Maximum value is 65535 (0xFFFF).");
                 }
                 else
                 {
-                    throw new("The custom user command value is invalid");
+                    throw new Exception("The custom user command value is invalid");
                 }
 
                 SendRawDeviceCommand((ushort)rawCommandValue);
@@ -992,7 +992,7 @@ public partial class PMUConnectionTester
         {
             try
             {
-                m_frameCaptureStream = new(dialog.FileName, FileMode.Create);
+                m_frameCaptureStream = new FileStream(dialog.FileName, FileMode.Create);
                 MenuItemStartCapture.Enabled = false;
                 MenuItemStopCapture.Enabled = true;
             }
@@ -2034,10 +2034,10 @@ public partial class PMUConnectionTester
 
             case TransportProtocol.Udp:
                 {
-                    if (connectionData.ContainsKey("server"))
+                    if (connectionData.TryGetValue("server", out string server))
                     {
                         TextBoxUdpLocalPort.Text = connectionData["localport"];
-                        AssignHostIP(TextBoxUdpHostIP, connectionData["server"]);
+                        AssignHostIP(TextBoxUdpHostIP, server);
                         TextBoxUdpRemotePort.Text = connectionData["remoteport"];
                         Forms.ReceiveFromSourceSelector.ConnectionString = settings.ConnectionString;
                         Forms.MulticastSourceSelector.ConnectionString = settings.ConnectionString;
@@ -2191,11 +2191,11 @@ public partial class PMUConnectionTester
                         ipV6Address = "::0";
                     }
 
-                    networkInterfaces.Add(new(elem[0], elem[1], ipV6Address));
+                    networkInterfaces.Add(new Tuple<string, string, string>(elem[0], elem[1], ipV6Address));
                     break;
 
                 case 3:
-                    networkInterfaces.Add(new(elem[0], elem[1], elem[2]));
+                    networkInterfaces.Add(new Tuple<string, string, string>(elem[0], elem[1], elem[2]));
                     break;
             }
         }
@@ -2351,7 +2351,7 @@ public partial class PMUConnectionTester
         try
         {
             ButtonListen.Enabled = false;
-            m_imageQueue = new() { ProcessItemFunction = ProcessReceivedFrameBufferImage };
+            m_imageQueue = new ImageQueue { ProcessItemFunction = ProcessReceivedFrameBufferImage };
             m_imageQueue.ProcessException += m_imageQueue_ProcessException;
 
             MultiProtocolFrameParser frameParser = m_frameParser;
@@ -2609,7 +2609,7 @@ public partial class PMUConnectionTester
 
             // We hard code column widths because the auto-size function is extremely slow
             foreach (UltraTreeNodeColumn column in TreeFrameAttributes.Nodes.ColumnSetResolved.Columns)
-                column.LayoutInfo.MinimumCellSize = new(200, 15);
+                column.LayoutInfo.MinimumCellSize = new Size(200, 15);
 
             // We use fundamental frame type as ID for frames so they are easy to identify - this
             // is also useful later when we want to determine root node associations to frames
@@ -3022,14 +3022,14 @@ public partial class PMUConnectionTester
         UltraChart chart = ChartDataDisplay;
 
         chart.BackColor = m_applicationSettings.BackgroundColor;
-        chart.Margin = new(0, 0, 0, 0);
+        chart.Margin = new Padding(0, 0, 0, 0);
         chart.Padding = chart.Margin;
 
         TitleAppearance titleTop = chart.TitleTop;
 
         titleTop.Margins.Top = 0;
         titleTop.Margins.Bottom = 10;
-        titleTop.Font = new("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point);
+        titleTop.Font = new Font("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point);
         titleTop.FontColor = m_applicationSettings.ForegroundColor;
         titleTop.ClipText = false;
 
@@ -3045,7 +3045,7 @@ public partial class PMUConnectionTester
         appearance.ChartLayers.Clear();
         appearance.ChartAreas.Clear();
 
-        m_frequencyData = new();
+        m_frequencyData = new DataTable();
         m_frequencyData.Columns.Add(new DataColumn("y", typeof(float)));
 
         // We call BeginDataLoad to disable auto-refresh of charts
@@ -3054,7 +3054,7 @@ public partial class PMUConnectionTester
         ChartArea frequencyChartArea = new()
         {
             BoundsMeasureType = MeasureType.Percentage,
-            Bounds = new(0, 7, 100, 43),
+            Bounds = new Rectangle(0, 7, 100, 43),
             Border =
             {
                 Thickness = 0
@@ -3091,7 +3091,7 @@ public partial class PMUConnectionTester
         if (appearance.ChartAreas.Count > 1)
             appearance.ChartAreas.RemoveAt(1);
 
-        m_phasorData = new();
+        m_phasorData = new DataTable();
 
         for (int i = 0; i < phasorCount; i++)
             m_phasorData.Columns.Add(new DataColumn($"y{i}", typeof(float)));
@@ -3102,7 +3102,7 @@ public partial class PMUConnectionTester
         ChartArea phaseAngleChartArea = new()
         {
             BoundsMeasureType = MeasureType.Percentage,
-            Bounds = new(0, 50, m_applicationSettings.ShowPhaseAngleLegend ? 80 : 100, 50),
+            Bounds = new Rectangle(0, 50, m_applicationSettings.ShowPhaseAngleLegend ? 80 : 100, 50),
             Border =
             {
                 Thickness = 0
@@ -3164,7 +3164,7 @@ public partial class PMUConnectionTester
             Labels =
             {
                 ItemFormatString = "<DATA_VALUE:0.0000>",
-                Font = new("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point),
+                Font = new Font("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point),
                 FontColor = m_applicationSettings.ForegroundColor
             },
             LineThickness = 1,
@@ -3200,7 +3200,7 @@ public partial class PMUConnectionTester
         Labels =
         {
             ItemFormatString = "<DATA_VALUE:0.#>",
-            Font = new("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point),
+            Font = new Font("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point),
             FontColor = m_applicationSettings.ForegroundColor,
             HorizontalAlign = StringAlignment.Near
         },
@@ -3240,7 +3240,7 @@ public partial class PMUConnectionTester
         frequencyDataSeries.DataBind(m_frequencyData, "y");
 
         // Set frequency color
-        frequencyDataSeries.PEs.Add(new(m_applicationSettings.FrequencyColor));
+        frequencyDataSeries.PEs.Add(new PaintElement(m_applicationSettings.FrequencyColor));
         ChartDataDisplay.CompositeChart.Series.Add(frequencyDataSeries);
         frequencyLayer.Series.Add(frequencyDataSeries);
 
@@ -3272,7 +3272,7 @@ public partial class PMUConnectionTester
                 m_selectedCell.PhasorDefinitions[i].Label;
 
             // Set phase angle color (rotating through configured set of colors)
-            phasorDataSeries.PEs.Add(new(m_applicationSettings.PhaseAngleColors[i % m_applicationSettings.PhaseAngleColors.Count]));
+            phasorDataSeries.PEs.Add(new PaintElement(m_applicationSettings.PhaseAngleColors[i % m_applicationSettings.PhaseAngleColors.Count]));
             ChartDataDisplay.CompositeChart.Series.Add(phasorDataSeries);
             phaseAngleLayer.Series.Add(phasorDataSeries);
         }
@@ -3283,7 +3283,7 @@ public partial class PMUConnectionTester
     private CompositeLegend CreatePhasorLegend()
     {
         CompositeLegend phasorLegend = new();
-        phasorLegend.Bounds = new(79, 50, 20, 48); // 78, 83, 50, 15)
+        phasorLegend.Bounds = new Rectangle(79, 50, 20, 48); // 78, 83, 50, 15)
         phasorLegend.BoundsMeasureType = MeasureType.Percentage;
         phasorLegend.PE.Fill = m_applicationSettings.LegendBackgroundColor;
 

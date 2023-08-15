@@ -45,7 +45,7 @@ internal static class Program
         Application.Run(Forms.PMUConnectionTester);
     }
 
-    internal static SingletonForms Forms => s_singletonForms ??= new();
+    internal static SingletonForms Forms => s_singletonForms ??= new SingletonForms();
 
     [ThreadStatic()]
     private static SingletonForms s_singletonForms;
