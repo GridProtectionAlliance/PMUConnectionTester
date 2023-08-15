@@ -817,7 +817,7 @@ public partial class PMUConnectionTester
         {
             case ApplicationSettings.ApplicationSettingsCategory:
                 {
-                    if (string.Equals(descriptor.Name, "ForceIPv4", StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(descriptor.Name, nameof(ApplicationSettings.ForceIPv4), StringComparison.OrdinalIgnoreCase))
                         ForceIPv4 = m_applicationSettings.ForceIPv4; // Apply change in IP mode
 
                     break;
@@ -826,20 +826,30 @@ public partial class PMUConnectionTester
             case ApplicationSettings.ConnectionSettingsCategory:
                 {
                     // We allow run-time dynamic changes to some frame parsing states
-                    if (string.Equals(descriptor.Name, "InjectSimulatedTimestamp", StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(descriptor.Name, nameof(ApplicationSettings.InjectSimulatedTimestamp), StringComparison.OrdinalIgnoreCase))
                     {
                         m_frameParser.InjectSimulatedTimestamp = m_applicationSettings.InjectSimulatedTimestamp;
                     }
-                    else if (string.Equals(descriptor.Name, "UseHighResolutionInputTimer", StringComparison.OrdinalIgnoreCase))
+                    else if (string.Equals(descriptor.Name, nameof(ApplicationSettings.UseHighResolutionInputTimer), StringComparison.OrdinalIgnoreCase))
                     {
                         m_frameParser.UseHighResolutionInputTimer = m_applicationSettings.UseHighResolutionInputTimer;
 
                         // Change in UseHighResolutionInputTimer may not be allowed if debugger is attached, so we restore accepted state to application settings
                         m_applicationSettings.UseHighResolutionInputTimer = m_frameParser.UseHighResolutionInputTimer;
                     }
-                    else if (string.Equals(descriptor.Name, "AlternateInterfaces", StringComparison.OrdinalIgnoreCase))
+                    else if (string.Equals(descriptor.Name, nameof(ApplicationSettings.AlternateInterfaces), StringComparison.OrdinalIgnoreCase))
                     {
                         InitializeNetworkInterfaces();
+                    }
+                    else if (string.Equals(descriptor.Name, nameof(ApplicationSettings.ConfigurationFrameVersion), StringComparison.OrdinalIgnoreCase))
+                    {
+                        m_frameParser.ConfigurationFrameVersion = m_applicationSettings.ConfigurationFrameVersion switch
+                        {
+                            1 => DeviceCommand.SendConfigurationFrame1,
+                            2 => DeviceCommand.SendConfigurationFrame2,
+                            3 => DeviceCommand.SendConfigurationFrame3,
+                            _ => DeviceCommand.SendLatestConfigurationFrameVersion
+                        };
                     }
 
                     break;
@@ -1957,25 +1967,28 @@ public partial class PMUConnectionTester
             // Include connection specific settings in connection string if they are not set to their default values so that
             // these settings will ride with their serialized connection file
             if (m_applicationSettings.MaximumConnectionAttempts != 1)
-                connectionSettings.ConnectionString += $"; maximumConnectionAttempts = {m_applicationSettings.MaximumConnectionAttempts}";
+                connectionSettings.ConnectionString += $"; {nameof(ApplicationSettings.MaximumConnectionAttempts)} = {m_applicationSettings.MaximumConnectionAttempts}";
 
             if (!m_applicationSettings.AutoStartDataParsingSequence)
-                connectionSettings.ConnectionString += "; autoStartDataParsingSequence = false";
+                connectionSettings.ConnectionString += $"; {nameof(ApplicationSettings.AutoStartDataParsingSequence)} = false";
 
             if (m_applicationSettings.SkipDisableRealTimeData)
-                connectionSettings.ConnectionString += "; skipDisableRealTimeData = true";
+                connectionSettings.ConnectionString += $"; {nameof(ApplicationSettings.SkipDisableRealTimeData)} = true";
 
             if (!m_applicationSettings.DisableRealTimeDataOnStop)
-                connectionSettings.ConnectionString += "; disableRealTimeDataOnStop = false";
+                connectionSettings.ConnectionString += $"; {nameof(ApplicationSettings.DisableRealTimeDataOnStop)} = false";
 
             if (m_applicationSettings.InjectSimulatedTimestamp)
                 connectionSettings.ConnectionString += "; simulateTimestamp = true";
 
             if (m_applicationSettings.UseHighResolutionInputTimer)
-                connectionSettings.ConnectionString += "; useHighResolutionInputTimer = true";
+                connectionSettings.ConnectionString += $"; {nameof(ApplicationSettings.UseHighResolutionInputTimer)} = true";
 
             if (!m_applicationSettings.KeepCommandChannelOpen)
-                connectionSettings.ConnectionString += "; keepCommandChannelOpen = false";
+                connectionSettings.ConnectionString += $"; {nameof(ApplicationSettings.KeepCommandChannelOpen)} = false";
+
+            if (m_applicationSettings.ConfigurationFrameVersion != -1)
+                connectionSettings.ConnectionString += $"; {nameof(ApplicationSettings.ConfigurationFrameVersion)} = {m_applicationSettings.ConfigurationFrameVersion}";
 
             connectionSettings.PmuID = Convert.ToInt32(TextBoxDeviceID.Text);
             connectionSettings.FrameRate = Convert.ToInt32(TextBoxFileFrameRate.Text);
@@ -2082,26 +2095,29 @@ public partial class PMUConnectionTester
         UpdateAlternateCommandChannelLabel();
 
         // Check for connection specific settings that may have been serialized into the connection string
-        if (connectionData.TryGetValue("maximumConnectionAttempts", out setting))
+        if (connectionData.TryGetValue(nameof(ApplicationSettings.MaximumConnectionAttempts), out setting))
             m_applicationSettings.MaximumConnectionAttempts = int.Parse(setting);
 
-        if (connectionData.TryGetValue("autoStartDataParsingSequence", out setting))
+        if (connectionData.TryGetValue(nameof(ApplicationSettings.AutoStartDataParsingSequence), out setting))
             m_applicationSettings.AutoStartDataParsingSequence = setting.ParseBoolean();
 
-        if (connectionData.TryGetValue("skipDisableRealTimeData", out setting))
+        if (connectionData.TryGetValue(nameof(ApplicationSettings.SkipDisableRealTimeData), out setting))
             m_applicationSettings.SkipDisableRealTimeData = setting.ParseBoolean();
 
-        if (connectionData.TryGetValue("disableRealTimeDataOnStop", out setting))
+        if (connectionData.TryGetValue(nameof(ApplicationSettings.DisableRealTimeDataOnStop), out setting))
             m_applicationSettings.DisableRealTimeDataOnStop = setting.ParseBoolean();
 
         if (connectionData.TryGetValue("simulateTimestamp", out setting))
             m_applicationSettings.InjectSimulatedTimestamp = setting.ParseBoolean();
 
-        if (connectionData.TryGetValue("useHighResolutionInputTimer", out setting))
+        if (connectionData.TryGetValue(nameof(ApplicationSettings.UseHighResolutionInputTimer), out setting))
             m_applicationSettings.UseHighResolutionInputTimer = setting.ParseBoolean();
 
-        if (connectionData.TryGetValue("keepCommandChannelOpen", out setting))
+        if (connectionData.TryGetValue(nameof(ApplicationSettings.KeepCommandChannelOpen), out setting))
             m_applicationSettings.KeepCommandChannelOpen = setting.ParseBoolean();
+
+        if (connectionData.TryGetValue(nameof(ApplicationSettings.ConfigurationFrameVersion), out setting))
+            m_applicationSettings.ConfigurationFrameVersion = int.Parse(setting);
 
         TextBoxDeviceID.Text = settings.PmuID.ToString();
         TextBoxFileFrameRate.Text = settings.FrameRate.ToString();
@@ -2232,16 +2248,16 @@ public partial class PMUConnectionTester
             m_networkInterfaces[index].Item3;
     }
 
-    public int GetNetworkInterfaceIndex(string ipValue)
+    public int GetNetworkInterfaceIndex(string address)
     {
-        ipValue = ipValue.ToNonNullString().Trim();
+        address = address.ToNonNullString().Trim();
 
         // Look for matching IPv4 address
-        int index = m_networkInterfaces.IndexOf(nic => string.Equals(nic.Item2, ipValue, StringComparison.OrdinalIgnoreCase));
+        int index = m_networkInterfaces.IndexOf(nic => string.Equals(nic.Item2, address, StringComparison.OrdinalIgnoreCase));
 
         // If not found, look for matching IPv6 address
         if (index < 0)
-            index = m_networkInterfaces.IndexOf(nic => string.Equals(nic.Item3, ipValue, StringComparison.OrdinalIgnoreCase));
+            index = m_networkInterfaces.IndexOf(nic => string.Equals(nic.Item3, address, StringComparison.OrdinalIgnoreCase));
 
         // If not found, assume default network interface
         if (index < 0)
@@ -2380,6 +2396,13 @@ public partial class PMUConnectionTester
                 frameParser.InjectSimulatedTimestamp = m_applicationSettings.InjectSimulatedTimestamp;
                 frameParser.UseHighResolutionInputTimer = m_applicationSettings.UseHighResolutionInputTimer;
                 frameParser.KeepCommandChannelOpen = m_applicationSettings.KeepCommandChannelOpen;
+                frameParser.ConfigurationFrameVersion = m_applicationSettings.ConfigurationFrameVersion switch
+                {
+                    1 => DeviceCommand.SendConfigurationFrame1,
+                    2 => DeviceCommand.SendConfigurationFrame2,
+                    3 => DeviceCommand.SendConfigurationFrame3,
+                    _ => DeviceCommand.SendLatestConfigurationFrameVersion
+                };
                 frameParser.ParsingExceptionWindow = Ticks.FromSeconds(m_applicationSettings.ParsingExceptionWindow);
                 frameParser.AutoRepeatCapturedPlayback = currentSettings.AutoRepeatPlayback;
                 frameParser.DefinedFrameRate = Convert.ToInt32(TextBoxFileFrameRate.Text);

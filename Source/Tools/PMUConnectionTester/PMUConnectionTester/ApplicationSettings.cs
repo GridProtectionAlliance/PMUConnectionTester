@@ -75,6 +75,7 @@ public class ApplicationSettings : CategorizedSettingsBase
     private const bool DefaultUseHighResolutionInputTimer = false;
     internal const string DefaultAlternateInterfaces = "Default|0.0.0.0|::0";
     private const bool DefaultKeepCommandChannelOpen = true;
+    private const int DefaultConfigurationFrameVersion = -1;
 
     // Default phase angle graph settings
     private const string DefaultPhaseAngleGraphStyle = "Relative";
@@ -220,9 +221,9 @@ public class ApplicationSettings : CategorizedSettingsBase
     // Specifiy default category
     public ApplicationSettings() : base("General")
     {
-        m_eventDelayTimer = new()
+        m_eventDelayTimer = new Timer
         {
-            Interval = 250d,
+            Interval = 250.0D,
             AutoReset = false,
             Enabled = false
         };
@@ -249,21 +250,25 @@ public class ApplicationSettings : CategorizedSettingsBase
     [DefaultValue(DefaultRestoreLastConnectionSettings)]
     [UserScopedSetting]
     public bool RestoreLastConnectionSettings { get; set; }
+
     [Category(ApplicationSettingsCategory)]
     [Description("Set to True to force use of IPv4.")]
     [DefaultValue(DefaultForceIPv4)]
     [UserScopedSetting]
     public bool ForceIPv4 { get; set; }
+
     [Category(ApplicationSettingsCategory)]
     [Description("Defines the number of parsing exceptions allowed during ParsingExceptionWindow before connection is reset.")]
     [DefaultValue(DefaultAllowedParsingExceptions)]
     [UserScopedSetting]
     public int AllowedParsingExceptions { get; set; }
+
     [Category(ApplicationSettingsCategory)]
     [Description("Defines time duration, in seconds, to monitor parsing exceptions.")]
     [DefaultValue(DefaultParsingExceptionWindow)]
     [UserScopedSetting]
     public double ParsingExceptionWindow { get; set; }
+
     [Category(ApplicationSettingsCategory)]
     [Description("Show the Configuration XML File in Explorer After Saving.")]
     [DefaultValue(DefaultShowConfigXmlExplorerAfterSave)]
@@ -279,16 +284,19 @@ public class ApplicationSettings : CategorizedSettingsBase
     [DefaultValue(typeof(Color), DefaultChannelNodeBackgroundColor)]
     [UserScopedSetting]
     public Color ChannelNodeBackgroundColor { get; set; }
+
     [Category(AttributeTreeCategory)]
     [Description("Defines the highlight foreground color for channel node entries on the attribute tree.")]
     [DefaultValue(typeof(Color), DefaultChannelNodeForegroundColor)]
     [UserScopedSetting]
     public Color ChannelNodeForegroundColor { get; set; }
+
     [Category(AttributeTreeCategory)]
     [Description("Defines the initial state for nodes when added to the attribute tree.  Note that a fully expanded tree will take much longer to initialize.")]
     [DefaultValue(typeof(NodeState), DefaultInitialNodeState)]
     [UserScopedSetting]
     public NodeState InitialNodeState { get; set; }
+
     [Category(AttributeTreeCategory)]
     [Description("Set to True to show attributes as children of their channel entries.")]
     [DefaultValue(DefaultShowAttributesAsChildren)]
@@ -314,6 +322,7 @@ public class ApplicationSettings : CategorizedSettingsBase
     [DefaultValue(typeof(Color), DefaultBackgroundColor)]
     [UserScopedSetting]
     public Color BackgroundColor { get; set; }
+
     [Category(ChartSettingsCategory)]
     [Description("Foreground color for graph region (axes, legend border, text, etc.)")]
     [DefaultValue(typeof(Color), DefaultForegroundColor)]
@@ -335,6 +344,7 @@ public class ApplicationSettings : CategorizedSettingsBase
     [DefaultValue(DefaultShowDataPointsOnGraphs)]
     [UserScopedSetting]
     public bool ShowDataPointsOnGraphs { get; set; }
+
     [Category(ChartSettingsCategory)]
     [Description("Set to True to change to the Messages tab on Data Exception.")]
     [DefaultValue(DefaultShowMessagesTabOnDataException)]
@@ -368,36 +378,49 @@ public class ApplicationSettings : CategorizedSettingsBase
     [DefaultValue(DefaultAutoStartDataParsingSequence)]
     [UserScopedSetting]
     public bool AutoStartDataParsingSequence { get; set; }
+
     [Category(ConnectionSettingsCategory)]
     [Description("Defines flag to skip automatic disabling of the real-time data stream on shutdown or startup. Useful when using serial or UDP multicast with several subscribed clients.")]
     [DefaultValue(DefaultSkipDisableRealTimeData)]
     [UserScopedSetting]
     public bool SkipDisableRealTimeData { get; set; }
+
     [Category(ConnectionSettingsCategory)]
     [Description("Defines flag to control disabling of real-time data stream on shutdown. Useful when using serial or UDP multicast with several subscribed clients.")]
     [DefaultValue(DefaultDisableRealTimeDataOnStop)]
     [UserScopedSetting]
     public bool DisableRealTimeDataOnStop { get; set; }
+
     [Category(ConnectionSettingsCategory)]
     [Description("Defines flag to inject a simulated timestamp into incoming streams - this will override any existing incoming timestamp. Useful when using file based input to simulate real-time data.")]
     [DefaultValue(DefaultInjectSimulatedTimestamp)]
     [UserScopedSetting]
     public bool InjectSimulatedTimestamp { get; set; }
+
     [Category(ConnectionSettingsCategory)]
     [Description("Defines flag that determines if a high-resolution precision timer should be used for file based input. Useful when input frames need be accurately time-aligned to the local clock to better simulate an input device and calculate downstream latencies.")]
     [DefaultValue(DefaultUseHighResolutionInputTimer)]
     [UserScopedSetting]
     public bool UseHighResolutionInputTimer { get; set; }
+
     [Category(ConnectionSettingsCategory)]
     [Description("Defines alternate network interface addresses that can be used for sourcing socket connections. Use the format \"Name|IPv4Addy|IPv6Addy\" (IPv6 address specification is optional) separating multiple alternate interfaces with a semi-colon \";\"")]
     [DefaultValue(DefaultAlternateInterfaces)]
     [UserScopedSetting]
     public string AlternateInterfaces { get; set; }
+
     [Category(ConnectionSettingsCategory)]
     [Description("Defines flag that determines if alternate command channel will remain open after successfully connecting device.")]
     [DefaultValue(DefaultKeepCommandChannelOpen)]
     [UserScopedSetting]
     public bool KeepCommandChannelOpen { get; set; }
+
+
+    [Category(ConnectionSettingsCategory)]
+    [Description("Defines version number for configuration frame that should be requested, e.g., set to 2 to force use of CFG2. Value of -1 selects default version for selected protocol.")]
+    [DefaultValue(DefaultConfigurationFrameVersion)]
+    [UserScopedSetting]
+    public int ConfigurationFrameVersion { get; set; }
 
     #endregion
 
@@ -408,12 +431,13 @@ public class ApplicationSettings : CategorizedSettingsBase
     [DefaultValue(typeof(AngleGraphStyle), DefaultPhaseAngleGraphStyle)]
     [UserScopedSetting]
     public AngleGraphStyle PhaseAngleGraphStyle { get; set; }
+
     [Category(PhaseAngleGraphCategory)]
     [Description("Set to True to show phase angle graph legend.")]
     [DefaultValue(DefaultShowPhaseAngleLegend)]
     [UserScopedSetting]
     public bool ShowPhaseAngleLegend { get; set; }
-
+    
     [Category(PhaseAngleGraphCategory)]
     [Description("Sets the total number of phase angle points to display.")]
     [DefaultValue(DefaultPhaseAnglePointsToPlot)]
@@ -430,11 +454,13 @@ public class ApplicationSettings : CategorizedSettingsBase
     [DefaultValue(typeof(Color), DefaultLegendBackgroundColor)]
     [UserScopedSetting]
     public Color LegendBackgroundColor { get; set; }
+
     [Category(PhaseAngleGraphCategory)]
     [Description("Foreground color for phase angle legend text.")]
     [DefaultValue(typeof(Color), DefaultLegendForegroundColor)]
     [UserScopedSetting]
     public Color LegendForegroundColor { get; set; }
+
 
     [Category(PhaseAngleGraphCategory)]
     [Description("Possible foreground colors for phase angle trends.")]
