@@ -1,4 +1,4 @@
-﻿//******************************************************************************************************
+﻿//*****************************************************************************************************
 //  PMUConnectionTester.cs - Gbtc
 //
 //  Copyright © 2022, Grid Protection Alliance.  All Rights Reserved.
@@ -206,12 +206,12 @@ public partial class PMUConnectionTester
         if (!File.Exists(m_lastConnectionFileName))
             File.Copy(GetAbsolutePath("LastRun.PmuConnection"), m_lastConnectionFileName);
 
-#if DEBUG
+    #if DEBUG
         LabelVersion.Text = "DEBUG VERSION";
-#else
-        var version = EntryAssembly.Version;
+    #else
+        Version version = EntryAssembly.Version;
         LabelVersion.Text = $"Version {version.Major}.{version.Minor}.{version.Build}"; // + "." & version.Revision;
-#endif
+    #endif
 
         // Initialize phasor protocol selection list
         foreach (PhasorProtocol protocol in Enum.GetValues(typeof(PhasorProtocol)).Cast<PhasorProtocol>())
@@ -341,8 +341,10 @@ public partial class PMUConnectionTester
         Shutdown();
     }
 
-    private void PMUConnectionTester_Shown(object sender, EventArgs e) =>
+    private void PMUConnectionTester_Shown(object sender, EventArgs e)
+    {
         TimerDelay.Start();
+    }
 
     private void TimerDelay_Tick(object sender, EventArgs e)
     {
@@ -353,45 +355,47 @@ public partial class PMUConnectionTester
 
         Forms.SplashScreen.Hide();
 
-        if (!m_formLoaded)
-        {
-            m_formLoaded = true;
-            BeginInvoke(new Action(() => ExtraParametersToolTipVisible(m_frameParser?.ConnectionParameters is not null)));
-        }
+        if (m_formLoaded)
+            return;
+
+        m_formLoaded = true;
+        BeginInvoke(new Action(() => ExtraParametersToolTipVisible(m_frameParser?.ConnectionParameters is not null)));
     }
 
     // We allow file drops from explorer onto connection tester
-    private void PMUConnectionTester_DragEnter(object sender, DragEventArgs e) =>
+    private void PMUConnectionTester_DragEnter(object sender, DragEventArgs e)
+    {
         e.Effect = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
+    }
 
     private void PMUConnectionTester_DragDrop(object sender, DragEventArgs e)
     {
         try
         {
-            if (e.Data.GetData(DataFormats.FileDrop) is Array fileNames)
+            if (e.Data.GetData(DataFormats.FileDrop) is not Array fileNames)
+                return;
+
+            // Only dealing with first file dropped on the form
+            string fileName = fileNames.GetValue(0).ToString();
+
+            if (!File.Exists(fileName))
+                return;
+
+            if (Path.GetExtension(fileName).ToLower().Trim() == ".pmuconnection")
             {
-                // Only dealing with first file dropped on the form
-                string fileName = fileNames.GetValue(0).ToString();
-
-                if (File.Exists(fileName))
-                {
-                    if (Path.GetExtension(fileName).ToLower().Trim() == ".pmuconnection")
-                    {
-                        // Deserializing connection settings may take a moment and explorer thread will be pending,
-                        // so we queue load operation on the form's invocation queue
-                        BeginInvoke(new Action<string>(LoadConnectionSettings), fileName);
-                    }
-                    else
-                    {
-                        // All other files are assumed to be a capture file
-                        TextBoxFileCaptureName.Text = fileName;
-                        TabControlCommunications.Tabs[(int)TransportProtocol.File].Selected = true;
-                    }
-
-                    // Show form in case explorer is overlapping
-                    Activate();
-                }
+                // Deserializing connection settings may take a moment and explorer thread will be pending,
+                // so we queue load operation on the form's invocation queue
+                BeginInvoke(new Action<string>(LoadConnectionSettings), fileName);
             }
+            else
+            {
+                // All other files are assumed to be a capture file
+                TextBoxFileCaptureName.Text = fileName;
+                TabControlCommunications.Tabs[(int)TransportProtocol.File].Selected = true;
+            }
+
+            // Show form in case explorer is overlapping
+            Activate();
         }
         catch (Exception ex)
         {
@@ -506,7 +510,8 @@ public partial class PMUConnectionTester
         m_lastPhaseAngle = 0.0f;
     }
 
-    private void ComboBoxByteEncodingDisplayFormats_SelectedIndexChanged(object sender, EventArgs e) =>
+    private void ComboBoxByteEncodingDisplayFormats_SelectedIndexChanged(object sender, EventArgs e)
+    {
         m_byteEncoding = ComboBoxByteEncodingDisplayFormats.SelectedIndex switch
         {
             0 => ByteEncoding.Hexadecimal,
@@ -517,6 +522,7 @@ public partial class PMUConnectionTester
             5 => ByteEncoding.ASCII,
             _ => ByteEncoding.Hexadecimal
         };
+    }
 
     private void ComboBoxProtocols_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -551,6 +557,7 @@ public partial class PMUConnectionTester
         switch (ComboBoxProtocols.SelectedIndex)
         {
             case (int)PhasorProtocol.FNET:
+            {
                 // Because users may be unfamiliar with typical FNET device connection requirements, we default
                 // to the typical connection settings when user selects FNET from the list
                 if (TabControlCommunications.SelectedTab.Index == (int)TransportProtocol.File)
@@ -565,8 +572,9 @@ public partial class PMUConnectionTester
 
                 ComboBoxByteEncodingDisplayFormats.SelectedIndex = 5;
                 break;
-
+            }
             case (int)PhasorProtocol.BPAPDCstream:
+            {
                 // If user selects the BPA protocol when a DST file is selected for input, make sure to automatically set the UsePhasorDataFileFormat to true
                 if (TabControlCommunications.SelectedTab.Index == (int)TransportProtocol.File & GetExtension(TextBoxFileCaptureName.Text).ToLower() == ".dst")
                 {
@@ -575,12 +583,14 @@ public partial class PMUConnectionTester
                 }
 
                 break;
-
+            }
             case (int)PhasorProtocol.Macrodyne:
+            {
                 // Macrodyne connections work best when real-time data is disabled before sending other commands
                 m_applicationSettings.SkipDisableRealTimeData = false;
                 PropertyGridApplicationSettings.Refresh();
                 break;
+            }
         }
     }
 
@@ -590,7 +600,7 @@ public partial class PMUConnectionTester
         TextBoxRawCommand.Visible = ComboBoxCommands.SelectedIndex == 6;
         TextBoxRawCommand.Enabled = ComboBoxCommands.SelectedIndex == 6;
 
-        // ' Some protocols only support enable and disable real-time data commands...
+        // Some protocols only support enable and disable real-time data commands...
         // If ComboBoxProtocols.SelectedIndex >= 4 And ComboBoxCommands.SelectedIndex > 1 Then
         // MsgBox("This protocol only supports enable and disable real-time data commands.", MsgBoxStyle.Exclamation Or MsgBoxStyle.OkOnly, "Invalid Command Selection")
         // ComboBoxCommands.SelectedIndex = 0
@@ -736,11 +746,15 @@ public partial class PMUConnectionTester
         Forms.NetworkInterfaceSelector.ComboBoxNetworkInterfaces.SelectedIndex = -1;
     }
 
-    private void LabelMulticastSource_Click(object sender, EventArgs e) =>
+    private void LabelMulticastSource_Click(object sender, EventArgs e)
+    {
         Forms.MulticastSourceSelector.ShowDialog(this);
+    }
 
-    private void LabelReceiveFrom_Click(object sender, EventArgs e) =>
+    private void LabelReceiveFrom_Click(object sender, EventArgs e)
+    {
         Forms.ReceiveFromSourceSelector.ShowDialog(this);
+    }
 
     private void LabelAlternateCommandChannel_Click(object sender, EventArgs e)
     {
@@ -788,21 +802,23 @@ public partial class PMUConnectionTester
         }
     }
 
-    private void TextBox_MouseClick(object sender, MouseEventArgs e) => 
+    private void TextBox_MouseClick(object sender, MouseEventArgs e)
+    {
         TextBox_GotFocus(sender, e);
+    }
 
     private void TextBoxFileCaptureName_TextChanged(object sender, EventArgs e)
     {
         if (string.IsNullOrEmpty(TextBoxFileCaptureName.Text))
             return;
 
-        if (GetExtension(TextBoxFileCaptureName.Text).ToLower() == ".dst")
-        {
-            ComboBoxProtocols.SelectedIndex = (int)PhasorProtocol.BPAPDCstream;
+        if (GetExtension(TextBoxFileCaptureName.Text).ToLower() != ".dst")
+            return;
 
-            if (m_frameParser.ConnectionParameters is GSF.PhasorProtocols.BPAPDCstream.ConnectionParameters connectionParameters)
-                connectionParameters.UsePhasorDataFileFormat = true;
-        }
+        ComboBoxProtocols.SelectedIndex = (int)PhasorProtocol.BPAPDCstream;
+
+        if (m_frameParser.ConnectionParameters is GSF.PhasorProtocols.BPAPDCstream.ConnectionParameters connectionParameters)
+            connectionParameters.UsePhasorDataFileFormat = true;
     }
 
     private void PropertyGridApplicationSettings_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
@@ -816,65 +832,63 @@ public partial class PMUConnectionTester
         switch (descriptor.Category ?? "")
         {
             case ApplicationSettings.ApplicationSettingsCategory:
-                {
-                    if (string.Equals(descriptor.Name, nameof(ApplicationSettings.ForceIPv4), StringComparison.OrdinalIgnoreCase))
-                        ForceIPv4 = m_applicationSettings.ForceIPv4; // Apply change in IP mode
+            {
+                if (string.Equals(descriptor.Name, nameof(ApplicationSettings.ForceIPv4), StringComparison.OrdinalIgnoreCase))
+                    ForceIPv4 = m_applicationSettings.ForceIPv4; // Apply change in IP mode
 
-                    break;
-                }
-
+                break;
+            }
             case ApplicationSettings.ConnectionSettingsCategory:
+            {
+                // We allow run-time dynamic changes to some frame parsing states
+                if (string.Equals(descriptor.Name, nameof(ApplicationSettings.InjectSimulatedTimestamp), StringComparison.OrdinalIgnoreCase))
                 {
-                    // We allow run-time dynamic changes to some frame parsing states
-                    if (string.Equals(descriptor.Name, nameof(ApplicationSettings.InjectSimulatedTimestamp), StringComparison.OrdinalIgnoreCase))
-                    {
-                        m_frameParser.InjectSimulatedTimestamp = m_applicationSettings.InjectSimulatedTimestamp;
-                    }
-                    else if (string.Equals(descriptor.Name, nameof(ApplicationSettings.UseHighResolutionInputTimer), StringComparison.OrdinalIgnoreCase))
-                    {
-                        m_frameParser.UseHighResolutionInputTimer = m_applicationSettings.UseHighResolutionInputTimer;
+                    m_frameParser.InjectSimulatedTimestamp = m_applicationSettings.InjectSimulatedTimestamp;
+                }
+                else if (string.Equals(descriptor.Name, nameof(ApplicationSettings.UseHighResolutionInputTimer), StringComparison.OrdinalIgnoreCase))
+                {
+                    m_frameParser.UseHighResolutionInputTimer = m_applicationSettings.UseHighResolutionInputTimer;
 
-                        // Change in UseHighResolutionInputTimer may not be allowed if debugger is attached, so we restore accepted state to application settings
-                        m_applicationSettings.UseHighResolutionInputTimer = m_frameParser.UseHighResolutionInputTimer;
-                    }
-                    else if (string.Equals(descriptor.Name, nameof(ApplicationSettings.AlternateInterfaces), StringComparison.OrdinalIgnoreCase))
+                    // Change in UseHighResolutionInputTimer may not be allowed if debugger is attached, so we restore accepted state to application settings
+                    m_applicationSettings.UseHighResolutionInputTimer = m_frameParser.UseHighResolutionInputTimer;
+                }
+                else if (string.Equals(descriptor.Name, nameof(ApplicationSettings.AlternateInterfaces), StringComparison.OrdinalIgnoreCase))
+                {
+                    InitializeNetworkInterfaces();
+                }
+                else if (string.Equals(descriptor.Name, nameof(ApplicationSettings.ConfigurationFrameVersion), StringComparison.OrdinalIgnoreCase))
+                {
+                    m_frameParser.ConfigurationFrameVersion = m_applicationSettings.ConfigurationFrameVersion switch
                     {
-                        InitializeNetworkInterfaces();
-                    }
-                    else if (string.Equals(descriptor.Name, nameof(ApplicationSettings.ConfigurationFrameVersion), StringComparison.OrdinalIgnoreCase))
-                    {
-                        m_frameParser.ConfigurationFrameVersion = m_applicationSettings.ConfigurationFrameVersion switch
-                        {
-                            1 => DeviceCommand.SendConfigurationFrame1,
-                            2 => DeviceCommand.SendConfigurationFrame2,
-                            3 => DeviceCommand.SendConfigurationFrame3,
-                            _ => DeviceCommand.SendLatestConfigurationFrameVersion
-                        };
-                    }
-
-                    break;
+                        1 => DeviceCommand.SendConfigurationFrame1,
+                        2 => DeviceCommand.SendConfigurationFrame2,
+                        3 => DeviceCommand.SendConfigurationFrame3,
+                        _ => DeviceCommand.SendLatestConfigurationFrameVersion
+                    };
                 }
 
+                break;
+            }
             case ApplicationSettings.ChartSettingsCategory:
             case ApplicationSettings.PhaseAngleGraphCategory:
             case ApplicationSettings.FrequencyGraphCategory:
+            {
+                if (string.Equals(descriptor.Name, "PhaseAngleGraphStyle", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (string.Equals(descriptor.Name, "PhaseAngleGraphStyle", StringComparison.OrdinalIgnoreCase))
-                    {
-                        // This property only changes data that is getting graphed - no need to reinitialize chart
-                        LabelSelectedIsRefAngle.Visible = m_applicationSettings.PhaseAngleGraphStyle == ApplicationSettings.AngleGraphStyle.Relative;
-                    }
-                    else
-                    {
-                        InitializeChart();
-                    }
-
-                    // We show chart tab (if data is available) to display changes on any chart property change
-                    if (m_selectedCell is not null)
-                        TabControlChart.Tabs[(int)ChartTabs.Graph].Selected = true;
-
-                    break;
+                    // This property only changes data that is getting graphed - no need to reinitialize chart
+                    LabelSelectedIsRefAngle.Visible = m_applicationSettings.PhaseAngleGraphStyle == ApplicationSettings.AngleGraphStyle.Relative;
                 }
+                else
+                {
+                    InitializeChart();
+                }
+
+                // We show chart tab (if data is available) to display changes on any chart property change
+                if (m_selectedCell is not null)
+                    TabControlChart.Tabs[(int)ChartTabs.Graph].Selected = true;
+
+                break;
+            }
         }
     }
 
@@ -914,35 +928,35 @@ public partial class PMUConnectionTester
         dialog.FileName = "";
         dialog.CheckFileExists = true;
 
-        if (dialog.ShowDialog(this) == DialogResult.OK)
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        FileStream configFile = File.Open(dialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
         {
-            FileStream configFile = File.Open(dialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            SoapFormatter formatter = new()
             {
-                SoapFormatter formatter = new()
-                {
-                    AssemblyFormat = FormatterAssemblyStyle.Simple,
-                    TypeFormat = FormatterTypeStyle.TypesWhenNeeded,
-                    Binder = Serialization.LegacyBinder
-                };
+                AssemblyFormat = FormatterAssemblyStyle.Simple,
+                TypeFormat = FormatterTypeStyle.TypesWhenNeeded,
+                Binder = Serialization.LegacyBinder
+            };
 
-                try
-                {
-                    m_configurationFrame = null;
+            try
+            {
+                m_configurationFrame = null;
 
-                    lock (m_processConfigFrame)
-                    {
-                        m_updatedConfigFrame = (IConfigurationFrame)formatter.Deserialize(configFile);
-                        m_processConfigFrame.RunOnceAsync();
-                    }
-                }
-                catch (Exception ex)
+                lock (m_processConfigFrame)
                 {
-                    MessageBox.Show(this, $"Failed to deserialize configuration frame: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    m_updatedConfigFrame = (IConfigurationFrame)formatter.Deserialize(configFile);
+                    m_processConfigFrame.RunOnceAsync();
                 }
             }
-
-            configFile.Close();
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"Failed to deserialize configuration frame: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
         }
+
+        configFile.Close();
     }
 
     private void MenuItemSaveConfigFile_Click(object sender, EventArgs e)
@@ -959,34 +973,34 @@ public partial class PMUConnectionTester
             dialog.Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*";
             dialog.FileName = "";
 
-            if (dialog.ShowDialog(this) == DialogResult.OK)
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            FileStream configFile = File.Create(dialog.FileName);
             {
-                FileStream configFile = File.Create(dialog.FileName);
+                SoapFormatter formatter = new()
                 {
-                    SoapFormatter formatter = new()
-                    {
-                        AssemblyFormat = FormatterAssemblyStyle.Simple,
-                        TypeFormat = FormatterTypeStyle.TypesWhenNeeded
-                    };
+                    AssemblyFormat = FormatterAssemblyStyle.Simple,
+                    TypeFormat = FormatterTypeStyle.TypesWhenNeeded
+                };
 
-                    try
-                    {
-                        formatter.Serialize(configFile, m_configurationFrame);
-                    }
-                    catch (Exception ex)
-                    {
-                        byte[] message = Encoding.UTF8.GetBytes(ex.Message);
-                        configFile.Write(message, 0, message.Length);
-                        MessageBox.Show(this, $"Failed to serialize configuration frame: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    }
+                try
+                {
+                    formatter.Serialize(configFile, m_configurationFrame);
                 }
-
-                configFile.Close();
-
-                // Open captured XML sample file in explorer...
-                if (m_applicationSettings.ShowConfigXmlExplorerAfterSave)
-                    Process.Start("explorer.exe", dialog.FileName);
+                catch (Exception ex)
+                {
+                    byte[] message = Encoding.UTF8.GetBytes(ex.Message);
+                    configFile.Write(message, 0, message.Length);
+                    MessageBox.Show(this, $"Failed to serialize configuration frame: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
             }
+
+            configFile.Close();
+
+            // Open captured XML sample file in explorer...
+            if (m_applicationSettings.ShowConfigXmlExplorerAfterSave)
+                Process.Start("explorer.exe", dialog.FileName);
         }
     }
 
@@ -998,25 +1012,24 @@ public partial class PMUConnectionTester
         dialog.Filter = "Captured Files (*.PmuCapture)|*.PmuCapture|All Files|*.*";
         dialog.FileName = "";
 
-        if (dialog.ShowDialog(this) == DialogResult.OK)
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        try
         {
-            try
-            {
-                m_frameCaptureStream = new FileStream(dialog.FileName, FileMode.Create);
-                MenuItemStartCapture.Enabled = false;
-                MenuItemStopCapture.Enabled = true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, $"Failed to start capturing data to \"{dialog.FileName}\": {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
+            m_frameCaptureStream = new FileStream(dialog.FileName, FileMode.Create);
+            MenuItemStartCapture.Enabled = false;
+            MenuItemStopCapture.Enabled = true;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, $"Failed to start capturing data to \"{dialog.FileName}\": {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
     }
 
     private void MenuItemStopCapture_Click(object sender, EventArgs e)
     {
-        if (m_frameCaptureStream is not null)
-            m_frameCaptureStream.Close();
+        m_frameCaptureStream?.Close();
 
         m_frameCaptureStream = null;
         MenuItemStopCapture.Enabled = false;
@@ -1031,25 +1044,24 @@ public partial class PMUConnectionTester
         dialog.Filter = "Debug Captured Files (*.csv)|*.csv|All Files|*.*";
         dialog.FileName = "";
 
-        if (dialog.ShowDialog(this) == DialogResult.OK)
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        try
         {
-            try
-            {
-                m_streamDebugCapture = File.CreateText(dialog.FileName);
-                MenuItemStartStreamDebugCapture.Enabled = false;
-                MenuItemStopStreamDebugCapture.Enabled = true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, $"Failed to start stream debug capture to \"{dialog.FileName}\": {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
+            m_streamDebugCapture = File.CreateText(dialog.FileName);
+            MenuItemStartStreamDebugCapture.Enabled = false;
+            MenuItemStopStreamDebugCapture.Enabled = true;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, $"Failed to start stream debug capture to \"{dialog.FileName}\": {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
     }
 
     private void MenuItemStopStreamDebugCapture_Click(object sender, EventArgs e)
     {
-        if (m_streamDebugCapture is not null)
-            m_streamDebugCapture.Close();
+        m_streamDebugCapture?.Close();
 
         m_streamDebugCapture = null;
         MenuItemStopStreamDebugCapture.Enabled = false;
@@ -1064,37 +1076,43 @@ public partial class PMUConnectionTester
         dialog.Filter = "Captured Frames (*.txt)|*.txt|All Files|*.*";
         dialog.FileName = "";
 
-        if (dialog.ShowDialog(this) == DialogResult.OK)
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        m_frameCaptureFileName = dialog.FileName;
+        MenuItemCancelSampleFrameCapture.Enabled = true;
+
+        lock (m_dataStreamLock)
         {
-            m_frameCaptureFileName = dialog.FileName;
-            MenuItemCancelSampleFrameCapture.Enabled = true;
+            m_capturedFrames = 0;
 
-            lock (m_dataStreamLock)
-            {
-                m_capturedFrames = 0;
+            m_frameSampleStream = File.CreateText(m_frameCaptureFileName);
 
-                m_frameSampleStream = File.CreateText(m_frameCaptureFileName);
-
-                m_frameSampleStream.WriteLine($"Sample Frame Capture - {DateTime.Now}");
-                m_frameSampleStream.WriteLine();
-                m_frameSampleStream.WriteLine($"Device Connection: {ConnectionInformation}");
-                m_frameSampleStream.WriteLine();
-                m_frameSampleStream.WriteLine(new string('*', TextFileWidth));
-                m_frameSampleStream.WriteLine();
-            }
-
-            MessageBox.Show(this, "Note that one sample for each type of frame encountered will be captured until a configuration frame is received.  Reception of a configuration frame will terminate the sample capture.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            m_frameSampleStream.WriteLine($"Sample Frame Capture - {DateTime.Now}");
+            m_frameSampleStream.WriteLine();
+            m_frameSampleStream.WriteLine($"Device Connection: {ConnectionInformation}");
+            m_frameSampleStream.WriteLine();
+            m_frameSampleStream.WriteLine(new string('*', TextFileWidth));
+            m_frameSampleStream.WriteLine();
         }
+
+        MessageBox.Show(this, "Note that one sample for each type of frame encountered will be captured until a configuration frame is received.  Reception of a configuration frame will terminate the sample capture.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
-    private void MenuItemCancelSampleFrameCapture_Click(object sender, EventArgs e) =>
+    private void MenuItemCancelSampleFrameCapture_Click(object sender, EventArgs e)
+    {
         CloseSampleCapture();
+    }
 
-    private void MenuItemLocalHelp_Click(object sender, EventArgs e) =>
+    private void MenuItemLocalHelp_Click(object sender, EventArgs e)
+    {
         Help.ShowHelp(this, GetAbsolutePath("PMUConnectionTester.chm"));
+    }
 
-    private void MenuItemOnlineHelp_Click(object sender, EventArgs e) =>
+    private void MenuItemOnlineHelp_Click(object sender, EventArgs e)
+    {
         Process.Start("https://pmuconnectiontester.info/HELP");
+    }
 
     private void MenuItemAbout_Click(object sender, EventArgs e)
     {
@@ -1106,28 +1124,32 @@ public partial class PMUConnectionTester
         aboutDialog.ShowDialog(this);
     }
 
-    private void MenuItemExit_Click(object sender, EventArgs e) =>
+    private void MenuItemExit_Click(object sender, EventArgs e)
+    {
         Close();
+    }
 
-    private void MenuItemRefresh_Click(object sender, EventArgs e) =>
+    private void MenuItemRefresh_Click(object sender, EventArgs e)
+    {
         InitializeAttributeTree();
+    }
 
     private void MenuItemExpandAll_Click(object sender, EventArgs e)
     {
         TreeFrameAttributes.Refresh();
         TreeNodesCollection nodes = TreeFrameAttributes.Nodes;
 
-        // Since expanding nodes can be a time consuming process, we perform expansion on root
+        // Since expanding nodes can be a time-consuming process, we perform expansion on root
         // nodes one at a time - resting between expansions to allow some UI thread time
         foreach (int value in Enum.GetValues(typeof(FundamentalFrameType)))
         {
             string frameKey = $"Frame{(value + 1)}";
 
-            if (nodes.Exists(frameKey))
-            {
-                nodes[frameKey].ExpandAll(ExpandAllType.OnlyNodesWithChildren);
-                Application.DoEvents();
-            }
+            if (!nodes.Exists(frameKey))
+                continue;
+
+            nodes[frameKey].ExpandAll(ExpandAllType.OnlyNodesWithChildren);
+            Application.DoEvents();
         }
     }
 
@@ -1141,12 +1163,16 @@ public partial class PMUConnectionTester
 
     #region [ Control Resizing Event Code ]
 
-    private void PMUConnectionTester_Resize(object sender, EventArgs e) =>
+    private void PMUConnectionTester_Resize(object sender, EventArgs e)
+    {
         UpdateApplicationTitle(null);
+    }
 
-    private void GroupBoxStatus_ExpandedStateChanged(object sender, EventArgs e) =>
+    private void GroupBoxStatus_ExpandedStateChanged(object sender, EventArgs e)
+    {
         ToolTipManager.GetUltraToolTip(GroupBoxStatus).Enabled =
             GroupBoxStatus.Expanded ? DefaultableBoolean.False : DefaultableBoolean.True;
+    }
 
     private void GroupBoxStatus_ExpandedStateChanging(object sender, CancelEventArgs e)
     {
@@ -1228,11 +1254,11 @@ public partial class PMUConnectionTester
 
     #region [ Non-Form Thread Event Handlers ]
 
-    // These functions are invoked from a separate threads, so you must use the "Invoke" method so you can safely manipulate visual control elements
+    // These functions are invoked from a separate threads, so thread-safe methods, e.g., "Invoke",
+    // must be used so that visual control elements can be safely manipulated
     private void m_frameParser_ReceivedFrameBufferImage(object sender, EventArgs<FundamentalFrameType, byte[], int, int> e)
     {
-        if (m_imageQueue is not null)
-            m_imageQueue.Enqueue(e);
+        m_imageQueue?.Enqueue(e);
     }
 
     private void m_frameParser_ReceivedConfigurationFrame(object sender, EventArgs<IConfigurationFrame> e)
@@ -1244,48 +1270,76 @@ public partial class PMUConnectionTester
         }
     }
 
-    private void m_frameParser_ReceivedDataFrame(object sender, EventArgs<IDataFrame> e) =>
+    private void m_frameParser_ReceivedDataFrame(object sender, EventArgs<IDataFrame> e)
+    {
         BeginInvoke(new Action<IDataFrame>(ReceivedDataFrame), e.Argument);
+    }
 
-    private void m_frameParser_ReceivedHeaderFrame(object sender, EventArgs<IHeaderFrame> e) =>
+    private void m_frameParser_ReceivedHeaderFrame(object sender, EventArgs<IHeaderFrame> e)
+    {
         BeginInvoke(new Action<IHeaderFrame>(ReceivedHeaderFrame), e.Argument);
+    }
 
     // Note we use the same function to handle both sent and received command frames...
-    private void m_frameParser_ReceivedCommandFrame(object sender, EventArgs<ICommandFrame> e) =>
+    private void m_frameParser_ReceivedCommandFrame(object sender, EventArgs<ICommandFrame> e)
+    {
         BeginInvoke(new Action<ICommandFrame>(ReceivedCommandFrame), e.Argument);
+    }
 
-    private void m_frameParser_ReceivedUndeterminedFrame(object sender, EventArgs<IChannelFrame> e) =>
+    private void m_frameParser_ReceivedUndeterminedFrame(object sender, EventArgs<IChannelFrame> e)
+    {
         BeginInvoke(new Action<IChannelFrame>(ReceivedUndeterminedFrame), e.Argument);
+    }
 
-    private void m_frameParser_DataStreamException(object sender, EventArgs<Exception> e) =>
+    private void m_frameParser_DataStreamException(object sender, EventArgs<Exception> e)
+    {
         BeginInvoke(new Action<Exception>(DataStreamException), e.Argument);
+    }
 
-    private void m_frameParser_ConfigurationChanged(object sender, EventArgs e) =>
+    private void m_frameParser_ConfigurationChanged(object sender, EventArgs e)
+    {
         BeginInvoke(new Action(ConfigurationChanged));
+    }
 
-    private void m_frameParser_Connected(object sender, EventArgs e) =>
+    private void m_frameParser_Connected(object sender, EventArgs e)
+    {
         BeginInvoke(new Action(Connected));
+    }
 
-    private void m_frameParser_ConnectionException(object sender, EventArgs<Exception, int> e) =>
+    private void m_frameParser_ConnectionException(object sender, EventArgs<Exception, int> e)
+    {
         BeginInvoke(new Action<Exception, int>(ConnectionException), e.Argument1, e.Argument2);
+    }
 
-    private void m_frameParser_ExceededParsingExceptionThreshold(object sender, EventArgs e) =>
+    private void m_frameParser_ExceededParsingExceptionThreshold(object sender, EventArgs e)
+    {
         BeginInvoke(new EventHandler(ExceededParsingExceptionThreshold), sender, e);
+    }
 
-    private void m_frameParser_Disconnected(object sender, EventArgs e) =>
+    private void m_frameParser_Disconnected(object sender, EventArgs e)
+    {
         BeginInvoke(new Action(Disconnected));
+    }
 
-    private void m_frameParser_ServerStarted(object sender, EventArgs e) =>
+    private void m_frameParser_ServerStarted(object sender, EventArgs e)
+    {
         BeginInvoke(new Action(ServerStarted));
+    }
 
-    private void m_frameParser_ServerStopped(object sender, EventArgs e) =>
+    private void m_frameParser_ServerStopped(object sender, EventArgs e)
+    {
         BeginInvoke(new Action(ServerStopped));
+    }
 
-    private void m_imageQueue_ProcessException(object sender, EventArgs<Exception> e) =>
+    private void m_imageQueue_ProcessException(object sender, EventArgs<Exception> e)
+    {
         BeginInvoke(new Action<Exception>(DataStreamException), e.Argument);
+    }
 
-    private void m_chartSettings_PhaseAngleColorsChanged() =>
+    private void m_chartSettings_PhaseAngleColorsChanged()
+    {
         BeginInvoke(new Action(PhaseAngleColorsChanged));
+    }
 
     #endregion
 
@@ -1296,14 +1350,14 @@ public partial class PMUConnectionTester
         if (m_shuttingDown)
             return;
 
-        if (state is EventArgs<FundamentalFrameType, byte[], int, int> bufferImageArgs)
-        {
-            BeginInvoke(new Action<FundamentalFrameType, byte[], int, int>(ReceivedFrameBufferImage), bufferImageArgs.Argument1, bufferImageArgs.Argument2, bufferImageArgs.Argument3, bufferImageArgs.Argument4);
+        if (state is not EventArgs<FundamentalFrameType, byte[], int, int> bufferImageArgs)
+            return;
 
-            // For file based input we slow image processing to attempt some level of synchronization with frame reception
-            if (m_frameParser.TransportProtocol == TransportProtocol.File)
-                Thread.Sleep(1000 / m_frameParser.DefinedFrameRate);
-        }
+        BeginInvoke(new Action<FundamentalFrameType, byte[], int, int>(ReceivedFrameBufferImage), bufferImageArgs.Argument1, bufferImageArgs.Argument2, bufferImageArgs.Argument3, bufferImageArgs.Argument4);
+
+        // For file based input we slow image processing to attempt some level of synchronization with frame reception
+        if (m_frameParser.TransportProtocol == TransportProtocol.File)
+            Thread.Sleep(1000 / m_frameParser.DefinedFrameRate);
     }
 
     private void ReceivedFrameBufferImage(FundamentalFrameType frameType, byte[] binaryImage, int offset, int length)
@@ -1322,38 +1376,38 @@ public partial class PMUConnectionTester
         if (m_frameCaptureStream is not null && frameType != FundamentalFrameType.CommandFrame)
             m_frameCaptureStream.Write(binaryImage, offset, length);
 
-        if (length > 0)
+        if (length <= 0)
+            return;
+
+        if (GroupBoxStatus.Expanded)
         {
-            if (GroupBoxStatus.Expanded)
+            if (m_byteEncoding is ByteEncoding.ASCIIEncoding)
             {
-                if (m_byteEncoding is ByteEncoding.ASCIIEncoding)
-                {
-                    // We handle ASCII encoding as a special case removing any control characters, no spacing
-                    // between characters and allowing the entire frame to be displayed
-                    LabelBinaryFrameImage.Text = m_byteEncoding.GetString(binaryImage, offset, length).RemoveControlCharacters();
-                }
-                else
-                {
-                    // For all others, we display bytes in the specified encoding format up to specified maximum display bytes
-                    LabelBinaryFrameImage.Text = m_byteEncoding.GetString(binaryImage, offset, Math.Min(length, m_applicationSettings.MaximumFrameDisplayBytes), ' ') + (length > m_applicationSettings.MaximumFrameDisplayBytes ? " ..." : "");
-                }
+                // We handle ASCII encoding as a special case removing any control characters, no spacing
+                // between characters and allowing the entire frame to be displayed
+                LabelBinaryFrameImage.Text = m_byteEncoding.GetString(binaryImage, offset, length).RemoveControlCharacters();
             }
-
-            // We update statistics after processing about 30 frames of data...
-            if (m_byteCount >= length * 30)
+            else
             {
-                StatusBar.Panels[TotalFramesPanel].Text = m_frameParser.TotalFramesReceived.ToString();
-                StatusBar.Panels[FramesPerSecondPanel].Text = m_frameParser.CalculatedFrameRate.ToString("0.0000");
-                StatusBar.Panels[TotalBytesPanel].Text = m_frameParser.TotalBytesReceived.ToString();
-                StatusBar.Panels[BitRatePanel].Text = m_frameParser.MegaBitRate.ToString("0.0000");
-                StatusBar.Panels[QueuedBuffersPanel].Text = m_frameParser.QueuedBuffers.ToString();
-
-                m_byteCount = 0;
-                Application.DoEvents();
+                // For all others, we display bytes in the specified encoding format up to specified maximum display bytes
+                LabelBinaryFrameImage.Text = m_byteEncoding.GetString(binaryImage, offset, Math.Min(length, m_applicationSettings.MaximumFrameDisplayBytes), ' ') + (length > m_applicationSettings.MaximumFrameDisplayBytes ? " ..." : "");
             }
-
-            m_byteCount += length;
         }
+
+        // We update statistics after processing about 30 frames of data...
+        if (m_byteCount >= length * 30)
+        {
+            StatusBar.Panels[TotalFramesPanel].Text = m_frameParser.TotalFramesReceived.ToString();
+            StatusBar.Panels[FramesPerSecondPanel].Text = m_frameParser.CalculatedFrameRate.ToString("0.0000");
+            StatusBar.Panels[TotalBytesPanel].Text = m_frameParser.TotalBytesReceived.ToString();
+            StatusBar.Panels[BitRatePanel].Text = m_frameParser.MegaBitRate.ToString("0.0000");
+            StatusBar.Panels[QueuedBuffersPanel].Text = m_frameParser.QueuedBuffers.ToString();
+
+            m_byteCount = 0;
+            Application.DoEvents();
+        }
+
+        m_byteCount += length;
     }
 
     private void CaptureFrameImage(FundamentalFrameType frameType, byte[] binaryImage, int offset, int length)
@@ -1652,15 +1706,12 @@ public partial class PMUConnectionTester
                         }
                     }
                 }
-
                 catch (ArgumentOutOfRangeException)
                 {
                 }
-
                 catch (IndexOutOfRangeException)
                 {
                 }
-
                 catch (Exception ex)
                 {
                     AppendStatusMessage($"Exception occurred while attempting to plot data: {ex.Message}");
@@ -1668,7 +1719,7 @@ public partial class PMUConnectionTester
             }
 
             // We only refresh graph every so often
-            if (Ticks.ToSeconds(DateTime.Now.Ticks - m_lastRefresh) >= (double)m_applicationSettings.RefreshRate)
+            if (Ticks.ToSeconds(DateTime.Now.Ticks - m_lastRefresh) >= m_applicationSettings.RefreshRate)
             {
                 ChartDataDisplay.DataBind();
                 m_lastRefresh = DateTime.Now.Ticks;
@@ -1676,30 +1727,30 @@ public partial class PMUConnectionTester
         }
 
         // Handle debug stream if it's open
-        if (m_streamDebugCapture is not null)
+        if (m_streamDebugCapture is null)
+            return;
+
+        // We write the data value line in the file from the data frame
+        m_streamDebugCapture.Write($"{frame.Timestamp:yyyy-MM-dd HH:mm:ss.fff},");
+
+        foreach (IDataCell cell in frame.Cells)
         {
-            // We write the data value line in the file from the data frame
-            m_streamDebugCapture.Write($"{frame.Timestamp:yyyy-MM-dd HH:mm:ss.fff},");
+            m_streamDebugCapture.Write($"{cell.StatusFlags:x},");
 
-            foreach (IDataCell cell in frame.Cells)
-            {
-                m_streamDebugCapture.Write($"{cell.StatusFlags:x},");
+            foreach (IPhasorValue phasorValue in cell.PhasorValues)
+                m_streamDebugCapture.Write($"{phasorValue.Angle.ToDegrees()},{phasorValue.Magnitude},");
 
-                foreach (IPhasorValue phasorValue in cell.PhasorValues)
-                    m_streamDebugCapture.Write($"{phasorValue.Angle.ToDegrees()},{phasorValue.Magnitude},");
+            IFrequencyValue frequencyValue = cell.FrequencyValue;
+            m_streamDebugCapture.Write($"{frequencyValue.Frequency},{frequencyValue.DfDt},");
 
-                IFrequencyValue frequencyValue = cell.FrequencyValue;
-                m_streamDebugCapture.Write($"{frequencyValue.Frequency},{frequencyValue.DfDt},");
+            foreach (IAnalogValue analogValue in cell.AnalogValues)
+                m_streamDebugCapture.Write($"{analogValue.Value},");
 
-                foreach (IAnalogValue analogValue in cell.AnalogValues)
-                    m_streamDebugCapture.Write($"{analogValue.Value},");
-
-                foreach (IDigitalValue digitalValue in cell.DigitalValues)
-                    m_streamDebugCapture.Write($"{digitalValue.Value},");
-            }
-
-            m_streamDebugCapture.WriteLine(frame.Timestamp);
+            foreach (IDigitalValue digitalValue in cell.DigitalValues)
+                m_streamDebugCapture.Write($"{digitalValue.Value},");
         }
+
+        m_streamDebugCapture.WriteLine(frame.Timestamp);
     }
 
     private void ReceivedHeaderFrame(IHeaderFrame frame)
@@ -1730,10 +1781,8 @@ public partial class PMUConnectionTester
     {
         AppendStatusMessage($"Exception: {ex.Message}");
 
-        if (m_applicationSettings.ShowMessagesTabOnDataException)
-        {
+        if (m_applicationSettings.ShowMessagesTabOnDataException) 
             TabControlChart.Tabs[(int)ChartTabs.Messages].Selected = true;
-        }
     }
 
     private void ConfigurationChanged()
@@ -1741,14 +1790,14 @@ public partial class PMUConnectionTester
         if (m_configurationFrame is null)
             return;
 
-        if (new Ticks(DateTime.UtcNow.Ticks - m_configChangeTime).ToSeconds() >= 60.0d)
-        {
-            m_configChangeTime = DateTime.UtcNow.Ticks;
-            AppendStatusMessage("NOTE: Data stream indicates that configuration in source device has changed");
+        if (new Ticks(DateTime.UtcNow.Ticks - m_configChangeTime).ToSeconds() < 60.0D)
+            return;
 
-            if (m_frameParser.DeviceSupportsCommands && MessageBox.Show(this, $"Data stream indicates that configuration in source device has changed.{Environment.NewLine}{Environment.NewLine}Do you want to request a new configuration frame?", "Device Configuration Changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                SendDeviceCommand(DeviceCommand.SendConfigurationFrame3);
-        }
+        m_configChangeTime = DateTime.UtcNow.Ticks;
+        AppendStatusMessage("NOTE: Data stream indicates that configuration in source device has changed");
+
+        if (m_frameParser.DeviceSupportsCommands && MessageBox.Show(this, $"Data stream indicates that configuration in source device has changed.{Environment.NewLine}{Environment.NewLine}Do you want to request a new configuration frame?", "Device Configuration Changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            SendDeviceCommand(DeviceCommand.SendConfigurationFrame3);
     }
 
     private void Connected()
@@ -1853,6 +1902,7 @@ public partial class PMUConnectionTester
     private void LoadConnectionSettings(string filename)
     {
         FileStream settingsFile = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
+
         SoapFormatter formatter = new()
         {
             AssemblyFormat = FormatterAssemblyStyle.Simple,
@@ -1881,6 +1931,7 @@ public partial class PMUConnectionTester
     private void SaveConnectionSettings(string filename)
     {
         FileStream settingsFile = File.Create(filename);
+
         SoapFormatter formatter = new()
         {
             AssemblyFormat = FormatterAssemblyStyle.Simple,
@@ -1930,35 +1981,32 @@ public partial class PMUConnectionTester
             switch (TabControlCommunications.SelectedTab.Index)
             {
                 case (int)TransportProtocol.Tcp:
-                    {
-                        connectionSettings.TransportProtocol = TransportProtocol.Tcp;
-                        connectionSettings.ConnectionString = $"server={TextBoxTcpHostIP.Text}; port={TextBoxTcpPort.Text}; interface={GetNetworkInterfaceValue(m_tcpNetworkInterface)}; islistener={CheckBoxEstablishTcpServer.Checked}";
-                        break;
-                    }
-
+                {
+                    connectionSettings.TransportProtocol = TransportProtocol.Tcp;
+                    connectionSettings.ConnectionString = $"server={TextBoxTcpHostIP.Text}; port={TextBoxTcpPort.Text}; interface={GetNetworkInterfaceValue(m_tcpNetworkInterface)}; islistener={CheckBoxEstablishTcpServer.Checked}";
+                    break;
+                }
                 case (int)TransportProtocol.Udp:
-                    {
-                        connectionSettings.TransportProtocol = TransportProtocol.Udp;
-                        connectionSettings.ConnectionString = CheckBoxRemoteUdpServer.Checked ?
-                            $"localport={TextBoxUdpLocalPort.Text}; server={TextBoxUdpHostIP.Text}; remoteport={TextBoxUdpRemotePort.Text}; interface={GetNetworkInterfaceValue(m_udpNetworkInterface)}{Forms.ReceiveFromSourceSelector.ConnectionString}{Forms.MulticastSourceSelector.ConnectionString}" :
-                            $"localport={TextBoxUdpLocalPort.Text}; interface={GetNetworkInterfaceValue(m_udpNetworkInterface)}{Forms.ReceiveFromSourceSelector.ConnectionString}";
+                {
+                    connectionSettings.TransportProtocol = TransportProtocol.Udp;
+                    connectionSettings.ConnectionString = CheckBoxRemoteUdpServer.Checked ?
+                        $"localport={TextBoxUdpLocalPort.Text}; server={TextBoxUdpHostIP.Text}; remoteport={TextBoxUdpRemotePort.Text}; interface={GetNetworkInterfaceValue(m_udpNetworkInterface)}{Forms.ReceiveFromSourceSelector.ConnectionString}{Forms.MulticastSourceSelector.ConnectionString}" :
+                        $"localport={TextBoxUdpLocalPort.Text}; interface={GetNetworkInterfaceValue(m_udpNetworkInterface)}{Forms.ReceiveFromSourceSelector.ConnectionString}";
 
-                        break;
-                    }
-
+                    break;
+                }
                 case (int)TransportProtocol.Serial:
-                    {
-                        connectionSettings.TransportProtocol = TransportProtocol.Serial;
-                        connectionSettings.ConnectionString = $"port={ComboBoxSerialPorts.Text}; baudrate={ComboBoxSerialBaudRates.Text}; parity={ComboBoxSerialParities.Text}; stopbits={ComboBoxSerialStopBits.Text}; databits={TextBoxSerialDataBits.Text}; dtrenable={CheckBoxSerialDTR.Checked}; rtsenable={CheckBoxSerialRTS.Checked}";
-                        break;
-                    }
-
+                {
+                    connectionSettings.TransportProtocol = TransportProtocol.Serial;
+                    connectionSettings.ConnectionString = $"port={ComboBoxSerialPorts.Text}; baudrate={ComboBoxSerialBaudRates.Text}; parity={ComboBoxSerialParities.Text}; stopbits={ComboBoxSerialStopBits.Text}; databits={TextBoxSerialDataBits.Text}; dtrenable={CheckBoxSerialDTR.Checked}; rtsenable={CheckBoxSerialRTS.Checked}";
+                    break;
+                }
                 case (int)TransportProtocol.File:
-                    {
-                        connectionSettings.TransportProtocol = TransportProtocol.File;
-                        connectionSettings.ConnectionString = $"file={TextBoxFileCaptureName.Text}";
-                        break;
-                    }
+                {
+                    connectionSettings.TransportProtocol = TransportProtocol.File;
+                    connectionSettings.ConnectionString = $"file={TextBoxFileCaptureName.Text}";
+                    break;
+                }
             }
 
             // Append command channel settings
@@ -2025,69 +2073,66 @@ public partial class PMUConnectionTester
         switch (settings.TransportProtocol)
         {
             case TransportProtocol.Tcp:
+            {
+                TextBoxTcpPort.Text = connectionData["port"];
+
+                // Note that old style connection strings may not contain "islistener" key
+                if (connectionData.ContainsKey("islistener") && connectionData["islistener"].ParseBoolean())
                 {
-                    TextBoxTcpPort.Text = connectionData["port"];
-
-                    // Note that old style connection strings may not contain "islistener" key
-                    if (connectionData.ContainsKey("islistener") && connectionData["islistener"].ParseBoolean())
-                    {
-                        TextBoxTcpHostIP.Text = m_loopbackAddress;
-                        CheckBoxEstablishTcpServer.Checked = true;
-                    }
-                    else
-                    {
-                        AssignHostIP(TextBoxTcpHostIP, connectionData["server"]);
-                        CheckBoxEstablishTcpServer.Checked = false;
-                    }
-
-                    m_tcpNetworkInterface = connectionData.TryGetValue("interface", out setting) ? GetNetworkInterfaceIndex(setting) : 0;
-
-                    break;
+                    TextBoxTcpHostIP.Text = m_loopbackAddress;
+                    CheckBoxEstablishTcpServer.Checked = true;
+                }
+                else
+                {
+                    AssignHostIP(TextBoxTcpHostIP, connectionData["server"]);
+                    CheckBoxEstablishTcpServer.Checked = false;
                 }
 
+                m_tcpNetworkInterface = connectionData.TryGetValue("interface", out setting) ? GetNetworkInterfaceIndex(setting) : 0;
+
+                break;
+            }
             case TransportProtocol.Udp:
+            {
+                if (connectionData.TryGetValue("server", out string server))
                 {
-                    if (connectionData.TryGetValue("server", out string server))
-                    {
-                        TextBoxUdpLocalPort.Text = connectionData["localport"];
-                        AssignHostIP(TextBoxUdpHostIP, server);
-                        TextBoxUdpRemotePort.Text = connectionData["remoteport"];
-                        Forms.ReceiveFromSourceSelector.ConnectionString = settings.ConnectionString;
-                        Forms.MulticastSourceSelector.ConnectionString = settings.ConnectionString;
-                        CheckBoxRemoteUdpServer.Checked = true;
-                    }
-                    else
-                    {
-                        TextBoxUdpLocalPort.Text = connectionData["localport"];
-                        TextBoxUdpHostIP.Text = m_loopbackAddress;
-                        TextBoxUdpRemotePort.Text = "5000";
-                        Forms.ReceiveFromSourceSelector.ConnectionString = settings.ConnectionString;
-                        Forms.MulticastSourceSelector.ConnectionString = "";
-                        CheckBoxRemoteUdpServer.Checked = false;
-                    }
-
-                    m_udpNetworkInterface = connectionData.TryGetValue("interface", out setting) ? GetNetworkInterfaceIndex(setting) : 0;
-
-                    break;
+                    TextBoxUdpLocalPort.Text = connectionData["localport"];
+                    AssignHostIP(TextBoxUdpHostIP, server);
+                    TextBoxUdpRemotePort.Text = connectionData["remoteport"];
+                    Forms.ReceiveFromSourceSelector.ConnectionString = settings.ConnectionString;
+                    Forms.MulticastSourceSelector.ConnectionString = settings.ConnectionString;
+                    CheckBoxRemoteUdpServer.Checked = true;
+                }
+                else
+                {
+                    TextBoxUdpLocalPort.Text = connectionData["localport"];
+                    TextBoxUdpHostIP.Text = m_loopbackAddress;
+                    TextBoxUdpRemotePort.Text = "5000";
+                    Forms.ReceiveFromSourceSelector.ConnectionString = settings.ConnectionString;
+                    Forms.MulticastSourceSelector.ConnectionString = "";
+                    CheckBoxRemoteUdpServer.Checked = false;
                 }
 
+                m_udpNetworkInterface = connectionData.TryGetValue("interface", out setting) ? GetNetworkInterfaceIndex(setting) : 0;
+
+                break;
+            }
             case TransportProtocol.Serial:
-                {
-                    ComboBoxSerialPorts.Text = connectionData["port"];
-                    ComboBoxSerialBaudRates.Text = connectionData["baudrate"];
-                    ComboBoxSerialParities.Text = connectionData["parity"];
-                    ComboBoxSerialStopBits.Text = connectionData["stopbits"];
-                    TextBoxSerialDataBits.Text = connectionData["databits"];
-                    CheckBoxSerialDTR.Checked = connectionData["dtrenable"].ParseBoolean();
-                    CheckBoxSerialRTS.Checked = connectionData["rtsenable"].ParseBoolean();
-                    break;
-                }
-
+            {
+                ComboBoxSerialPorts.Text = connectionData["port"];
+                ComboBoxSerialBaudRates.Text = connectionData["baudrate"];
+                ComboBoxSerialParities.Text = connectionData["parity"];
+                ComboBoxSerialStopBits.Text = connectionData["stopbits"];
+                TextBoxSerialDataBits.Text = connectionData["databits"];
+                CheckBoxSerialDTR.Checked = connectionData["dtrenable"].ParseBoolean();
+                CheckBoxSerialRTS.Checked = connectionData["rtsenable"].ParseBoolean();
+                break;
+            }
             case TransportProtocol.File:
-                {
-                    TextBoxFileCaptureName.Text = connectionData["file"];
-                    break;
-                }
+            {
+                TextBoxFileCaptureName.Text = connectionData["file"];
+                break;
+            }
         }
 
         // Apply alternate command channel settings (if any)
@@ -2174,7 +2219,7 @@ public partial class PMUConnectionTester
     public void InitializeNetworkInterfaces()
     {
         // Load network interfaces
-        List<Tuple<string, string, string>> networkInterfaces = new();
+        List<Tuple<string, string, string>> networkInterfaces = [];
 
         // Make sure "default" NIC is available in network interface list
         string[] nicInterfaces = m_applicationSettings.AlternateInterfaces.ToNonNullNorEmptyString(ApplicationSettings.DefaultAlternateInterfaces).Split(';');
@@ -2186,20 +2231,17 @@ public partial class PMUConnectionTester
             switch (elem.Length)
             {
                 case 2:
+                {
                     string ipV6Address = "::0";
 
                     try
                     {
-                        foreach (IPAddress address in Dns.GetHostEntry(elem[1]).AddressList)
-                        {
-                            // Check to see if address has an IPv6 style address
-                            if (address.AddressFamily == AddressFamily.InterNetworkV6)
-                            {
-                                // Attempt to assign IP address
-                                ipV6Address = address.ToString();
-                                break;
-                            }
-                        }
+                        // Check to see if address has an IPv6 style address
+                        IPAddress address = Dns.GetHostEntry(elem[1]).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetworkV6);
+
+                        // Attempt to assign IP address
+                        if (address is not null)
+                            ipV6Address = address.ToString();
                     }
                     catch
                     {
@@ -2209,16 +2251,18 @@ public partial class PMUConnectionTester
 
                     networkInterfaces.Add(new Tuple<string, string, string>(elem[0], elem[1], ipV6Address));
                     break;
-
+                }
                 case 3:
+                {
                     networkInterfaces.Add(new Tuple<string, string, string>(elem[0], elem[1], elem[2]));
                     break;
+                }
             }
         }
 
         try
         {
-            // Add IP's for active, physical NIC's - if IPv4 is not supported, default to "::0", if IPv6 is not supported, default to "0.0.0.0"
+            // Add IPs for active, physical NIC's - if IPv4 is not supported, default to "::0", if IPv6 is not supported, default to "0.0.0.0"
             networkInterfaces.AddRange(NetworkInterface.GetAllNetworkInterfaces()
                 .Where(nic => nic.OperationalStatus == OperationalStatus.Up && nic.NetworkInterfaceType != NetworkInterfaceType.Loopback && nic.NetworkInterfaceType != NetworkInterfaceType.Tunnel)
                 .Select(nic => new Tuple<string, string, string>(nic.Description, nic.GetIPProperties().UnicastAddresses.FirstOrDefault(info =>
@@ -2448,7 +2492,7 @@ public partial class PMUConnectionTester
                 LabelAlternateCommandChannelState.Enabled = false;
                 GroupBoxStatus.Expanded = true;
 
-                // Assign pre-loaded configuration frame (if any)
+                // Assign preloaded configuration frame (if any)
                 if (m_configurationFrame is not null)
                     m_frameParser.ConfigurationFrame = m_configurationFrame;
             }
@@ -2548,8 +2592,10 @@ public partial class PMUConnectionTester
         Environment.Exit(0);
     }
 
-    private void ClearStatusMessages() =>
+    private void ClearStatusMessages()
+    {
         TextBoxMessages.Text = "";
+    }
 
     private void AppendStatusMessage(string message)
     {
@@ -2567,8 +2613,10 @@ public partial class PMUConnectionTester
         messages.ScrollToCaret();
     }
 
-    private string UnhandledExceptionErrorMessage() =>
-        $"An unexpected exception has occurred in the PMU Connection Tester. This error may have been caused by an inconsistent system state or a programming error.  Details of this problem have been logged to an error file, it may be necessary to restart the application. Please notify us with details of this exception so they are aware of this problem: {GlobalExceptionLogger.LastException.Message}";
+    private string UnhandledExceptionErrorMessage()
+    {
+        return $"An unexpected exception has occurred in the PMU Connection Tester. This error may have been caused by an inconsistent system state or a programming error. Details of this problem have been logged to an error file; it may be necessary to restart the application. Please notify us with details of this exception so they are aware of this problem: {GlobalExceptionLogger.LastException.Message}";
+    }
 
     #endregion
 
@@ -2587,42 +2635,38 @@ public partial class PMUConnectionTester
             DataTable attributeTable = attributeTreeDataSet.Tables["Attributes"];
 
             // Get a copy of the current frame set
-            List<IChannelFrame> attributeFrames = new(m_attributeFrames.Values);
+            List<IChannelFrame> attributeFrames = [..m_attributeFrames.Values];
 
             // For consistency in display, we make sure frames are in desired order
             attributeFrames.Sort(CompareByFrameType);
 
             // Tag configuration channel nodes by assigning a unique key that will allow virtual associations between nodes
-            foreach (IChannelFrame frame in attributeFrames)
+            foreach (IConfigurationFrame configFrame in attributeFrames.Where(frame => frame.FrameType == FundamentalFrameType.ConfigurationFrame).Cast<IConfigurationFrame>())
             {
-                if (frame.FrameType == FundamentalFrameType.ConfigurationFrame)
+                configFrame.Tag = Guid.NewGuid().ToString();
+
+                // Tag frame cells collection
+                configFrame.Cells.Tag = Guid.NewGuid().ToString();
+
+                // Tag each frame cell item
+                foreach (IConfigurationCell cellNode in configFrame.Cells)
                 {
-                    IConfigurationFrame configFrame = (IConfigurationFrame)frame;
-                    configFrame.Tag = Guid.NewGuid().ToString();
+                    cellNode.Tag = Guid.NewGuid().ToString();
 
-                    // Tag frame cells collection
-                    configFrame.Cells.Tag = Guid.NewGuid().ToString();
+                    foreach (IPhasorDefinition phasorDefinition in cellNode.PhasorDefinitions)
+                        phasorDefinition.Tag = Guid.NewGuid().ToString();
 
-                    // Tag each frame cell item
-                    foreach (IConfigurationCell cellNode in configFrame.Cells)
-                    {
-                        cellNode.Tag = Guid.NewGuid().ToString();
+                    cellNode.FrequencyDefinition.Tag = Guid.NewGuid().ToString();
 
-                        foreach (IPhasorDefinition phasorDefinition in cellNode.PhasorDefinitions)
-                            phasorDefinition.Tag = Guid.NewGuid().ToString();
+                    foreach (IAnalogDefinition analogDefinition in cellNode.AnalogDefinitions)
+                        analogDefinition.Tag = Guid.NewGuid().ToString();
 
-                        cellNode.FrequencyDefinition.Tag = Guid.NewGuid().ToString();
-
-                        foreach (IAnalogDefinition analogDefinition in cellNode.AnalogDefinitions)
-                            analogDefinition.Tag = Guid.NewGuid().ToString();
-
-                        foreach (IDigitalDefinition digitalDefinition in cellNode.DigitalDefinitions)
-                            digitalDefinition.Tag = Guid.NewGuid().ToString();
-                    }
-
-                    // Only configuration nodes need tagging since they will be the destination of all "links"
-                    break;
+                    foreach (IDigitalDefinition digitalDefinition in cellNode.DigitalDefinitions)
+                        digitalDefinition.Tag = Guid.NewGuid().ToString();
                 }
+
+                // Only configuration nodes need tagging since they will be the destination of all "links"
+                break;
             }
 
             // We bind tree before there's any data because this makes the data fill very fast
@@ -2634,7 +2678,7 @@ public partial class PMUConnectionTester
             foreach (UltraTreeNodeColumn column in TreeFrameAttributes.Nodes.ColumnSetResolved.Columns)
                 column.LayoutInfo.MinimumCellSize = new Size(200, 15);
 
-            // We use fundamental frame type as ID for frames so they are easy to identify - this
+            // We use fundamental frame type as ID for frames, so they are easy to identify - this
             // is also useful later when we want to determine root node associations to frames
             int currentNodeID = (int)FundamentalFrameType.Undetermined + 1;
 
@@ -2659,81 +2703,95 @@ public partial class PMUConnectionTester
                 // We add extra detail for non partial configuration and data frames...
                 int lastCellNodeID;
 
-                switch (frame.FrameType)
+                if (frame.FrameType == FundamentalFrameType.ConfigurationFrame)
                 {
-                    case FundamentalFrameType.ConfigurationFrame:
-                        IConfigurationFrame configFrame = (IConfigurationFrame)frame;
+                    IConfigurationFrame configFrame = (IConfigurationFrame)frame;
 
-                        // Add frame cells collection object to frame item
-                        lastNodeID = AddChannelNode(attributeTable, lastNodeID, ref currentNodeID, configFrame.Cells, null, null);
+                    // Add frame cells collection object to frame item
+                    lastNodeID = AddChannelNode(attributeTable, lastNodeID, ref currentNodeID, configFrame.Cells, null,
+                        null);
+
+                    // Add each frame cell item to the list
+                    foreach (IConfigurationCell cellNode in configFrame.Cells)
+                    {
+                        lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, ref currentNodeID, cellNode,
+                            cellNode.StationName, null);
+
+                        foreach (IPhasorDefinition phasorDefinition in cellNode.PhasorDefinitions)
+                            AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, phasorDefinition,
+                                phasorDefinition.Label, null);
+
+                        AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, cellNode.FrequencyDefinition,
+                            null, null);
+
+                        foreach (IAnalogDefinition analogDefinition in cellNode.AnalogDefinitions)
+                            AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, analogDefinition,
+                                analogDefinition.Label, null);
+
+                        foreach (IDigitalDefinition digitalDefinition in cellNode.DigitalDefinitions)
+                            AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, digitalDefinition,
+                                digitalDefinition.Label, null);
+                    }
+                }
+                else if (frame.FrameType == FundamentalFrameType.DataFrame)
+                {
+                    IDataFrame dataFrame = (IDataFrame)frame;
+
+                    // Add frame cells collection object to frame item
+                    if (dataFrame.ConfigurationFrame is not null)
+                    {
+                        lastNodeID = AddChannelNode(attributeTable, lastNodeID, ref currentNodeID, dataFrame.Cells,
+                            null, dataFrame.ConfigurationFrame.Cells);
 
                         // Add each frame cell item to the list
-                        foreach (IConfigurationCell cellNode in configFrame.Cells)
+                        foreach (IDataCell cellNode in dataFrame.Cells)
                         {
-                            lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, ref currentNodeID, cellNode, cellNode.StationName, null);
+                            lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, ref currentNodeID, cellNode,
+                                cellNode.StationName, cellNode.ConfigurationCell);
 
-                            foreach (IPhasorDefinition phasorDefinition in cellNode.PhasorDefinitions)
-                                AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, phasorDefinition, phasorDefinition.Label, null);
+                            foreach (IPhasorValue phasorValue in cellNode.PhasorValues)
+                                AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, phasorValue,
+                                    phasorValue.Label, phasorValue.Definition);
 
-                            AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, cellNode.FrequencyDefinition, null, null);
+                            AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, cellNode.FrequencyValue,
+                                null, cellNode.FrequencyValue.Definition);
 
-                            foreach (IAnalogDefinition analogDefinition in cellNode.AnalogDefinitions)
-                                AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, analogDefinition, analogDefinition.Label, null);
+                            foreach (IAnalogValue analogValue in cellNode.AnalogValues)
+                                AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, analogValue,
+                                    analogValue.Label, analogValue.Definition);
 
-                            foreach (IDigitalDefinition digitalDefinition in cellNode.DigitalDefinitions)
-                                AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, digitalDefinition, digitalDefinition.Label, null);
+                            foreach (IDigitalValue digitalValue in cellNode.DigitalValues)
+                                AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, digitalValue,
+                                    digitalValue.Label, digitalValue.Definition);
                         }
+                    }
+                    else
+                    {
+                        lastNodeID = AddChannelNode(attributeTable, lastNodeID, ref currentNodeID, dataFrame.Cells,
+                            null, null);
 
-                        break;
-
-                    case FundamentalFrameType.DataFrame:
-                        IDataFrame dataFrame = (IDataFrame)frame;
-
-                        // Add frame cells collection object to frame item
-                        if (dataFrame.ConfigurationFrame is not null)
+                        // Add each frame cell item to the list
+                        foreach (IDataCell cellNode in dataFrame.Cells)
                         {
-                            lastNodeID = AddChannelNode(attributeTable, lastNodeID, ref currentNodeID, dataFrame.Cells, null, dataFrame.ConfigurationFrame.Cells);
+                            lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, ref currentNodeID, cellNode,
+                                cellNode.StationName, null);
 
-                            // Add each frame cell item to the list
-                            foreach (IDataCell cellNode in dataFrame.Cells)
-                            {
-                                lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, ref currentNodeID, cellNode, cellNode.StationName, cellNode.ConfigurationCell);
+                            foreach (IPhasorValue phasorValue in cellNode.PhasorValues)
+                                AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, phasorValue,
+                                    phasorValue.Label, null);
 
-                                foreach (IPhasorValue phasorValue in cellNode.PhasorValues)
-                                    AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, phasorValue, phasorValue.Label, phasorValue.Definition);
+                            AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, cellNode.FrequencyValue,
+                                null, null);
 
-                                AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, cellNode.FrequencyValue, null, cellNode.FrequencyValue.Definition);
+                            foreach (IAnalogValue analogValue in cellNode.AnalogValues)
+                                AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, analogValue,
+                                    analogValue.Label, null);
 
-                                foreach (IAnalogValue analogValue in cellNode.AnalogValues)
-                                    AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, analogValue, analogValue.Label, analogValue.Definition);
-
-                                foreach (IDigitalValue digitalValue in cellNode.DigitalValues)
-                                    AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, digitalValue, digitalValue.Label, digitalValue.Definition);
-                            }
+                            foreach (IDigitalValue digitalValue in cellNode.DigitalValues)
+                                AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, digitalValue,
+                                    digitalValue.Label, null);
                         }
-                        else
-                        {
-                            lastNodeID = AddChannelNode(attributeTable, lastNodeID, ref currentNodeID, dataFrame.Cells, null, null);
-
-                            // Add each frame cell item to the list
-                            foreach (IDataCell cellNode in dataFrame.Cells)
-                            {
-                                lastCellNodeID = AddChannelNode(attributeTable, lastNodeID, ref currentNodeID, cellNode, cellNode.StationName, null);
-
-                                foreach (IPhasorValue phasorValue in cellNode.PhasorValues)
-                                    AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, phasorValue, phasorValue.Label, null);
-
-                                AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, cellNode.FrequencyValue, null, null);
-
-                                foreach (IAnalogValue analogValue in cellNode.AnalogValues)
-                                    AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, analogValue, analogValue.Label, null);
-
-                                foreach (IDigitalValue digitalValue in cellNode.DigitalValues)
-                                    AddChannelNode(attributeTable, lastCellNodeID, ref currentNodeID, digitalValue, digitalValue.Label, null);
-                            }
-                        }
-
-                        break;
+                    }
                 }
             }
         }
@@ -2745,6 +2803,8 @@ public partial class PMUConnectionTester
 
     private int AddChannelNode(DataTable attributeTable, int parentID, ref int currentNodeID, IChannel channelNode, string channelLabel, IChannel associatedChannelNode)
     {
+        const string PhasorProtocolsNamespace = $"{nameof(GSF)}.{nameof(GSF.PhasorProtocols)}.";
+
         // Add channel node
         DataRow row = attributeTable.NewRow();
         currentNodeID += 1;
@@ -2763,91 +2823,90 @@ public partial class PMUConnectionTester
             row["RootElement"] = true;
         }
 
-        if (channelNode is not null)
+        if (channelNode is null)
+            return channelNodeID;
+
+        if (channelNode.Tag is not null)
+            row["Key"] = channelNode.Tag;
+
+        if (channelLabel is null)
+            row["Attribute"] = channelNode.Attributes["Derived Type"].Replace(PhasorProtocolsNamespace, "").Replace("_", ".");
+        else
+            row["Attribute"] = $"{channelNode.Attributes["Derived Type"].Replace(PhasorProtocolsNamespace, "").Replace("_", ".")} ({channelLabel})";
+
+        row["ChannelNode"] = parentID;
+        attributeTable.Rows.Add(row);
+
+        // Add associated channel node reference (i.e., a "link" node), if defined
+        if (associatedChannelNode is not null)
         {
-            if (channelNode.Tag is not null)
-                row["Key"] = channelNode.Tag;
+            currentNodeID += 1;
+            row = attributeTable.NewRow();
+            row["ID"] = currentNodeID;
 
-            if (channelLabel is null)
-                row["Attribute"] = channelNode.Attributes["Derived Type"].Replace("GSF.PhasorProtocols.", "").Replace("_", ".");
+            // We allow the frame attributes to show up at root level if user doesn't want
+            // attributes to show up as child nodes
+            if (m_applicationSettings.ShowAttributesAsChildren)
+            {
+                row["ParentID"] = channelNodeID;
+                row["RootElement"] = false;
+            }
+            else if (parentID > (int)FundamentalFrameType.Undetermined)
+            {
+                row["ParentID"] = parentID;
+                row["RootElement"] = false;
+            }
             else
-                row["Attribute"] = $"{channelNode.Attributes["Derived Type"].Replace("GSF.PhasorProtocols.", "").Replace("_", ".")} ({channelLabel})";
+            {
+                row["RootElement"] = true;
+            }
 
-            row["ChannelNode"] = parentID;
+            row["AssociatedKey"] = associatedChannelNode.Tag;
+            row["Attribute"] = "     Click for Associated Definition";
+            row["Value"] = associatedChannelNode.Attributes["Derived Type"].Replace(PhasorProtocolsNamespace, "");
+            row["ChannelNode"] = -1;
+
             attributeTable.Rows.Add(row);
+        }
 
-            // Add associated channel node reference (i.e., a "link" node), if defined
-            if (associatedChannelNode is not null)
+        // Add channel node attributes
+        foreach (KeyValuePair<string, string> attribute in channelNode.Attributes.Where(attribute => !string.Equals(attribute.Key, "Derived Type", StringComparison.OrdinalIgnoreCase)))
+        {
+            currentNodeID += 1;
+            row = attributeTable.NewRow();
+            row["ID"] = currentNodeID;
+
+            // We allow the frame attributes to show up at root level if user doesn't want
+            // attributes to show up as child nodes
+            if (m_applicationSettings.ShowAttributesAsChildren)
             {
-                currentNodeID += 1;
-                row = attributeTable.NewRow();
-                row["ID"] = currentNodeID;
-
-                // We allow the frame attributes to show up at root level if user doesn't want
-                // attributes to show up as child nodes
-                if (m_applicationSettings.ShowAttributesAsChildren)
-                {
-                    row["ParentID"] = channelNodeID;
-                    row["RootElement"] = false;
-                }
-                else if (parentID > (int)FundamentalFrameType.Undetermined)
-                {
-                    row["ParentID"] = parentID;
-                    row["RootElement"] = false;
-                }
-                else
-                {
-                    row["RootElement"] = true;
-                }
-
-                row["AssociatedKey"] = associatedChannelNode.Tag;
-                row["Attribute"] = "     Click for Associated Definition";
-                row["Value"] = associatedChannelNode.Attributes["Derived Type"].Replace("GSF.PhasorProtocols.", "");
-                row["ChannelNode"] = -1;
-
-                attributeTable.Rows.Add(row);
+                row["ParentID"] = channelNodeID;
+                row["RootElement"] = false;
+            }
+            else if (parentID > (int)FundamentalFrameType.Undetermined)
+            {
+                row["ParentID"] = parentID;
+                row["RootElement"] = false;
+            }
+            else
+            {
+                row["RootElement"] = true;
             }
 
-            // Add channel node attributes
-            foreach (KeyValuePair<string, string> attribute in channelNode.Attributes)
-            {
-                if (string.Equals(attribute.Key, "Derived Type", StringComparison.OrdinalIgnoreCase))
-                    continue;
+            row["Attribute"] = $"     {attribute.Key}";
+            row["Value"] = attribute.Value;
+            row["ChannelNode"] = 0;
 
-                currentNodeID += 1;
-                row = attributeTable.NewRow();
-                row["ID"] = currentNodeID;
-
-                // We allow the frame attributes to show up at root level if user doesn't want
-                // attributes to show up as child nodes
-                if (m_applicationSettings.ShowAttributesAsChildren)
-                {
-                    row["ParentID"] = channelNodeID;
-                    row["RootElement"] = false;
-                }
-                else if (parentID > (int)FundamentalFrameType.Undetermined)
-                {
-                    row["ParentID"] = parentID;
-                    row["RootElement"] = false;
-                }
-                else
-                {
-                    row["RootElement"] = true;
-                }
-
-                row["Attribute"] = $"     {attribute.Key}";
-                row["Value"] = attribute.Value;
-                row["ChannelNode"] = 0;
-
-                attributeTable.Rows.Add(row);
-            }
+            attributeTable.Rows.Add(row);
         }
 
         return channelNodeID;
     }
 
-    private static int CompareByFrameType(IChannelFrame channelFrame1, IChannelFrame channelFrame2) =>
-        channelFrame1.FrameType.CompareTo(channelFrame2.FrameType);
+    private static int CompareByFrameType(IChannelFrame channelFrame1, IChannelFrame channelFrame2)
+    {
+        return channelFrame1.FrameType.CompareTo(channelFrame2.FrameType);
+    }
 
     private static DataSet CreateAttributeTreeDataSet()
     {
@@ -2918,31 +2977,33 @@ public partial class PMUConnectionTester
             switch (channelNode)
             {
                 case > 0:
-                    {
-                        // We highlight all channel nodes (actual phasor class instances) to distinguish them from their attributes
-                        Override nodeOverride = node.Override;
+                {
+                    // We highlight all channel nodes (actual phasor class instances) to distinguish them from their attributes
+                    Override nodeOverride = node.Override;
 
-                        nodeOverride.ShowColumns = DefaultableBoolean.False;
-                        nodeOverride.BorderStyleNode = UIElementBorderStyle.Solid;
-                        nodeOverride.ItemHeight = 20;
+                    nodeOverride.ShowColumns = DefaultableBoolean.False;
+                    nodeOverride.BorderStyleNode = UIElementBorderStyle.Solid;
+                    nodeOverride.ItemHeight = 20;
 
-                        AppearanceBase nodeAppearance = nodeOverride.NodeAppearance;
+                    AppearanceBase nodeAppearance = nodeOverride.NodeAppearance;
 
-                        nodeAppearance.BackColor = m_applicationSettings.ChannelNodeBackgroundColor;
-                        nodeAppearance.ForeColor = m_applicationSettings.ChannelNodeForegroundColor;
-                        nodeAppearance.FontData.Bold = DefaultableBoolean.True;
-                        nodeAppearance.FontData.SizeInPoints = 9f;
+                    nodeAppearance.BackColor = m_applicationSettings.ChannelNodeBackgroundColor;
+                    nodeAppearance.ForeColor = m_applicationSettings.ChannelNodeForegroundColor;
+                    nodeAppearance.FontData.Bold = DefaultableBoolean.True;
+                    nodeAppearance.FontData.SizeInPoints = 9f;
 
-                        // Assign a tree key to root frames for quick reference later (used during expand all)
-                        if (channelNode <= (int)FundamentalFrameType.Undetermined)
-                            node.Key = $"Frame{channelNode}";
+                    // Assign a tree key to root frames for quick reference later (used during expand all)
+                    if (channelNode <= (int)FundamentalFrameType.Undetermined)
+                        node.Key = $"Frame{channelNode}";
 
-                        break;
-                    }
+                    break;
+                }
                 case -1:
+                {
                     // We make virtual hyperlinks of associated channel nodes
                     node.Override.HotTracking = DefaultableBoolean.True;
                     break;
+                }
             }
 
             // Set initial tree nodes to desired state - initially expanding nodes makes tree build *much* slower
@@ -2986,7 +3047,7 @@ public partial class PMUConnectionTester
             return;
 
         // Mouse click event needs to return thread to tree control and looking up channel node may
-        // be time consuming since we'll need to be expanding nodes, so we queue this work up on a
+        // be time-consuming since we'll need to be expanding nodes, so we queue this work up on a
         // different thread.  Actual work to be performed will still be on UI thread via Invoke, but
         // this event completes and returns thread control to the tree.  This step also allows calls
         // to DoEvents which could otherwise cause problems if called within the local event context.
@@ -2994,8 +3055,10 @@ public partial class PMUConnectionTester
     }
 
     // UI work must be invoked on UI thread
-    private void LookupAssociatedChannelNode(object state) =>
+    private void LookupAssociatedChannelNode(object state)
+    {
         BeginInvoke(new Action<string>(LookupAssociatedChannelNode), state);
+    }
 
     private void LookupAssociatedChannelNode(string associatedKey)
     {
@@ -3078,14 +3141,8 @@ public partial class PMUConnectionTester
         {
             BoundsMeasureType = MeasureType.Percentage,
             Bounds = new Rectangle(0, 7, 100, 43),
-            Border =
-            {
-                Thickness = 0
-            },
-            PE =
-            {
-                Fill = m_applicationSettings.BackgroundColor
-            }
+            Border = { Thickness = 0 },
+            PE = { Fill = m_applicationSettings.BackgroundColor }
         };
 
         ChartDataDisplay.CompositeChart.ChartAreas.Add(frequencyChartArea);
@@ -3126,14 +3183,8 @@ public partial class PMUConnectionTester
         {
             BoundsMeasureType = MeasureType.Percentage,
             Bounds = new Rectangle(0, 50, m_applicationSettings.ShowPhaseAngleLegend ? 80 : 100, 50),
-            Border =
-            {
-                Thickness = 0
-            },
-            PE =
-            {
-                Fill = m_applicationSettings.BackgroundColor
-            }
+            Border = { Thickness = 0 },
+            PE = { Fill = m_applicationSettings.BackgroundColor }
         };
 
         ChartDataDisplay.CompositeChart.ChartAreas.Add(phaseAngleChartArea);
@@ -3146,12 +3197,12 @@ public partial class PMUConnectionTester
         ChartLayerAppearance phaseAngleLayer = CreatePhaseAngleLayer(phaseAngleChartArea, timeAxis, phaseAngleAxis);
         ChartDataDisplay.CompositeChart.ChartLayers.Add(phaseAngleLayer);
 
-        if (m_applicationSettings.ShowPhaseAngleLegend)
-        {
-            CompositeLegend phasorLegend = CreatePhasorLegend();
-            ChartDataDisplay.CompositeChart.Legends.Add(phasorLegend);
-            phasorLegend.ChartLayers.Add(phaseAngleLayer);
-        }
+        if (!m_applicationSettings.ShowPhaseAngleLegend)
+            return;
+
+        CompositeLegend phasorLegend = CreatePhasorLegend();
+        ChartDataDisplay.CompositeChart.Legends.Add(phasorLegend);
+        phasorLegend.ChartLayers.Add(phaseAngleLayer);
     }
 
     private AxisItem CreateTimeAxis(int extent) => new()
@@ -3159,22 +3210,13 @@ public partial class PMUConnectionTester
         OrientationType = AxisNumber.X_Axis,
         DataType = AxisDataType.String,
         Visible = true,
-        Labels =
-        {
-            Visible = false
-        },
+        Labels = { Visible = false },
         SetLabelAxisType = SetLabelAxisType.ContinuousData,
         LineThickness = 1,
         LineColor = m_applicationSettings.ForegroundColor,
         Extent = extent,
-        MinorGridLines =
-        {
-            Visible = false
-        },
-        MajorGridLines =
-        {
-            Visible = false
-        }
+        MinorGridLines = { Visible = false },
+        MajorGridLines = { Visible = false }
     };
 
     private AxisItem CreateFrequencyAxis()
@@ -3193,14 +3235,8 @@ public partial class PMUConnectionTester
             LineThickness = 1,
             LineColor = m_applicationSettings.ForegroundColor,
             Extent = 50,
-            MinorGridLines =
-            {
-                Visible = false
-            },
-            MajorGridLines =
-            {
-                Visible = true
-            },
+            MinorGridLines = { Visible = false },
+            MajorGridLines = { Visible = true },
             TickmarkStyle = AxisTickStyle.Percentage,
             TickmarkPercentage = 23d,
             TickmarkInterval = 0.001d,
@@ -3230,14 +3266,8 @@ public partial class PMUConnectionTester
         LineThickness = 1,
         LineColor = m_applicationSettings.ForegroundColor,
         Extent = 30,
-        MinorGridLines =
-        {
-            Visible = false
-        },
-        MajorGridLines =
-        {
-            Visible = true
-        },
+        MinorGridLines = { Visible = false },
+        MajorGridLines = { Visible = true },
         TickmarkStyle = AxisTickStyle.Percentage,
         TickmarkPercentage = 25d,
         RangeType = AxisRangeType.Custom,
@@ -3330,5 +3360,4 @@ public partial class PMUConnectionTester
     #endregion
 
     #endregion
-
 }

@@ -47,6 +47,6 @@ internal static class Program
 
     internal static SingletonForms Forms => s_singletonForms ??= new SingletonForms();
 
-    [ThreadStatic()]
+    [ThreadStatic]
     private static SingletonForms s_singletonForms;
 }

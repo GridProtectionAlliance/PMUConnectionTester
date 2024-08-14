@@ -130,40 +130,36 @@ public class ApplicationSettings : CategorizedSettingsBase
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            if (value is string colorList)
+            if (value is not string colorList)
+                return base.ConvertFrom(context, culture, value);
+
+            ColorList colors = [];
+
+            foreach (string colorItem in colorList.Split(';'))
             {
-                ColorList colors = new();
-
-                foreach (string colorItem in colorList.Split(';'))
-                {
-                    if (m_colorParser.ConvertFromString(colorItem.Trim()) is Color color)
-                        colors.Add(color);
-                }
-
-                return colors;
+                if (m_colorParser.ConvertFromString(colorItem.Trim()) is Color color)
+                    colors.Add(color);
             }
 
-            return base.ConvertFrom(context, culture, value);
+            return colors;
         }
 
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
-            if (destinationType == typeof(string))
+            if (destinationType != typeof(string))
+                return base.ConvertTo(context, culture, value, destinationType);
+
+            StringBuilder colorList = new();
+
+            foreach (Color colorItem in (ColorList)value)
             {
-                StringBuilder colorList = new();
+                if (colorList.Length > 0)
+                    colorList.Append(';');
 
-                foreach (Color colorItem in (ColorList)value)
-                {
-                    if (colorList.Length > 0)
-                        colorList.Append(';');
-
-                    colorList.Append(m_colorParser.ConvertToString(colorItem));
-                }
-
-                return colorList.ToString();
+                colorList.Append(m_colorParser.ConvertToString(colorItem));
             }
 
-            return base.ConvertTo(context, culture, value, destinationType);
+            return colorList.ToString();
         }
     }
 
@@ -218,7 +214,7 @@ public class ApplicationSettings : CategorizedSettingsBase
 
     #region [ Constructors ]
 
-    // Specifiy default category
+    // Specify default category
     public ApplicationSettings() : base("General")
     {
         m_eventDelayTimer = new Timer
@@ -445,7 +441,6 @@ public class ApplicationSettings : CategorizedSettingsBase
     public int PhaseAnglePointsToPlot
     {
         get => m_phaseAnglePointsToPlot;
-
         set => m_phaseAnglePointsToPlot = value < 2 ? DefaultPhaseAnglePointsToPlot : value;
     }
 
@@ -510,7 +505,7 @@ public class ApplicationSettings : CategorizedSettingsBase
         // Updates to a collection from a PropertyGrid don't get a normal "PropertyValueChanged" notification,
         // so you're stuck with detecting a call to "Clear" in your personal collection.  However, the update
         // is not complete until a call to "Add" for each updated item, so we need to wait for a moment to
-        // allow all of the adds to finish - this isn't exact science - someone didn't think through this one.
+        // allow all the adds to finish - this isn't exact science - someone didn't think through this one.
         m_eventDelayTimer.Enabled = true;
     }
 

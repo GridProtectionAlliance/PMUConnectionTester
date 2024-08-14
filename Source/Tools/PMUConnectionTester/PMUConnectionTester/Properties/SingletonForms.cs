@@ -20,6 +20,7 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
+// ReSharper disable CheckNamespace
 
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ internal class SingletonForms
 
     private static T CreateInstance<T>() where T : Form, new()
     {
-        if ((s_formBeingCreated ??= new HashSet<Type>()).Contains(typeof(T)))
+        if ((s_formBeingCreated ??= []).Contains(typeof(T)))
             throw new InvalidOperationException("WinForms_RecursiveFormCreate");
 
         s_formBeingCreated.Add(typeof(T));
