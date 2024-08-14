@@ -453,6 +453,7 @@ public partial class PMUConnectionTester
 
     private void ComboBoxPmus_SelectedIndexChanged(object sender, EventArgs e)
     {
+        string lastSelectedCellName = GetCellName(m_selectedCell);
         m_selectedCell = null;
 
         if (m_configurationFrame is null)
@@ -469,6 +470,9 @@ public partial class PMUConnectionTester
 
         lock (ComboBoxPhasors)
         {
+            // Try to maintain selected phasor index if PMU device selection remains the same
+            int selectedIndex = lastSelectedCellName.Equals(GetCellName(m_selectedCell)) ? ComboBoxPhasors.SelectedIndex : -1;
+
             ComboBoxPhasors.Items.Clear();
 
             PhasorDefinitionCollection phasorDefinitions = m_selectedCell.PhasorDefinitions;
@@ -492,9 +496,16 @@ public partial class PMUConnectionTester
             ComboBoxPhasors.Tag = ComboBoxPhasors.Items.Cast<string>().ToArray();
 
             if (ComboBoxPhasors.Items.Count > 0)
-                ComboBoxPhasors.SelectedIndex = 0;
+            {
+                if (selectedIndex >= 0 && selectedIndex < ComboBoxPhasors.Items.Count)
+                    ComboBoxPhasors.SelectedIndex = selectedIndex;
+                else
+                    ComboBoxPhasors.SelectedIndex = 0;
+            }
             else
+            {
                 ComboBoxPhasors.SelectedIndex = -1;
+            }
         }
         
         if (ComboBoxVoltagePhasors.Items.Count > 0)
@@ -1642,7 +1653,7 @@ public partial class PMUConnectionTester
         ComboBox.ObjectCollection items = pmus.Items;
 
         foreach (IConfigurationCell cell in frame.Cells)
-            items.Add(cell.StationName.ToNonNullString(cell.IDLabel.ToNonNullString($"Device {cell.IDCode}")));
+            items.Add(GetCellName(cell));
 
         if (pmus.Items.Count > 0)
         {
@@ -1685,6 +1696,11 @@ public partial class PMUConnectionTester
         }
 
         UpdateChartTitle($"Configured frame rate: {frame.FrameRate} frames/second");
+    }
+
+    private static string GetCellName(IConfigurationCell cell)
+    {
+        return cell?.StationName.ToNonNullString(cell.IDLabel.ToNonNullString($"Device {cell.IDCode}")) ?? "undefined";
     }
 
     private void ReceivedDataFrame(IDataFrame frame)
