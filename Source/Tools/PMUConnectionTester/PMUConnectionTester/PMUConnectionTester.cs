@@ -31,6 +31,7 @@
 //       https://marketplace.visualstudio.com/items?itemName=SharpDevelopTeam.CodeConverter
 //
 //******************************************************************************************************
+// ReSharper disable CoVariantArrayConversion
 
 using System;
 using System.Collections.Concurrent;
@@ -466,31 +467,36 @@ public partial class PMUConnectionTester
         ComboBoxVoltagePhasors.Items.Clear();
         ComboBoxCurrentPhasors.Items.Clear();
 
-        ComboBoxPhasors.Items.Clear();
-
-        PhasorDefinitionCollection phasorDefinitions = m_selectedCell.PhasorDefinitions;
-
-        for (int i = 0; i < phasorDefinitions.Count; i++)
+        lock (ComboBoxPhasors)
         {
-            IPhasorDefinition phasor = phasorDefinitions[i];
+            ComboBoxPhasors.Items.Clear();
 
-            if (phasor.PhasorType == PhasorType.Voltage)
+            PhasorDefinitionCollection phasorDefinitions = m_selectedCell.PhasorDefinitions;
+
+            for (int i = 0; i < phasorDefinitions.Count; i++)
             {
-                ComboBoxPhasors.Items.Add($"V: {phasor.Label}");
-                ComboBoxVoltagePhasors.Items.Add($"{i}: {phasor.Label}");
+                IPhasorDefinition phasor = phasorDefinitions[i];
+
+                if (phasor.PhasorType == PhasorType.Voltage)
+                {
+                    ComboBoxPhasors.Items.Add($"V: {phasor.Label}");
+                    ComboBoxVoltagePhasors.Items.Add($"{i}: {phasor.Label}");
+                }
+                else
+                {
+                    ComboBoxPhasors.Items.Add($"I: {phasor.Label}");
+                    ComboBoxCurrentPhasors.Items.Add($"{i}: {phasor.Label}");
+                }
             }
+
+            ComboBoxPhasors.Tag = ComboBoxPhasors.Items.Cast<string>().ToArray();
+
+            if (ComboBoxPhasors.Items.Count > 0)
+                ComboBoxPhasors.SelectedIndex = 0;
             else
-            {
-                ComboBoxPhasors.Items.Add($"I: {phasor.Label}");
-                ComboBoxCurrentPhasors.Items.Add($"{i}: {phasor.Label}");
-            }
+                ComboBoxPhasors.SelectedIndex = -1;
         }
-
-        if (ComboBoxPhasors.Items.Count > 0)
-            ComboBoxPhasors.SelectedIndex = 0;
-        else
-            ComboBoxPhasors.SelectedIndex = -1;
-
+        
         if (ComboBoxVoltagePhasors.Items.Count > 0)
             ComboBoxVoltagePhasors.SelectedIndex = 0;
         else
@@ -507,7 +513,87 @@ public partial class PMUConnectionTester
     private void ComboBoxPhasors_SelectedIndexChanged(object sender, EventArgs e)
     {
         m_phasorData.Rows.Clear();
-        m_lastPhaseAngle = 0.0f;
+        m_lastPhaseAngle = 0.0D;
+    }
+
+    private void ComboBoxPhasors_Enter(object sender, EventArgs e)
+    {
+        lock (ComboBoxPhasors)
+            ComboBoxPhasors.SelectAll();
+    }
+
+    private void ComboBoxPhasors_DropDownClosed(object sender, EventArgs e)
+    {
+        lock (ComboBoxPhasors)
+        {
+            int selectedIndex = GetComboBoxPhasorsSelectedIndex();
+
+            ComboBoxPhasors.Items.Clear();
+         
+            if (ComboBoxPhasors.Tag is string[] elements)
+                ComboBoxPhasors.Items.AddRange(elements);
+
+            ComboBoxPhasors.SelectedIndex = selectedIndex;
+        }
+    }
+
+    private void ComboBoxPhasors_TextUpdate(object sender, EventArgs e)
+    {
+        lock (ComboBoxPhasors)
+        {
+            if (ComboBoxPhasors.Tag is not string[] elements)
+                return;
+
+            string searchText = ComboBoxPhasors.Text;
+
+            if (string.IsNullOrEmpty(searchText))
+            {
+                ComboBoxPhasors.Items.Clear();
+                ComboBoxPhasors.Items.AddRange(elements);
+                
+                if (ComboBoxPhasors.Items.Count > 0)
+                    ComboBoxPhasors.SelectedIndex = 0;
+                else
+                    ComboBoxPhasors.SelectedIndex = -1;
+
+                ComboBoxPhasors.SelectAll();
+                return;
+            }
+
+            if (!ComboBoxPhasors.DroppedDown)
+                ComboBoxPhasors.DroppedDown = true;
+
+            string[] updatedComboBoxItems = elements
+                .Where(item => item.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                .OrderBy(item => item)
+                .ToArray();
+
+            // Removes every element from the combobox control, Combobox.Items.Clear causes the cursor position to reset
+            foreach (string element in elements)
+                ComboBoxPhasors.Items.Remove(element);
+
+            // Re-adds all the element in order
+            ComboBoxPhasors.Items.AddRange(updatedComboBoxItems);
+        }
+    }
+
+    private int GetComboBoxPhasorsSelectedIndex()
+    {
+        if (InvokeRequired)
+            return (int)Invoke(GetComboBoxPhasorsSelectedIndex);
+
+        lock (ComboBoxPhasors)
+        {
+            int index = ComboBoxPhasors.SelectedIndex;
+
+            if (index < 0)
+                return ComboBoxPhasors.Items.Count > 0 ? 0 : index;
+
+            string selectedItem = ComboBoxPhasors.Items[index].ToString();
+
+            return ComboBoxPhasors.Tag is string[] elements ?
+                elements.IndexOf(item => item.Equals(selectedItem)) : index;
+        }
     }
 
     private void ComboBoxByteEncodingDisplayFormats_SelectedIndexChanged(object sender, EventArgs e)
@@ -1531,6 +1617,9 @@ public partial class PMUConnectionTester
         if (!ReferenceEquals(m_frameParser.ConfigurationFrame, frame))
             m_frameParser.ConfigurationFrame = frame;
 
+        // Try to maintain original index selection
+        int selectedIndex = ComboBoxPmus.SelectedIndex;
+
         ComboBoxPmus.Items.Clear();
 
         if (frame is null)
@@ -1556,7 +1645,12 @@ public partial class PMUConnectionTester
             items.Add(cell.StationName.ToNonNullString(cell.IDLabel.ToNonNullString($"Device {cell.IDCode}")));
 
         if (pmus.Items.Count > 0)
-            pmus.SelectedIndex = 0;
+        {
+            if (selectedIndex >= 0 && selectedIndex < pmus.Items.Count)
+                pmus.SelectedIndex = selectedIndex;
+            else
+                pmus.SelectedIndex = 0;
+        }
 
         MenuItemSaveConfigFile.Enabled = true;
 
@@ -1604,7 +1698,7 @@ public partial class PMUConnectionTester
             double frequency = default;
             int phasorCount = default;
 
-            int phasorIndex = ComboBoxPhasors.SelectedIndex;
+            int phasorIndex = GetComboBoxPhasorsSelectedIndex();
 
             if (cell.FrequencyValue is not null)
                 frequency = cell.FrequencyValue.Frequency;
@@ -2277,7 +2371,6 @@ public partial class PMUConnectionTester
         m_networkInterfaces = networkInterfaces.ToArray();
         Forms.NetworkInterfaceSelector.ComboBoxNetworkInterfaces.Items.Clear();
 
-        // ReSharper disable once CoVariantArrayConversion
         Forms.NetworkInterfaceSelector.ComboBoxNetworkInterfaces.Items.AddRange(m_networkInterfaces);
         Forms.NetworkInterfaceSelector.ComboBoxNetworkInterfaces.DisplayMember = "Item1";
     }
@@ -2554,8 +2647,11 @@ public partial class PMUConnectionTester
         GroupBoxStatus.Expanded = false;
         GroupBoxHeaderFrame.Expanded = false;
         TextBoxHeaderFrame.Text = "";
-        ComboBoxPhasors.Items.Clear();
-        ComboBoxPhasors.Text = "";
+        lock (ComboBoxPhasors)
+        {
+            ComboBoxPhasors.Items.Clear();
+            ComboBoxPhasors.Text = "";
+        }
         ComboBoxVoltagePhasors.Items.Clear();
         ComboBoxVoltagePhasors.Text = "";
         ComboBoxCurrentPhasors.Items.Clear();
