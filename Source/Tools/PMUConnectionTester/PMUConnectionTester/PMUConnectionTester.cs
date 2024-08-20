@@ -465,58 +465,68 @@ public partial class PMUConnectionTester
         LabelAnalogCount.Text = m_selectedCell.AnalogDefinitions.Count.ToString();
         LabelDigitalCount.Text = m_selectedCell.DigitalDefinitions.Count.ToString();
         LabelNominalFrequency.Text = ((int)m_selectedCell.NominalFrequency).ToString();
-        ComboBoxVoltagePhasors.Items.Clear();
-        ComboBoxCurrentPhasors.Items.Clear();
 
         lock (ComboBoxPhasors)
         {
-            // Try to maintain selected phasor index if PMU device selection remains the same
-            int selectedIndex = lastSelectedCellName.Equals(GetCellName(m_selectedCell)) ? ComboBoxPhasors.SelectedIndex : -1;
-
-            ComboBoxPhasors.Items.Clear();
-
-            PhasorDefinitionCollection phasorDefinitions = m_selectedCell.PhasorDefinitions;
-
-            for (int i = 0; i < phasorDefinitions.Count; i++)
+            // If the phasor drop-down is open, a custom sort/filter may be shown. In this
+            // case, do not override list contents until the drop-down is closed as user may
+            // be monitoring selections in the drop-down. Overriding list contents can be an
+            // issue if PMU is reporting a new configuration frame once per minute (common).
+            // If there are actual config changes, the user can always close and re-open the
+            // drop-down which will refresh the list contents.
+            if (!ComboBoxPhasors.DroppedDown)
             {
-                IPhasorDefinition phasor = phasorDefinitions[i];
+                ComboBoxVoltagePhasors.Items.Clear();
+                ComboBoxCurrentPhasors.Items.Clear();
 
-                if (phasor.PhasorType == PhasorType.Voltage)
+                // Try to maintain selected phasor index if PMU device selection remains the same
+                int selectedIndex = lastSelectedCellName.Equals(GetCellName(m_selectedCell)) ? ComboBoxPhasors.SelectedIndex : -1;
+
+                ComboBoxPhasors.Items.Clear();
+
+                PhasorDefinitionCollection phasorDefinitions = m_selectedCell.PhasorDefinitions;
+
+                for (int i = 0; i < phasorDefinitions.Count; i++)
                 {
-                    ComboBoxPhasors.Items.Add($"V: {phasor.Label}");
-                    ComboBoxVoltagePhasors.Items.Add($"{i}: {phasor.Label}");
+                    IPhasorDefinition phasor = phasorDefinitions[i];
+
+                    if (phasor.PhasorType == PhasorType.Voltage)
+                    {
+                        ComboBoxPhasors.Items.Add($"V: {phasor.Label}");
+                        ComboBoxVoltagePhasors.Items.Add($"{i}: {phasor.Label}");
+                    }
+                    else
+                    {
+                        ComboBoxPhasors.Items.Add($"I: {phasor.Label}");
+                        ComboBoxCurrentPhasors.Items.Add($"{i}: {phasor.Label}");
+                    }
+                }
+
+                ComboBoxPhasors.Tag = ComboBoxPhasors.Items.Cast<string>().ToArray();
+
+                if (ComboBoxPhasors.Items.Count > 0)
+                {
+                    if (selectedIndex >= 0 && selectedIndex < ComboBoxPhasors.Items.Count)
+                        ComboBoxPhasors.SelectedIndex = selectedIndex;
+                    else
+                        ComboBoxPhasors.SelectedIndex = 0;
                 }
                 else
                 {
-                    ComboBoxPhasors.Items.Add($"I: {phasor.Label}");
-                    ComboBoxCurrentPhasors.Items.Add($"{i}: {phasor.Label}");
+                    ComboBoxPhasors.SelectedIndex = -1;
                 }
-            }
 
-            ComboBoxPhasors.Tag = ComboBoxPhasors.Items.Cast<string>().ToArray();
-
-            if (ComboBoxPhasors.Items.Count > 0)
-            {
-                if (selectedIndex >= 0 && selectedIndex < ComboBoxPhasors.Items.Count)
-                    ComboBoxPhasors.SelectedIndex = selectedIndex;
+                if (ComboBoxVoltagePhasors.Items.Count > 0)
+                    ComboBoxVoltagePhasors.SelectedIndex = 0;
                 else
-                    ComboBoxPhasors.SelectedIndex = 0;
-            }
-            else
-            {
-                ComboBoxPhasors.SelectedIndex = -1;
+                    ComboBoxVoltagePhasors.SelectedIndex = -1;
+
+                if (ComboBoxCurrentPhasors.Items.Count > 0)
+                    ComboBoxCurrentPhasors.SelectedIndex = 0;
+                else
+                    ComboBoxCurrentPhasors.SelectedIndex = -1;
             }
         }
-        
-        if (ComboBoxVoltagePhasors.Items.Count > 0)
-            ComboBoxVoltagePhasors.SelectedIndex = 0;
-        else
-            ComboBoxVoltagePhasors.SelectedIndex = -1;
-
-        if (ComboBoxCurrentPhasors.Items.Count > 0)
-            ComboBoxCurrentPhasors.SelectedIndex = 0;
-        else
-            ComboBoxCurrentPhasors.SelectedIndex = -1;
 
         InitializePhaseAngleLayer(m_selectedCell.PhasorDefinitions.Count);
     }
@@ -535,17 +545,7 @@ public partial class PMUConnectionTester
 
     private void ComboBoxPhasors_DropDownClosed(object sender, EventArgs e)
     {
-        lock (ComboBoxPhasors)
-        {
-            int selectedIndex = GetComboBoxPhasorsSelectedIndex();
-
-            ComboBoxPhasors.Items.Clear();
-         
-            if (ComboBoxPhasors.Tag is string[] elements)
-                ComboBoxPhasors.Items.AddRange(elements);
-
-            ComboBoxPhasors.SelectedIndex = selectedIndex;
-        }
+        ComboBoxPmus_SelectedIndexChanged(sender, e);
     }
 
     private void ComboBoxPhasors_TextUpdate(object sender, EventArgs e)
