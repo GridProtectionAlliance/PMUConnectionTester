@@ -3007,6 +3007,10 @@ public partial class PMUConnectionTester
 
             row["Attribute"] = $"     {attribute.Key}";
             row["Value"] = attribute.Value;
+
+            // Indices should start at 0
+            if (string.Equals(attribute.Key, "Index"))
+                row["Value"] = (int.Parse(attribute.Value) + 1).ToString();
             row["ChannelNode"] = 0;
 
             attributeTable.Rows.Add(row);
