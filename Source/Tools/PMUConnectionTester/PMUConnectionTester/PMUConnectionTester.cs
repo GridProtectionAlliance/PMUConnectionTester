@@ -58,6 +58,7 @@ using GSF.Communication;
 using GSF.Configuration;
 using GSF.Parsing;
 using GSF.PhasorProtocols;
+using GSF.PhasorProtocols.IEEEC37_118;
 using GSF.Threading;
 using GSF.Units;
 using GSF.Units.EE;
@@ -1737,7 +1738,7 @@ public partial class PMUConnectionTester
 
                     if (phasor is not null)
                     {
-                        if (Math.Abs((phasor.Angle - m_lastPhaseAngle).ToDegrees()) >= 0.5d || m_phasorData.Rows.Count < 2)
+                        if (Math.Abs((phasor.AdjustedAngle() - m_lastPhaseAngle).ToDegrees()) >= 0.5d || m_phasorData.Rows.Count < 2)
                         {
                             DataRow row = m_phasorData.NewRow();
 
@@ -1747,7 +1748,7 @@ public partial class PMUConnectionTester
                                 for (int i = 0; i < phasorCount; i++)
                                 {
                                     if (m_phasorData.Columns.Count > i)
-                                        row[i] = cell.PhasorValues[i].Angle.ToDegrees();
+                                        row[i] = cell.PhasorValues[i].AdjustedAngle().ToDegrees();
                                 }
                             }
                             else
@@ -1756,7 +1757,7 @@ public partial class PMUConnectionTester
                                 for (int i = 0; i < phasorCount; i++)
                                 {
                                     if (m_phasorData.Columns.Count > i)
-                                        row[i] = (cell.PhasorValues[i].Angle - phasor.Angle).ToRange(-Math.PI, false).ToDegrees();
+                                        row[i] = (cell.PhasorValues[i].AdjustedAngle() - phasor.AdjustedAngle()).ToRange(-Math.PI, false).ToDegrees();
                                 }
                             }
 
@@ -1801,18 +1802,18 @@ public partial class PMUConnectionTester
                                 }
                             }
 
-                            m_lastPhaseAngle = phasor.Angle;
+                            m_lastPhaseAngle = phasor.AdjustedAngle();
                         }
 
                         if (GroupBoxStatus.Expanded)
                         {
                             LabelFrequency.Text = $"{frequency:0.0000} Hz";
-                            LabelAngle.Text = $"{phasor.Angle.ToDegrees()}°";
+                            LabelAngle.Text = $"{phasor.AdjustedAngle().ToDegrees()}°";
 
                             // Most PMU's are setup such that voltage magnitudes need to multiplied by the SQRT(3)
                             LabelMagnitude.Text = phasor.Type == PhasorType.Voltage ?
-                                $"{(phasor.Magnitude / 1000d):0.0000} ({(phasor.Magnitude * m_sqrtOf3 / 1000d):0.0000}) kV" :
-                                $"{phasor.Magnitude:0.0000} Amperes";
+                                $"{(phasor.AdjustedMagnitude() / 1000d):0.0000} ({(phasor.AdjustedMagnitude() * m_sqrtOf3 / 1000d):0.0000}) kV" :
+                                $"{phasor.AdjustedMagnitude():0.0000} Amperes";
                         }
                     }
                 }
@@ -1848,13 +1849,13 @@ public partial class PMUConnectionTester
             m_streamDebugCapture.Write($"{cell.StatusFlags:x},");
 
             foreach (IPhasorValue phasorValue in cell.PhasorValues)
-                m_streamDebugCapture.Write($"{phasorValue.Angle.ToDegrees()},{phasorValue.Magnitude},");
+                m_streamDebugCapture.Write($"{phasorValue.AdjustedAngle().ToDegrees()},{phasorValue.AdjustedMagnitude()},");
 
             IFrequencyValue frequencyValue = cell.FrequencyValue;
             m_streamDebugCapture.Write($"{frequencyValue.Frequency},{frequencyValue.DfDt},");
 
             foreach (IAnalogValue analogValue in cell.AnalogValues)
-                m_streamDebugCapture.Write($"{analogValue.Value},");
+                m_streamDebugCapture.Write($"{analogValue.AdjustedValue()},");
 
             foreach (IDigitalValue digitalValue in cell.DigitalValues)
                 m_streamDebugCapture.Write($"{digitalValue.Value},");
@@ -3476,4 +3477,31 @@ public partial class PMUConnectionTester
     #endregion
 
     #endregion
+}
+
+public static class IDataCellValueExtensions
+{
+    public static double AdjustedMagnitude(this IPhasorValue phasor)
+    {
+        if (phasor.Definition is not PhasorDefinition3 definition)
+            return phasor.Magnitude;
+
+        return definition.MagnitudeMultiplier * phasor.Magnitude;
+    }
+
+    public static Angle AdjustedAngle(this IPhasorValue phasor)
+    {
+        if (phasor.Definition is not PhasorDefinition3 definition)
+            return phasor.Angle;
+
+        return definition.AngleAdder + phasor.Angle;
+    }
+
+    public static double AdjustedValue(this IAnalogValue analog)
+    {
+        if (analog.Definition is not AnalogDefinition3 definition)
+            return analog.Value;
+
+        return definition.Adder + definition.Multiplier * analog.Value;
+    }
 }
