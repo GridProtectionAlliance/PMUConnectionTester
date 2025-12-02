@@ -2476,7 +2476,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.Byte,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2489,7 +2489,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.SByte,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2502,7 +2502,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.Int16,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2515,7 +2515,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.UInt16,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2528,7 +2528,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(GSF.Int24,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2541,7 +2541,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(GSF.UInt24,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2554,7 +2554,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.Int32,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2567,7 +2567,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.UInt32,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2580,7 +2580,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.Int64,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2593,7 +2593,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.UInt64,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2606,7 +2606,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.Byte,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2619,7 +2619,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.SByte,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2632,7 +2632,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.Int16,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2645,7 +2645,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.UInt16,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2658,7 +2658,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(GSF.Int24,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2671,7 +2671,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(GSF.UInt24,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2684,7 +2684,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.Int32,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2697,7 +2697,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.UInt32,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2710,7 +2710,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.Int64,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2723,7 +2723,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.UInt64,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -3392,6 +3392,18 @@
             <typeparam name="T"><see cref="T:System.Type"/> of elements in the <paramref name="source"/></typeparam>
             <param name="source">An enumeration over which to find the median element(s).</param>
             <returns>The median item(s) from an enumeration, or <c>null</c> if <paramref name="source"/> is <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Collections.CollectionExtensions.Middle``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Gets the middle item(s) from an enumeration, i.e., one return item for odd lengths, two for even lengths.
+            </summary>
+            <remarks>
+            If enumeration length is even, two items will be returned representing the items in the middle of the set;
+            otherwise, if the enumeration length is odd, one item will be returned from exactly the middle of the set.
+            </remarks>
+            <typeparam name="T"><see cref="T:System.Type"/> of elements in the <paramref name="source"/></typeparam>
+            <param name="source">An enumeration over which to find the middle element(s).</param>
+            <returns>The middle item(s) from an enumeration, or <c>null</c> if <paramref name="source"/> is <c>null</c>.</returns>
         </member>
         <member name="M:GSF.Collections.CollectionExtensions.MajorityBy``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Boolean,System.Collections.Generic.IEqualityComparer{``1})">
             <summary>
@@ -12313,6 +12325,21 @@
             <param name="timeout">Timeout, in milliseconds, to wait for command line operation to complete.</param>
             <returns><c>true</c> if process completed; otherwise, <c>false</c> if process timed-out.</returns>
         </member>
+        <member name="P:GSF.Console.Command.CustomProcessStartInfo">
+            <summary>
+            Customizable Command.ProcessStartInfo to set prior to Creating or Executing the CommandProcess.
+            The original Process.StartInfo defaults are used when Command.CustomProcessStartInfo is null.
+            Command.CustomProcessStartInfo is null to be consistent with earlier implementations.
+            Example to create a Command.CustomProcessStartInfo with Gemstone default StartInfo but without creating a Window:
+            GSF.Core.Console.Command.CustomProcessStartInfo = new()
+            {
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            };
+            </summary>
+        </member>
         <member name="M:GSF.Console.Command.Execute(System.String,System.String,System.Int32)">
             <summary>
             Executes a command line operation and returns its standard output and exit code or throws an exception with the standard error.
@@ -12706,6 +12733,11 @@
             Gets or sets default timeout for <see cref="T:GSF.Data.AdoDataConnection"/> data operations.
             </summary>
         </member>
+        <member name="P:GSF.Data.AdoDataConnection.DefaultStringType">
+            <summary>
+            Gets or sets a value to indicate whether queries should default to ANSI strings instead of Unicode strings.
+            </summary>
+        </member>
         <member name="P:GSF.Data.AdoDataConnection.UtcNow">
             <summary>
             Gets current UTC date-time in an implementation that is proper for the connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.
@@ -12926,6 +12958,25 @@
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
             <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
+        <member name="M:GSF.Data.AdoDataConnection.TryRetrieveRow(System.String,System.Data.DataRow@,System.Object[])">
+            <summary>
+            Tries to retrieve the first <see cref="T:System.Data.DataRow"/> in the result set of the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>.
+            </summary>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="row">The first <see cref="T:System.Data.DataRow"/> in the result set, or <c>null</c>.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.TryRetrieveRow(System.Int32,System.String,System.Data.DataRow@,System.Object[])">
+            <summary>
+            Tries to retrieve the first <see cref="T:System.Data.DataRow"/> in the result set of the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>.
+            </summary>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="row">The first <see cref="T:System.Data.DataRow"/> in the result set, or <c>null</c>.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
         <member name="M:GSF.Data.AdoDataConnection.RetrieveData(System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
@@ -12998,6 +13049,20 @@
             </summary>
             <param name="value"><see cref="T:System.Guid"/> to format per database type.</param>
             <returns>Proper <see cref="T:System.Guid"/> implementation for connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ANSI(System.String)">
+            <summary>
+            Instructs <see cref="T:GSF.Data.AdoDataConnection"/> to treat this string as an ANSI string in parameterized queries.
+            </summary>
+            <param name="value">The string to be treated as ANSI.</param>
+            <returns>The value to be used in parameterized queries.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.Unicode(System.String)">
+            <summary>
+            Instructs <see cref="T:GSF.Data.AdoDataConnection"/> to treat this string as a Unicode string in parameterized queries.
+            </summary>
+            <param name="value">The string to be treated as Unicode.</param>
+            <returns>The value to be used in parameterized queries.</returns>
         </member>
         <member name="M:GSF.Data.AdoDataConnection.Guid(System.Data.DataRow,System.String)">
             <summary>
@@ -13991,7 +14056,7 @@
             Executes the SQL statement using <see cref="T:System.Data.IDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
@@ -14001,9 +14066,32 @@
             Executes the SQL statement using <see cref="T:System.Data.IDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.DataExtensions.TryRetrieveRow(System.Data.IDbConnection,System.Type,System.String,System.Data.DataRow@,System.Object[])">
+            <summary>
+            Tries to retrieve the first <see cref="T:System.Data.DataRow"/> in the result set of the SQL statement using <see cref="T:System.Data.IDbConnection"/>.
+            </summary>
+            <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
+            <param name="sql">The SQL statement to be executed.</param>
+            <param name="row">The first <see cref="T:System.Data.DataRow"/> in the result set, or <c>null</c>.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.DataExtensions.TryRetrieveRow(System.Data.IDbConnection,System.Type,System.String,System.Int32,System.Data.DataRow@,System.Object[])">
+            <summary>
+            Tries to retrieve the first <see cref="T:System.Data.DataRow"/> in the result set of the SQL statement using <see cref="T:System.Data.IDbConnection"/>.
+            </summary>
+            <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
+            <param name="sql">The SQL statement to be executed.</param>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="row">The first <see cref="T:System.Data.DataRow"/> in the result set, or <c>null</c>.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
@@ -14120,7 +14208,7 @@
             Executes the SQL statement using <see cref="T:System.Data.IDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
@@ -14130,9 +14218,32 @@
             Executes the SQL statement using <see cref="T:System.Data.IDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.DataExtensions.TryRetrieveRow(System.Data.IDbCommand,System.Type,System.String,System.Data.DataRow@,System.Object[])">
+            <summary>
+            Tries to retrieve the first <see cref="T:System.Data.DataRow"/> in the result set of the SQL statement using <see cref="T:System.Data.IDbCommand"/>.
+            </summary>
+            <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
+            <param name="sql">The SQL statement to be executed.</param>
+            <param name="row">The first <see cref="T:System.Data.DataRow"/> in the result set, or <c>null</c>.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.DataExtensions.TryRetrieveRow(System.Data.IDbCommand,System.Type,System.String,System.Int32,System.Data.DataRow@,System.Object[])">
+            <summary>
+            Tries to retrieve the first <see cref="T:System.Data.DataRow"/> in the result set of the SQL statement using <see cref="T:System.Data.IDbCommand"/>.
+            </summary>
+            <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
+            <param name="sql">The SQL statement to be executed.</param>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="row">The first <see cref="T:System.Data.DataRow"/> in the result set, or <c>null</c>.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
@@ -14274,7 +14385,7 @@
             of result set, if the result set contains multiple tables.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>A <see cref="T:System.Data.DataTable"/> object.</returns>
@@ -14285,7 +14396,7 @@
             of result set, if the result set contains multiple tables.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
@@ -14429,7 +14540,7 @@
             of result set, if the result set contains multiple tables.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>A <see cref="T:System.Data.DataTable"/> object.</returns>
@@ -14440,7 +14551,7 @@
             of result set, if the result set contains multiple tables.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
@@ -14584,7 +14695,7 @@
             may contain multiple tables, depending on the SQL statement.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>A <see cref="T:System.Data.DataSet"/> object.</returns>
@@ -14595,7 +14706,7 @@
             may contain multiple tables, depending on the SQL statement.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
@@ -14739,7 +14850,7 @@
             may contain multiple tables, depending on the SQL statement.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>A <see cref="T:System.Data.DataSet"/> object.</returns>
@@ -14750,7 +14861,7 @@
             may contain multiple tables, depending on the SQL statement.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
@@ -15677,6 +15788,22 @@
             </summary>
             <param name="keyReference">Reference name used to lookup encryption key and initialization vector.</param>
         </member>
+        <member name="T:GSF.Data.Model.ExtensionAttributeBase">
+            <summary>
+            Base class for Attributes that are used to extend the functionality of <see cref="T:GSF.Data.Model.TableOperations`1"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ExtensionAttributeBase.FieldMatch">
+            <summary>
+            The regular expression used to match field names the attribute applies to.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.ExtensionAttributeBase.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ExtensionAttributeBase"/>
+            </summary>
+            <param name="fieldMatch">Field match expression for the attribute.</param>
+        </member>
         <member name="T:GSF.Data.Model.FieldDataTypeAttribute">
             <summary>
             Defines an attribute that will request use of a specific data type on a modeled table field.
@@ -15759,6 +15886,11 @@
             Defines a common interface for implementations of <see cref="T:GSF.Data.Model.TableOperations`1"/>.
             </summary>
         </member>
+        <member name="P:GSF.Data.Model.ITableOperations.Connection">
+            <summary>
+            Gets <see cref="T:GSF.Data.AdoDataConnection"/> instance associated with this <see cref="T:GSF.Data.Model.TableOperations`1"/> used for database operations.
+            </summary>
+        </member>
         <member name="P:GSF.Data.Model.ITableOperations.TableName">
             <summary>
             Gets the table name defined for the modeled table, includes any escaping as defined in model.
@@ -15789,12 +15921,12 @@
         </member>
         <member name="P:GSF.Data.Model.ITableOperations.UseCaseSensitiveFieldNames">
             <summary>
-            Gets or sets flag that determines if field names should be treated as case sensitive. Defaults to <c>false</c>.
+            Gets or sets flag that determines if field names should be treated as case-sensitive. Defaults to <c>false</c>.
             </summary>
             <remarks>
             In cases where modeled table fields have applied <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>, this flag will be used
-            to properly update escaped field names that may be case sensitive. For example, escaped field names in Oracle
-            are case sensitive. This value is typically <c>false</c>.
+            to properly update escaped field names that may be case-sensitive. For example, escaped field names in Oracle
+            are case-sensitive. This value is typically <c>false</c>.
             </remarks>
         </member>
         <member name="P:GSF.Data.Model.ITableOperations.PrimaryKeyCache">
@@ -16607,6 +16739,13 @@
             <param name="fieldName">Field name to retrieve.</param>
             <returns>Field <see cref="T:System.Type"/> or <c>null</c> if field is not found.</returns>
         </member>
+        <member name="M:GSF.Data.Model.ITableOperations.FieldExists(System.String)">
+            <summary>
+            Gets flag that determines if the specified field exists.
+            </summary>
+            <param name="fieldName">Field name to check.</param>
+            <returns><c>true</c> if field is found; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.GetSearchRestriction(System.String)">
             <summary>
             Generates a <see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.
@@ -17164,6 +17303,18 @@
             </summary>
             <param name="settingsCategory">Config file Settings category to use for class.</param>
         </member>
+        <member name="T:GSF.Data.Model.SortExtensionAttribute">
+            <summary>
+            Defines an attribute that marks static methods on a model that are used to transform a
+            field into more complex order by expression, e.g., a subquery, for sorting.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.SortExtensionAttribute.#ctor(System.String)">
+            <summary>
+            Defines an attribute that marks static methods on a model that are used to transform a
+            field into more complex order by expression, e.g., a subquery, for sorting.
+            </summary>
+        </member>
         <member name="T:GSF.Data.Model.SQLSearchFilter">
             <summary>
             Defines a Filter to be applied to a Query
@@ -17313,131 +17464,34 @@
             <exception cref="T:System.ArgumentNullException"><paramref name="connection"/> cannot be <c>null</c>.</exception>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.Connection">
-            <summary>
-            Gets <see cref="T:GSF.Data.AdoDataConnection"/> instance associated with this <see cref="T:GSF.Data.Model.TableOperations`1"/> used for database operations.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.TableName">
-            <summary>
-            Gets the table name defined for the modeled table, includes any escaping as defined in model.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.UnescapedTableName">
-            <summary>
-            Gets the table name defined for the modeled table without any escape characters.
-            </summary>
-            <remarks>
-            A table name will only be escaped if the model requested escaping with the <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>.
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.HasPrimaryKeyIdentityField">
-            <summary>
-            Gets flag that determines if modeled table has a primary key that is an identity field.
-            </summary>
+             <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.ExceptionHandler">
-            <summary>
-            Gets or sets delegate used to handle table operation exceptions.
-            </summary>
-            <remarks>
-            When exception handler is provided, table operations will not throw exceptions for database calls, any
-            encountered exceptions will be passed to handler for processing. Otherwise, exceptions will be thrown
-            on the call stack.
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.UseCaseSensitiveFieldNames">
-            <summary>
-            Gets or sets flag that determines if field names should be treated as case sensitive. Defaults to <c>false</c>.
-            </summary>
-            <remarks>
-            In cases where modeled table fields have applied <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>, this flag will be used
-            to properly update escaped field names that may be case sensitive. For example, escaped field names in Oracle
-            are case sensitive. This value is typically <c>false</c>.
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.PrimaryKeyCache">
-            <summary>
-            Gets or sets primary key cache.
-            </summary>
-            <remarks>
-            <para>
-            The <see cref="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)"/> overloads that include paging parameters
-            cache the sorted and filtered primary keys of queried records between calls so that paging is fast and
-            efficient. Since the primary keys are cached, an instance of the <see cref="T:GSF.Data.Model.TableOperations`1"/> should
-            exist per user session when using query functions that support pagination. In web based implementations,
-            the primary cache should be stored with user session state data and then restored between instances of
-            the <see cref="T:GSF.Data.Model.TableOperations`1"/> that are created along with a connection that is opened per page.
-            </para>
-            <para>
-            The function <see cref="M:GSF.Data.Model.TableOperations`1.ClearPrimaryKeyCache"/> should be called to manually clear cache when table
-            contents are known to have changed. Note that calls to any <see cref="M:GSF.Data.Model.TableOperations`1.DeleteRecord(`0)"/> overloads will
-            automatically clear any existing primary key cache.
-            </para>
-            <para>
-            Primary keys values are stored in data table without interpretation, i.e., in their raw form as queried
-            from the database. Primary key data in cache will be encrypted for models with primary key fields that
-            are marked with the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>
-            </para>
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction">
-            <summary>
-            Gets or sets root record restriction that applies to query table operations.
-            </summary>
-            <remarks>
-            <para>
-            Defining a root query restriction creates a base query filter that gets applied to all query operations,
-            even when another restriction is applied - in this case the root restriction will be pre-pended to the
-            specified query, e.g.:
-            <code>
-            restriction = RootQueryRestriction + restriction;
-            </code>
-            A root query restriction is useful to apply a common state to the query operations, e.g., always
-            filtering records for a specific user or context.
-            </para>
-            <para>
-            A root query restriction can be manually assigned to a <see cref="T:GSF.Data.Model.TableOperations`1"/> instance or
-            automatically assigned by marking a model with the <see cref="T:GSF.Data.Model.RootQueryRestrictionAttribute"/>.
-            </para>
-            <para>
-            If any of the <see cref="F:GSF.Data.Model.RecordRestriction.Parameters"/> reference a table field that is modeled with
-            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
-            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
-            returned value so that the field value will be properly set prior to executing the database function.
-            </para>
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.ApplyRootQueryRestrictionToUpdates">
-            <summary>
-            Gets or sets flag that determines if <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> should be applied to update operations.
-            </summary>
-            <remarks>
-            <para>
-            If <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> only references primary key fields, then this property value should be set
-            to <c>false</c> since default update operations for a modeled record already work against primary key fields.
-            </para>
-            <para>
-            This flag can be manually set per <see cref="T:GSF.Data.Model.TableOperations`1"/> instance or handled automatically by marking
-            a model with the <see cref="T:GSF.Data.Model.RootQueryRestrictionAttribute"/> and assigning a value to the attribute property
-            <see cref="F:GSF.Data.Model.RootQueryRestrictionAttribute.ApplyToUpdates"/>.
-            </para>
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.ApplyRootQueryRestrictionToDeletes">
-            <summary>
-            Gets or sets flag that determines if <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> should be applied to delete operations.
-            </summary>
-            <remarks>
-            <para>
-            If <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> only references primary key fields, then this property value should be set
-            to <c>false</c> since default delete operations for a modeled record already work against primary key fields.
-            </para>
-            <para>
-            This flag can be manually set per <see cref="T:GSF.Data.Model.TableOperations`1"/> instance or handled automatically by marking
-            a model with the <see cref="T:GSF.Data.Model.RootQueryRestrictionAttribute"/> and assigning a value to the attribute property
-            <see cref="F:GSF.Data.Model.RootQueryRestrictionAttribute.ApplyToDeletes"/>.
-            </para>
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.NewRecord">
             <summary>
@@ -18142,7 +18196,7 @@
             filter expression where the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> have been modeled
             on a field referenced by one of the <see cref="T:GSF.Data.Model.RecordRestriction"/> parameters. Since the record restrictions are used
             with a free-form expression, the <see cref="T:GSF.Data.Model.TableOperations`1"/> class cannot be aware of the fields accessed in the
-            expression without attempting to parse the expression which would be time consuming and error prone; as a result, users
+            expression without attempting to parse the expression which would be time-consuming and error-prone; as a result, users
             will need to be aware to call this function when using record restriction that references fields that are either marked
             for encryption or use a specific field data-type attribute.
             </para>
@@ -18164,6 +18218,13 @@
             </summary>
             <param name="fieldName">Field name to retrieve.</param>
             <returns>Field <see cref="T:System.Type"/> or <c>null</c> if field is not found.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.FieldExists(System.String)">
+            <summary>
+            Gets flag that determines if the specified field exists.
+            </summary>
+            <param name="fieldName">Field name to check.</param>
+            <returns><c>true</c> if field is found; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetSearchRestriction(System.String)">
             <summary>
@@ -51934,6 +51995,11 @@
         <member name="T:GSF.Units.EE.VoltageLevel">
             <summary>
             Common transmission voltage levels enumeration.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV34">
+            <summary>
+            34 kV.
             </summary>
         </member>
         <member name="F:GSF.Units.EE.VoltageLevel.kV44">
