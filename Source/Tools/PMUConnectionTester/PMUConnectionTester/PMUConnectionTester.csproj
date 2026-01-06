@@ -282,7 +282,6 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>$(SolutionDir)Dependencies\GSF\ValidateAssemblyBindings.exe $(TargetPath).config</PostBuildEvent>
   </PropertyGroup>
 </Project>

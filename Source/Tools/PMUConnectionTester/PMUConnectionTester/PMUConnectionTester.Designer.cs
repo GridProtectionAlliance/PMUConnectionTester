@@ -961,11 +961,11 @@ namespace ConnectionTester
             // 
             this.TextBoxFileFrameRate.AutoSize = false;
             this.TextBoxFileFrameRate.EditAs = Infragistics.Win.UltraWinMaskedEdit.EditAsType.UseSpecifiedMask;
-            this.TextBoxFileFrameRate.InputMask = "nnn";
+            this.TextBoxFileFrameRate.InputMask = "nnnnn";
             this.TextBoxFileFrameRate.Location = new System.Drawing.Point(73, 50);
             this.TextBoxFileFrameRate.Name = "TextBoxFileFrameRate";
             this.TextBoxFileFrameRate.PromptChar = ' ';
-            this.TextBoxFileFrameRate.Size = new System.Drawing.Size(27, 20);
+            this.TextBoxFileFrameRate.Size = new System.Drawing.Size(40, 20);
             this.TextBoxFileFrameRate.TabIndex = 4;
             this.TextBoxFileFrameRate.Text = "30";
             this.TextBoxFileFrameRate.GotFocus += new System.EventHandler(this.TextBox_GotFocus);
@@ -1006,7 +1006,7 @@ namespace ConnectionTester
             // 
             appearance56.TextHAlignAsString = "Right";
             this.LabelFramesPerSecond.Appearance = appearance56;
-            this.LabelFramesPerSecond.Location = new System.Drawing.Point(95, 53);
+            this.LabelFramesPerSecond.Location = new System.Drawing.Point(110, 53);
             this.LabelFramesPerSecond.Name = "LabelFramesPerSecond";
             this.LabelFramesPerSecond.Size = new System.Drawing.Size(82, 17);
             this.LabelFramesPerSecond.TabIndex = 5;
