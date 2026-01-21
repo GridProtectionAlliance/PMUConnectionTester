@@ -9037,7 +9037,7 @@
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedTcpServerReference.DisconnectAll">
             <summary>
-            Disconnects all of the connected clients.
+            Disconnects all the connected clients.
             </summary>
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedTcpServerReference.Dispose">
@@ -9056,7 +9056,7 @@
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedTcpServerReference.Multicast(System.Byte[],System.Int32,System.Int32)">
             <summary>
-            Sends data to all of the connected clients synchronously.
+            Sends data to all the connected clients synchronously.
             </summary>
             <param name="data">The buffer that contains the binary data to be sent.</param>
             <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
@@ -9074,7 +9074,7 @@
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedTcpServerReference.MulticastAsync(System.Byte[],System.Int32,System.Int32)">
             <summary>
-            Sends data to all of the connected clients asynchronously.
+            Sends data to all the connected clients asynchronously.
             </summary>
             <param name="data">The buffer that contains the binary data to be sent.</param>
             <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
@@ -9677,7 +9677,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.InjectSimulatedTimestamp">
             <summary>
-            Gets or sets flag indicating whether or not to inject local system time into parsed data frames.
+            Gets or sets flag indicating whether to inject local system time into parsed data frames.
             </summary>
             <remarks>
             When connection is made to a file for replay purposes or consumer doesn't trust remote clock source, this flag
@@ -9892,9 +9892,9 @@
             </summary>
             <returns><c>true</c> if frame parser was successfully initialized; otherwise <c>false</c>.</returns>
             <remarks>
-            Starting the multi-protocol frame parser will automatically initialize the frame parsers so calling
+            Starting the multiprotocol frame parser will automatically initialize the frame parsers so calling
             this method then will be unnecessary, however, if you are using this class just to edit custom
-            connection parameters then initializing the will be necessary.
+            connection parameters then initializing them will be necessary.
             </remarks>
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.InitializeFrameParser(System.Collections.Generic.Dictionary{System.String,System.String})">
@@ -18907,6 +18907,113 @@
             Gets or sets the <see cref="T:GSF.PhasorProtocols.Macrodyne.PhasorDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.Macrodyne.PhasorValue"/>.
             </summary>
         </member>
+        <member name="T:GSF.PhasorProtocols.ReplayTimer">
+            <summary>
+            Replay timer class used to pace frame publication for file-based playback.
+            </summary>
+            <remarks>
+            This class uses a combination of coarse sleeping, yielding, and spinning for
+            accurate wait times with minimal CPU usage. Supports common frame rates, e.g.,
+            30 or 60, and very high frame rates, e.g., 3000.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.ReplayTimer.#ctor(System.Int32)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.ReplayTimer"/> instance.
+            </summary>
+            <param name="definedFrameRate">The defined frame rate in frames per second.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.ReplayTimer.DefinedFrameRate">
+            <summary>
+            Gets the defined frame rate for this timer.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.ReplayTimer.WaitNext">
+            <summary>
+            Blocks until the next scheduled frame rate interval.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition">
+            <summary>
+            Represents the SEL CWS implementation of an <see cref="T:GSF.PhasorProtocols.IAnalogDefinition"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogDefinition.#ctor(GSF.PhasorProtocols.IConfigurationCell)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/> from specified parameters.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogDefinition.#ctor(GSF.PhasorProtocols.SelCWS.ConfigurationCell,System.String,System.UInt32,System.Double,GSF.PhasorProtocols.AnalogType)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/> from specified parameters.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.</param>
+            <param name="label">The label of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.</param>
+            <param name="scale">The integer scaling value of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.</param>
+            <param name="offset">The offset of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.</param>
+            <param name="type">The <see cref="T:GSF.PhasorProtocols.AnalogType"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogDefinition.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.AnalogDefinition.Parent">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.AnalogDefinition.Scalar">
+            <summary>
+            Gets or sets the scalar for this Point-on-Wave (POW) analog.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.AnalogDefinition.Attributes">
+            <inheritdoc/>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogDefinition.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.AnalogValue">
+            <summary>
+            Represents the SEL CWS implementation of an <see cref="T:GSF.PhasorProtocols.IAnalogValue"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogValue.#ctor(GSF.PhasorProtocols.IDataCell,GSF.PhasorProtocols.IAnalogDefinition)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.IDataCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.</param>
+            <param name="analogDefinition">The <see cref="T:GSF.PhasorProtocols.IAnalogDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogValue.#ctor(GSF.PhasorProtocols.SelCWS.DataCell,GSF.PhasorProtocols.SelCWS.AnalogDefinition,System.Double)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/> from specified parameters.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.</param>
+            <param name="analogDefinition">The <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.</param>
+            <param name="value">The floating point value that represents this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogValue.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.AnalogValue.Parent">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.AnalogValue.Definition">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.
+            </summary>
+        </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.FrameType">
             <summary>
             SEL CWS frame types enumeration.
@@ -18920,6 +19027,41 @@
         <member name="F:GSF.PhasorProtocols.SelCWS.FrameType.ConfigurationFrame">
             <summary>
             Configuration frame.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.PhaseChannel">
+            <summary>
+            Phase channels for SEL CWS PoW analogs.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.IA">
+            <summary>
+            Phase A current (IA).
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.IB">
+            <summary>
+            Phase B current (IB).
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.IC">
+            <summary>
+            Phase C current (IC).
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.VA">
+            <summary>
+            Phase A voltage (VA).
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.VB">
+            <summary>
+            Phase B voltage (VB).
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.VC">
+            <summary>
+            Phase C voltage (VC).
             </summary>
         </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.Common">
@@ -18949,9 +19091,14 @@
             </summary>
             <remarks>SEL CWS doesn't support digital values.</remarks>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.Common.DefaultFrameRate">
+        <member name="F:GSF.PhasorProtocols.SelCWS.Common.DefaultFramePerSecond">
             <summary>
             Default frame rate for SEL CWS devices is 3000 frames per second.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.Common.FramesPerPacket">
+            <summary>
+            Frames per UDP packet for SEL CWS devices is 50 samples.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.SelCWS.Common.DefaultNominalFrequency">
@@ -19010,6 +19157,11 @@
             Gets the packet count for this SEL CWS frame.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.NominalFrequency">
+            <summary>
+            Gets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the SEL CWS device.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.FundamentalFrameType">
             <summary>
             Gets the fundamental frame type of this frame.
@@ -19044,7 +19196,7 @@
             <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
             <param name="scalars">The scalar values for this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
             <param name="stationName">The name of the station for this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
-            <param name="phasorNames">The names of the phasors for this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
+            <param name="analogNames">The names of the analog POW points for this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationCell.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -19196,6 +19348,15 @@
             <see cref="T:System.Collections.Generic.Dictionary`2"/> of string based property names and values for the <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/> object.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.HeaderLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.BodyLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.FooterLength">
+            <inheritdoc/>
+        </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.ParseHeaderImage(System.Byte[],System.Int32,System.Int32)">
             <summary>
             Parses the binary header image.
@@ -19251,6 +19412,11 @@
             Default value for <see cref="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.CalculatePhaseEstimates"/>.
             </summary>
         </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.ConnectionParameters.DefaultRepeatLastCalculatedValueWhenDownSampling">
+            <summary>
+            Default value for <see cref="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.RepeatLastCalculatedValueWhenDownSampling"/>.
+            </summary>
+        </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.ConnectionParameters.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.ConnectionParameters"/>.
@@ -19265,18 +19431,110 @@
         </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.CalculatePhaseEstimates">
             <summary>
-            Gets or sets flag that determines if phase estimates should be calculated for phasor measurements.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.FrameRate">
-            <summary>
-            Gets or sets the configured frame rate for the SEL CWS device.
+            Gets or sets flag that determines if current and voltage phase estimates, frequency and dF/dt should be
+            calculated for PoW data.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.NominalFrequency">
             <summary>
             Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of this SEL CWS device.
             </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.CalculationFrameRate">
+            <summary>
+            Gets or sets the configured frame rate for phase estimate calculations.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.RepeatLastCalculatedValueWhenDownSampling">
+            <summary>
+            Gets or sets flag that determines if last value should be repeated when down-sampling, i.e.,
+            when <see cref="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.CalculationFrameRate"/> is less than SEL CWS frame rate (commonly 3000Hz);
+            otherwise <see cref="F:System.Double.NaN"/> will be used.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.ReferenceChannel">
+            <summary>
+            Gets or sets the reference channel for frequency tracking.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.TargetCycles">
+            <summary>
+            Gets or sets the number of nominal cycles contained in the sliding DFT analysis window.
+            </summary>
+            <remarks>
+            Larger values generally reduce noise/jitter (more averaging) but increase latency and reduce step response.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.EnableIntervalAveraging">
+            <summary>
+            Gets or sets a flag that determines if interval averaging (boxcar averaging) is enabled across each publish interval when down-sampling.
+            </summary>
+            <remarks>
+            Down-sampling without an anti-alias / low-pass step will preserve high-rate jitter and can alias higher-frequency
+            content into the published stream. Interval averaging acts as a simple, cheap low-pass filter that reduces
+            jitter and improves published stability.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.EnablePublishEMA">
+            <summary>
+            Gets or sets a flag that determines if an additional exponential moving average (EMA) is applied to the published stream (after interval averaging).
+            </summary>
+            <remarks>
+            Interval averaging removes high-rate noise; publish-EMA further reduces remaining jitter and produces a "calm"
+            display or control signal. This is usually the most intuitive "knob" for operators/consumers because it acts on
+            the actual output cadence.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.PublishAnglesTauSeconds">
+            <summary>
+            Gets or sets the EMA time constant τ (seconds) for published phase angles.
+            </summary>
+            <remarks>
+            Angles are circular quantities; this implementation performs wrap-safe smoothing by operating on unit vectors
+            (cos/sin) rather than naïvely averaging radians. This avoids discontinuities at ±π.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.PublishMagnitudesTauSeconds">
+            <summary>
+            Gets or sets the EMA time constant τ (seconds) for published RMS magnitudes.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.PublishFrequencyTauSeconds">
+            <summary>
+            Gets or sets the EMA time constant τ (seconds) for published frequency.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.PublishRocofTauSeconds">
+            <summary>
+            Gets or sets the EMA time constant τ (seconds) for published ROCOF (dF/dt).
+            </summary>
+            <remarks>
+            ROCOF is effectively a derivative signal and is typically much noisier than frequency; it generally benefits from
+            heavier smoothing (larger τ) than frequency.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.SampleFrequencyTauSeconds">
+            <summary>
+            Gets or sets the EMA time constant τ (seconds) for the internal per-sample frequency smoothing that occurs inside the estimator before any down-sampling/publish filtering.
+            </summary>
+            <remarks>
+            When interval averaging + publish EMA are enabled, this can be relatively light. If you disable publish smoothing,
+            you may want to increase this τ.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.SampleRocofTauSeconds">
+            <summary>
+            Gets or sets the EMA time constant τ (seconds) for the internal per-sample ROCOF smoothing (computed from the internally smoothed frequency).
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.RecalculationCycles">
+            <summary>
+            Gets or sets the number of nominal cycles between full DFT recalculations for numerical stability.
+            </summary>
+            <remarks>
+            Sliding DFT updates are O(1) per sample but can accumulate numerical drift; periodic full recomputation
+            re-anchors the phasor sums.
+            </remarks>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.ConnectionParameters.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -19326,21 +19584,14 @@
         <member name="P:GSF.PhasorProtocols.SelCWS.DataCell.DeviceError">
             <inheritdoc/>
         </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataCell.BodyLength">
+            <inheritdoc />
+        </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataCell.ParseBodyImage(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Parses the binary body image.
-            </summary>
-            <param name="buffer">Binary image to parse.</param>
-            <param name="startIndex">Start index into <paramref name="buffer"/> to begin parsing.</param>
-            <param name="length">Length of valid data within <paramref name="buffer"/>.</param>
-            <returns>The length of the data that was parsed.</returns>
+            <inheritdoc />
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataCell.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
-            </summary>
-            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
-            <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
+            <inheritdoc />
         </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.DataCellCollection">
             <summary>
@@ -19415,55 +19666,45 @@
             Gets the <see cref="T:GSF.PhasorProtocols.SelCWS.FrameType"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.AllowQueuedPublication">
+            <summary>
+            Gets flag that determines if frame image can be queued for publication or should be processed immediately.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.CommonHeader">
             <summary>
             Gets or sets current <see cref="T:GSF.PhasorProtocols.SelCWS.CommonFrameHeader"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.BinaryLength">
+            <inheritdoc />
+            <remarks>
+            This property is overridden so the length can be adjusted for lack of a checksum.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.BodyLength">
+            <inheritdoc />
+        </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.Attributes">
-            <summary>
-            <see cref="T:System.Collections.Generic.Dictionary`2"/> of string based property names and values for the <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/> object.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.ParseHeaderImage(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Parses the binary header image.
-            </summary>
-            <param name="buffer">Binary image to parse.</param>
-            <param name="startIndex">Start index into <paramref name="buffer"/> to begin parsing.</param>
-            <param name="length">Length of valid data within <paramref name="buffer"/>.</param>
-            <returns>The length of the data that was parsed.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.ParseBodyImage(System.Byte[],System.Int32,System.Int32)">
             <inheritdoc/>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.ChecksumIsValid(System.Byte[],System.Int32)">
-            <summary>
-            Determines if checksum in the <paramref name="buffer"/> is valid.
-            </summary>
-            <param name="buffer">Buffer image to validate.</param>
-            <param name="startIndex">Start index into <paramref name="buffer"/> to perform checksum.</param>
-            <returns>Flag that determines if checksum over <paramref name="buffer"/> is valid.</returns>
+            <inheritdoc/>
             <remarks>
             SEL CWS doesn't use checksums - this always returns true.
             </remarks>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.CalculateChecksum(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Method is not implemented.
-            </summary>
-            <exception cref="T:System.NotImplementedException">SEL CWS doesn't use checksums.</exception>
-            <param name="buffer">Array of <see cref="T:System.Byte"/>s.</param>
-            <param name="length">An <see cref="T:System.Int32"/> value for the bytes to read.</param>
-            <param name="offset">An <see cref="T:System.Int32"/> value for offset to read from.</param>
-            <returns>An <see cref="T:System.UInt16"/> as the checksum.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
-            </summary>
-            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
-            <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
+            <inheritdoc/>
         </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.FrameParser">
             <summary>
@@ -19509,10 +19750,15 @@
             <summary>
             Gets flag that determines if SEL CWS protocol parsing implementation uses synchronization bytes.
             </summary>
+            <remarks>
+            Protocol technically uses sync-bytes, but since they vary (0x00 or 0x01) we handle stream initialization
+            manually in the <see cref="M:GSF.PhasorProtocols.SelCWS.FrameParser.Parse(GSF.PhasorProtocols.SourceChannel,System.Byte[],System.Int32,System.Int32)"/> method.
+            </remarks>
         </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.CalculatePhaseEstimates">
             <summary>
-            Gets flag that determines if phase estimates should be calculated for phasor measurements.
+            Gets or sets flag that determines if current and voltage phase estimates, frequency and dF/dt should be
+            calculated for PoW data.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.NominalFrequency">
@@ -19520,10 +19766,101 @@
             Gets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the SEL CWS device.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.FrameRate">
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.CalculationFrameRate">
             <summary>
-            Gets or sets the configured frame rate for the SEL CWS device.
+            Gets or sets the configured frame rate for phase estimate calculations.
             </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.RepeatLastCalculatedValueWhenDownSampling">
+            <summary>
+            Gets or sets flag that determines if last value should be repeated when down-sampling, i.e.,
+            when <see cref="P:GSF.PhasorProtocols.SelCWS.FrameParser.CalculationFrameRate"/> is less than SEL CWS frame rate (commonly 3000Hz);
+            otherwise <see cref="F:System.Double.NaN"/> will be used.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.ReferenceChannel">
+            <summary>
+            Gets or sets the reference channel for frequency tracking.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.TargetCycles">
+            <summary>
+            Gets or sets the number of nominal cycles contained in the sliding DFT analysis window.
+            </summary>
+            <remarks>
+            Larger values generally reduce noise/jitter (more averaging) but increase latency and reduce step response.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.EnableIntervalAveraging">
+            <summary>
+            Gets or sets a flag that determines if interval averaging (boxcar averaging) is enabled across each publish interval when down-sampling.
+            </summary>
+            <remarks>
+            Down-sampling without an anti-alias / low-pass step will preserve high-rate jitter and can alias higher-frequency
+            content into the published stream. Interval averaging acts as a simple, cheap low-pass filter that reduces
+            jitter and improves published stability.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.EnablePublishEMA">
+            <summary>
+            Gets or sets a flag that determines if an additional exponential moving average (EMA) is applied to the published stream (after interval averaging).
+            </summary>
+            <remarks>
+            Interval averaging removes high-rate noise; publish-EMA further reduces remaining jitter and produces a "calm"
+            display or control signal. This is usually the most intuitive "knob" for operators/consumers because it acts on
+            the actual output cadence.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.PublishAnglesTauSeconds">
+            <summary>
+            Gets or sets the EMA time constant τ (seconds) for published phase angles.
+            </summary>
+            <remarks>
+            Angles are circular quantities; this implementation performs wrap-safe smoothing by operating on unit vectors
+            (cos/sin) rather than naïvely averaging radians. This avoids discontinuities at ±π.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.PublishMagnitudesTauSeconds">
+            <summary>
+            Gets or sets the EMA time constant τ (seconds) for published RMS magnitudes.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.PublishFrequencyTauSeconds">
+            <summary>
+            Gets or sets the EMA time constant τ (seconds) for published frequency.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.PublishRocofTauSeconds">
+            <summary>
+            Gets or sets the EMA time constant τ (seconds) for published ROCOF (dF/dt).
+            </summary>
+            <remarks>
+            ROCOF is effectively a derivative signal and is typically much noisier than frequency; it generally benefits from
+            heavier smoothing (larger τ) than frequency.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.SampleFrequencyTauSeconds">
+            <summary>
+            Gets or sets the EMA time constant τ (seconds) for the internal per-sample frequency smoothing that occurs inside the estimator before any down-sampling/publish filtering.
+            </summary>
+            <remarks>
+            When interval averaging + publish EMA are enabled, this can be relatively light. If you disable publish smoothing,
+            you may want to increase this τ.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.SampleRocofTauSeconds">
+            <summary>
+            Gets or sets the EMA time constant τ (seconds) for the internal per-sample ROCOF smoothing (computed from the internally smoothed frequency).
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.RecalculationCycles">
+            <summary>
+            Gets or sets the number of nominal cycles between full DFT recalculations for numerical stability.
+            </summary>
+            <remarks>
+            Sliding DFT updates are O(1) per sample but can accumulate numerical drift; periodic full recomputation
+            re-anchors the phasor sums.
+            </remarks>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.Start">
             <summary>
@@ -19553,7 +19890,13 @@
             </para>
             </remarks>
         </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.Parse(GSF.PhasorProtocols.SourceChannel,System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.ParseFrame(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.OnParsingException(System.Exception)">
             <inheritdoc/>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.OnReceivedConfigurationFrame(GSF.PhasorProtocols.IConfigurationFrame)">
@@ -19677,11 +20020,6 @@
             Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/>.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.PhasorDefinition.Scalar">
-            <summary>
-            Gets or set scalar for this phasor.
-            </summary>
-        </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.PhasorValue">
             <summary>
             Represents the SEL CWS implementation of a <see cref="T:GSF.PhasorProtocols.IPhasorValue"/>.
@@ -19729,28 +20067,322 @@
             Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.
             </summary>
         </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.PhaseEstimate">
+            <summary>
+            Represents the output of the phase estimation algorithm.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.PhaseEstimate.Frequency">
+            <summary>
+            Gets smoothed frequency estimate in hertz.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.PhaseEstimate.dFdt">
+            <summary>
+            Gets rate of change of frequency (ROCOF) in Hz/s.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.PhaseEstimate.Angles">
+            <summary>
+            Gets angles in radians, length 6: IA, IB, IC, VA, VB, VC.
+            </summary>
+            <remarks>
+            The data this span references is owned by the <see cref="T:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator"/> instance,
+            it is only valid during the scope of the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler"/> delegate call.
+            If you need to retain the data, make a copy.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.PhaseEstimate.Magnitudes">
+            <summary>
+            Gets RMS magnitudes, length 6: IA, IB, IC, VA, VB, VC.
+            </summary>
+            <remarks>
+            The data this span references is owned by the <see cref="T:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator"/> instance,
+            it is only valid during the scope of the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler"/> delegate call.
+            If you need to retain the data, make a copy.
+            </remarks>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler">
+            <summary>
+            Delegate for handling a <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimate"/>.
+            </summary>
+            <param name="estimate">Phase estimate.</param>
+        </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator">
             <summary>
-            Represents a rolling six-phase estimator.
+            Represents a rolling six-phase estimator using a sliding DFT algorithm with optional smoothing.
+            </summary>
+            <remarks>
+            <para>
+            This class implements a real-time phasor measurement algorithm suitable for power system
+            applications. It uses a Sliding Discrete Fourier Transform (SDFT) approach to efficiently
+            compute phasors at each sample with O(1) complexity.
+            </para>
+            <para>
+            Frequency estimation is performed by tracking the rate of change of phase angle from the
+            reference channel (VA by default). The frequency and ROCOF outputs are smoothed using
+            exponential moving average filters.
+            </para>
+            <para>
+            The algorithm is designed for nominal 50Hz or 60Hz systems sampled at 3000Hz, but can be
+            configured for other sample rates.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultReferenceChannel">
+            <summary>
+            Default value for reference channel.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultTargetCycles">
+            <summary>
+            Default value for number of target cycles.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultEnableIntervalAveraging">
+            <summary>
+            Default value for determining if interval averaging is enabled.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultEnablePublishEMA">
+            <summary>
+            Default value for determining if EMA publishing is enabled.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultPublishAnglesTauSeconds">
+            <summary>
+            Default value for EMA time constant τ (seconds) published angles.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultPublishMagnitudesTauSeconds">
+            <summary>
+            Default value for EMA time constant τ (seconds) published RMS magnitudes.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultPublishFrequencyTauSeconds">
+            <summary>
+            Default value for EMA time constant τ (seconds) published frequency.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultPublishRocofTauSeconds">
+            <summary>
+            Default value for EMA time constant τ (seconds) published ROCOF.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultSampleFrequencyTauSeconds">
+            <summary>
+            Default value for EMA time constant τ (seconds) published for the internal per-sample frequency smoothing.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultSampleRocofTauSeconds">
+            <summary>
+            Default value for EMA time constant τ (seconds) published for the internal per-sample ROCOF smoothing.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultRecalculationCycles">
+            <summary>
+            Default value for number of recalculation cycles.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.#ctor(System.Double,System.Double,GSF.Units.EE.LineFrequency,GSF.PhasorProtocols.SelCWS.PhaseChannel,System.Int32,System.Boolean,System.Boolean,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator"/> class with independent
+            input sample rate and output publish rate, plus smoothing expressed as time constants (τ).
+            </summary>
+            <param name="sampleRateHz">
+            Input sample rate in Hz (PoW samples per second). Must be &gt; 0.
+            This is the rate at which <see cref="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler)"/> is called with new samples.
+            </param>
+            <param name="outputRateHz">
+            Output publish rate in Hz (estimates per second). Must be &gt; 0 and &lt;= <paramref name="sampleRateHz"/>.
+            Common synchrophasor-friendly values: 30, 60 or 120Hz. Defaults chosen for "calm" 60Hz publish rates;
+            τ-to-α mapping adapts automatically to other publish rates.
+            <br/>
+            Behavioral note:
+            <see cref="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler)"/> may return <c>false</c> even after the estimator is ready, if the current sample does not
+            land on a publish boundary (i.e., it is not yet time to produce the next output).
+            </param>
+            <param name="nominalFrequency">
+            Nominal line frequency (typically 50Hz or 60Hz). This determines the nominal-cycle length used
+            for the DFT window and the expected reference-phase progression.
+            </param>
+            <param name="referenceChannel">
+            Reference channel for frequency tracking.
+            Default: <see cref="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.VA"/>.
+            </param>
+            <param name="targetCycles">
+            Number of nominal cycles contained in the sliding DFT analysis window (default: 2).
+            Larger values generally reduce noise/jitter (more averaging) but increase latency and reduce step response.
+            </param>
+            <param name="enableIntervalAveraging">
+            Enables interval averaging (boxcar averaging) across each publish interval when down-sampling
+            (<paramref name="outputRateHz"/> &lt; <paramref name="sampleRateHz"/>).
+            <br/>
+            Why this exists:
+            Down-sampling without an anti-alias / low-pass step will preserve high-rate jitter and can alias higher-frequency
+            content into the published stream. Interval averaging acts as a simple, cheap low-pass filter that reduces
+            jitter and improves published stability.
+            <br/>
+            Consequences:<br/>
+            - Improves calmness and reduces aliasing artifacts.<br/>
+            - Adds a small amount of additional latency (effectively ~½ publish interval group delay).<br/>
+            Recommended: <c>true</c> (default).
+            </param>
+            <param name="enablePublishEMA">
+            Enables an additional exponential moving average (EMA) applied to the published stream (after interval averaging).
+            <br/>
+            Why this exists:<br/>
+            Interval averaging removes high-rate noise; publish-EMA further reduces remaining jitter and produces a "calm"
+            display or control signal. This is usually the most intuitive "knob" for operators/consumers because it acts on
+            the actual output cadence.
+            <br/>
+            Consequences:<br/>
+            - Larger time constants (τ) produce smoother outputs but slower response to real changes.<br/>
+            - Smaller τ tracks faster but appears noisier.<br/>
+            Default: <c>true</c>.
+            </param>
+            <param name="publishAnglesTauSeconds">
+            EMA time constant τ (seconds) for published phase angles. Default: 0.35s.
+            <br/>
+            Important:<br/>
+            Angles are circular quantities; this implementation performs wrap-safe smoothing by operating on unit vectors
+            (cos/sin) rather than naïvely averaging radians. This avoids discontinuities at ±π.
+            </param>
+            <param name="publishMagnitudesTauSeconds">
+            EMA time constant τ (seconds) for published RMS magnitudes. Default: 0.50s.
+            </param>
+            <param name="publishFrequencyTauSeconds">
+            EMA time constant τ (seconds) for published frequency. Default: 0.75s.
+            </param>
+            <param name="publishRocofTauSeconds">
+            EMA time constant τ (seconds) for published ROCOF (dF/dt). Default: 1.50s.
+            <br/>
+            Note:<br/>
+            ROCOF is effectively a derivative signal and is typically much noisier than frequency; it generally benefits from
+            heavier smoothing (larger τ) than frequency.
+            </param>
+            <param name="sampleFrequencyTauSeconds">
+            EMA time constant τ (seconds) for the internal per-sample frequency smoothing that occurs inside the estimator
+            before any down-sampling/publish filtering. Default: 0.15s.
+            <br/>
+            Guidance:<br/>
+            When interval averaging + publish EMA are enabled, this can be relatively light. If you disable publish smoothing,
+            you may want to increase this τ.
+            </param>
+            <param name="sampleRocofTauSeconds">
+            EMA time constant τ (seconds) for the internal per-sample ROCOF smoothing (computed from the internally smoothed
+            frequency). Default: 0.30s.
+            </param>
+            <param name="recalculationCycles">
+            Number of nominal cycles between full DFT recalculations for numerical stability (default: 10).
+            Sliding DFT updates are O(1) per sample but can accumulate numerical drift; periodic full recomputation
+            re-anchors the phasor sums.
+            </param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if any rate is non-positive, output rate exceeds input rate, targetCycles &lt; 1, or any τ is negative.
+            </exception>
+            <remarks>
+            <para>
+            <b>Time constant (τ) vs "alpha" (α):</b><br/>
+            Internally, EMAs use α constrained from 0 to 1. This API exposes τ because it is easier to reason about.
+            For update period Δt (seconds), α is derived as:
+            <code>
+            α = 1 - exp(-Δt / τ)
+            </code>
+            Interpretation: after a step change, an EMA will move about 63% toward the new value after ~τ seconds.
+            </para>
+            <para>
+            <b>Two-stage smoothing (when outputRate &lt; inputRate):</b>
+            <list type="number">
+            <item>
+            <description><b>Interval averaging (boxcar)</b> across the publish interval (anti-alias / jitter reduction).</description>
+            </item>
+            <item>
+            <description><b>Publish EMA</b> applied to the down-sampled stream (additional "calmness").</description>
+            </item>
+            </list>
+            This combination yields stable outputs at 60Hz without producing thousands of nearly-identical jittery estimates per second.
+            </para>
+            <para>
+            <b>Knob-tweaking guidance:</b>
+            <list type="bullet">
+            <item>
+            <description>Increase <paramref name="targetCycles"/> to reduce noise/jitter, at the cost of more latency.</description>
+            </item>
+            <item>
+            <description>Increase publish τ values to make outputs calmer, at the cost of slower response.</description>
+            </item>
+            <item>
+            <description>If you disable interval averaging, consider increasing publish τ values to compensate.</description>
+            </item>
+            <item>
+            <description>Keep ROCOF τ larger than frequency τ; ROCOF is inherently noisier.</description>
+            </item>
+            </list>
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.SampleRateHz">
+            <summary>
+            Gets the configured sample rate in Hz.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.OutputRateHz">
+            <summary>
+            Gets the configured output publish rate in Hz.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.NominalFrequencyHz">
+            <summary>
+            Gets the nominal frequency in Hz.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.ReferenceChannel">
+            <summary>
+            Gets the reference channel index used for frequency tracking (typically VA).
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.WindowSamples">
             <summary>
-            Gets the current window length in samples.
+            Gets the number of samples in the analysis window.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.CurrentFrequency">
+        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.TotalSamplesProcessed">
             <summary>
-            Gets the current filtered frequency estimate in hertz.
+            Gets the total number of samples processed.
             </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.IsReady">
+            <summary>
+            Gets whether the estimator has filled its window and is producing valid estimates.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler)">
+            <summary>
+            Push one interleaved sample-group (IA, IB, IC, VA, VB, VC) with its epoch nanoseconds.
+            </summary>
+            <param name="ia">Current sample for phase A current.</param>
+            <param name="ib">Current sample for phase B current.</param>
+            <param name="ic">Current sample for phase C current.</param>
+            <param name="va">Current sample for phase A voltage.</param>
+            <param name="vb">Current sample for phase B voltage.</param>
+            <param name="vc">Current sample for phase C voltage.</param>
+            <param name="epochNanoseconds">Timestamp in nanoseconds since epoch.</param>
+            <param name="phaseEstimateHandler">Handler for phase estimate result.</param>
+            <returns>
+            <c>true</c> when an estimate is available (window has filled) and it is time to 
+            publish at target <see cref="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.OutputRateHz"/>; otherwise, <c>false</c>.
+            </returns>
             <remarks>
-            Returns <c>NaN</c> if window not yet full.
+            The data referenced in the span-based properties of the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimate"/>
+            parameter provided to the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler"/> delegate is owned by the
+            <see cref="T:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator"/> instance, it is only valid during the scope of the
+            delegate call. If you need to retain the data, make a copy.
             </remarks>
         </member>
-        <member name="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimate@)">
+        <member name="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.Reset">
             <summary>
-            Push one interleaved sample-group (IA,IB,IC,VA,VB,VC) with its epoch nanoseconds.
-            Returns <c>true</c> when an estimate is available, i.e., window has filled.
+            Resets the estimator to its initial state.
             </summary>
         </member>
         <member name="T:GSF.PhasorProtocols.SelFastMessage.CommandFrame">
