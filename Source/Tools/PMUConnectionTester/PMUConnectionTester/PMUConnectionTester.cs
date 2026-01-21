@@ -154,6 +154,7 @@ public partial class PMUConnectionTester
     private byte m_capturedFrames;
     private object m_dataStreamLock;
     private string m_lastConnectionFileName;
+    private ReplayTimer m_replayTimer;
 
     #endregion
 
@@ -1127,7 +1128,8 @@ public partial class PMUConnectionTester
 
     private void MenuItemStopCapture_Click(object sender, EventArgs e)
     {
-        m_frameCaptureStream?.Close();
+        m_frameCaptureStream?.Flush();
+        m_frameCaptureStream?.Dispose();
 
         m_frameCaptureStream = null;
         MenuItemStopCapture.Enabled = false;
@@ -1453,9 +1455,14 @@ public partial class PMUConnectionTester
 
         BeginInvoke(new Action<FundamentalFrameType, byte[], int, int>(ReceivedFrameBufferImage), bufferImageArgs.Argument1, bufferImageArgs.Argument2, bufferImageArgs.Argument3, bufferImageArgs.Argument4);
 
+        if (m_frameParser.TransportProtocol != TransportProtocol.File)
+            return;
+
         // For file based input we slow image processing to attempt some level of synchronization with frame reception
-        if (m_frameParser.TransportProtocol == TransportProtocol.File)
-            Thread.Sleep(1000 / m_frameParser.DefinedFrameRate);
+        if (m_replayTimer?.DefinedFrameRate != m_frameParser.DefinedFrameRate)
+            m_replayTimer = new ReplayTimer(m_frameParser.DefinedFrameRate);
+
+        m_replayTimer.WaitNext();
     }
 
     private void ReceivedFrameBufferImage(FundamentalFrameType frameType, byte[] binaryImage, int offset, int length)
@@ -1593,7 +1600,7 @@ public partial class PMUConnectionTester
     {
         const int MinConfigProcessingDelay = 1000;
 
-        if (m_frameParser is null || !m_frameParser.Enabled)
+        if (m_frameParser is null)
             return;
 
         ushort timeSinceLastConfig = (ushort)Math.Round(new Ticks(DateTime.UtcNow.Ticks - m_lastConfigProcessedTime).ToMilliseconds() % ushort.MaxValue);
@@ -1604,7 +1611,7 @@ public partial class PMUConnectionTester
             Thread.Sleep(MinConfigProcessingDelay - timeSinceLastConfig);
 
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (m_frameParser is null || !m_frameParser.Enabled)
+            if (m_frameParser is null)
                 return;
         }
 
@@ -1620,7 +1627,7 @@ public partial class PMUConnectionTester
         lock (m_processConfigFrame)
             frame = m_updatedConfigFrame;
 
-        if (m_frameParser is null || !m_frameParser.Enabled)
+        if (m_frameParser is null)
         {
             UpdateChartTitle("");
             return;
@@ -1697,6 +1704,10 @@ public partial class PMUConnectionTester
         }
 
         UpdateChartTitle($"Configured frame rate: {frame.FrameRate} frames/second");
+
+        // Update chart settings based on new configuration frame
+        m_applicationSettings.FrequencyPointsToPlot = frame.FrameRate;
+        m_applicationSettings.PhaseAnglePointsToPlot = frame.FrameRate;
     }
 
     private static string GetCellName(IConfigurationCell cell)
