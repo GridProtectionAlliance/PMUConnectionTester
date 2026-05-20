@@ -139,6 +139,7 @@ public partial class PMUConnectionTester
     // Charting data variables
     private DataTable m_frequencyData;
     private DataTable m_phasorData;
+    private DataTable m_analogData;
     private Angle m_lastPhaseAngle;
     private long m_lastRefresh;
 
@@ -170,6 +171,7 @@ public partial class PMUConnectionTester
         // Make sure application settings exist
         m_applicationSettings = new ApplicationSettings();
         m_applicationSettings.PhaseAngleColorsChanged += m_chartSettings_PhaseAngleColorsChanged;
+        m_applicationSettings.AnalogColorsChanged += m_chartSettings_AnalogColorsChanged;
 
         // Create a new multi-protocol frame parser
         m_frameParser = new MultiProtocolFrameParser();
@@ -971,6 +973,7 @@ public partial class PMUConnectionTester
             case ApplicationSettings.ChartSettingsCategory:
             case ApplicationSettings.PhaseAngleGraphCategory:
             case ApplicationSettings.FrequencyGraphCategory:
+            case ApplicationSettings.AnalogGraphCategory:
             {
                 if (string.Equals(descriptor.Name, "PhaseAngleGraphStyle", StringComparison.OrdinalIgnoreCase))
                 {
@@ -1441,6 +1444,11 @@ public partial class PMUConnectionTester
         BeginInvoke(new Action(PhaseAngleColorsChanged));
     }
 
+    private void m_chartSettings_AnalogColorsChanged()
+    {
+        BeginInvoke(new Action(AnalogColorsChanged));
+    }
+
     #endregion
 
     #region [ Thread Delegate Implementations ]
@@ -1650,6 +1658,10 @@ public partial class PMUConnectionTester
         LabelTime.Text = frame.TimeTag.ToString();
         m_attributeFrames[frame.FrameType] = frame;
 
+        // Track whether this is the first config frame for this connection so subsequent
+        // repeat config frames don't overwrite the user's chart sample-count settings
+        bool isInitialConfigFrame = m_configChangeTime == 0L;
+
         // Cache config frame reference for future use...
         m_configChangeTime = DateTime.UtcNow.Ticks;
         m_configurationFrame = frame;
@@ -1705,9 +1717,18 @@ public partial class PMUConnectionTester
 
         UpdateChartTitle($"Configured frame rate: {frame.FrameRate} frames/second");
 
-        // Update chart settings based on new configuration frame
-        m_applicationSettings.FrequencyPointsToPlot = frame.FrameRate;
-        m_applicationSettings.PhaseAnglePointsToPlot = frame.FrameRate;
+        // Only seed chart sample counts on the initial configuration frame for this connection
+        // so subsequent repeat configuration frames don't clobber user adjustments
+        if (isInitialConfigFrame)
+        {
+            m_applicationSettings.FrequencyPointsToPlot = frame.FrameRate;
+            m_applicationSettings.PhaseAnglePointsToPlot = frame.FrameRate;
+
+            // Point-on-wave analog streams typically run at much higher frame rates than
+            // traditional phasor data; a fraction of the frame rate shows the waveform shape
+            // more clearly than a full second of data
+            m_applicationSettings.AnalogPointsToPlot = Math.Max(30, frame.FrameRate / 10);
+        }
     }
 
     private static string GetCellName(IConfigurationCell cell)
@@ -1739,6 +1760,31 @@ public partial class PMUConnectionTester
 
             while (m_frequencyData.Rows.Count > m_applicationSettings.FrequencyPointsToPlot)
                 m_frequencyData.Rows.RemoveAt(0);
+
+            // Plot real-time analog trends (one row per frame for smooth point-on-wave waveforms)
+            if (m_applicationSettings.PlotAnalogValues && cell.AnalogValues is not null && m_analogData.Columns.Count > 0)
+            {
+                try
+                {
+                    DataRow analogRow = m_analogData.NewRow();
+                    int analogCount = cell.AnalogValues.Count;
+
+                    for (int i = 0; i < m_analogData.Columns.Count; i++)
+                    {
+                        if (i < analogCount)
+                            analogRow[i] = (float)cell.AnalogValues[i].AdjustedValue();
+                    }
+
+                    m_analogData.Rows.Add(analogRow);
+
+                    while (m_analogData.Rows.Count > m_applicationSettings.AnalogPointsToPlot)
+                        m_analogData.Rows.RemoveAt(0);
+                }
+                catch (Exception ex)
+                {
+                    AppendStatusMessage($"Exception occurred while attempting to plot analog data: {ex.Message}");
+                }
+            }
 
             // Plot real-time phasor trends
             if (phasorIndex < phasorCount && phasorIndex > -1 && phasorCount > 0)
@@ -1988,6 +2034,20 @@ public partial class PMUConnectionTester
 
         if (colorList.Count == 0)
             colorList.Add(Color.Black);
+
+        InitializeChart();
+
+        if (m_selectedCell is not null)
+            TabControlChart.Tabs[(int)ChartTabs.Graph].Selected = true;
+    }
+
+    private void AnalogColorsChanged()
+    {
+        // Validate that there is at least one color available for analog charts
+        ApplicationSettings.ColorList colorList = m_applicationSettings.AnalogColors;
+
+        if (colorList.Count == 0)
+            colorList.Add(Color.DarkOrange);
 
         InitializeChart();
 
@@ -2645,6 +2705,7 @@ public partial class PMUConnectionTester
         m_lastConfigProcessedTime = 0L;
         m_frequencyData.Rows.Clear();
         m_phasorData.Rows.Clear();
+        m_analogData?.Rows.Clear();
         m_lastRefresh = 0L;
         m_lastFrameType = FundamentalFrameType.Undetermined;
         m_attributeFrames.Clear();
@@ -3290,47 +3351,91 @@ public partial class PMUConnectionTester
 
         appearance.Legends.Clear();
 
-        if (appearance.Series.Count > 1)
+        // Frequency layer occupies index 0; clear any phasor/analog series, layers, and chart areas
+        while (appearance.Series.Count > 1)
             appearance.Series.RemoveAt(1);
 
-        if (appearance.ChartLayers.Count > 1)
+        while (appearance.ChartLayers.Count > 1)
             appearance.ChartLayers.RemoveAt(1);
 
-        if (appearance.ChartAreas.Count > 1)
+        while (appearance.ChartAreas.Count > 1)
             appearance.ChartAreas.RemoveAt(1);
+
+        int analogCount = m_selectedCell?.AnalogDefinitions?.Count ?? 0;
+        bool showAnalogs = m_applicationSettings.PlotAnalogValues && analogCount > 0;
+        bool replacePhasors = showAnalogs && m_applicationSettings.AnalogGraphStyle == ApplicationSettings.AnalogDisplayStyle.ReplacePhasors;
+        bool showPhasors = !replacePhasors;
 
         m_phasorData = new DataTable();
 
-        for (int i = 0; i < phasorCount; i++)
-            m_phasorData.Columns.Add(new DataColumn($"y{i}", typeof(float)));
+        if (showPhasors)
+        {
+            for (int i = 0; i < phasorCount; i++)
+                m_phasorData.Columns.Add(new DataColumn($"y{i}", typeof(float)));
+        }
 
         // We call BeginDataLoad to disable auto-refresh of charts
         m_phasorData.BeginLoadData();
 
-        ChartArea phaseAngleChartArea = new()
+        m_analogData = new DataTable();
+
+        if (showAnalogs)
+        {
+            for (int i = 0; i < analogCount; i++)
+                m_analogData.Columns.Add(new DataColumn($"a{i}", typeof(float)));
+        }
+
+        m_analogData.BeginLoadData();
+
+        bool needsLegend = (showPhasors && m_applicationSettings.ShowPhaseAngleLegend) ||
+                           (showAnalogs && m_applicationSettings.ShowAnalogLegend);
+
+        ChartArea chartArea = new()
         {
             BoundsMeasureType = MeasureType.Percentage,
-            Bounds = new Rectangle(0, 50, m_applicationSettings.ShowPhaseAngleLegend ? 80 : 100, 50),
+            Bounds = new Rectangle(0, 50, needsLegend ? 80 : 100, 50),
             Border = { Thickness = 0 },
             PE = { Fill = m_applicationSettings.BackgroundColor }
         };
 
-        ChartDataDisplay.CompositeChart.ChartAreas.Add(phaseAngleChartArea);
+        ChartDataDisplay.CompositeChart.ChartAreas.Add(chartArea);
 
         AxisItem timeAxis = CreateTimeAxis(0);
-        phaseAngleChartArea.Axes.Add(timeAxis);
-        AxisItem phaseAngleAxis = CreatePhaseAngleAxis();
-        phaseAngleChartArea.Axes.Add(phaseAngleAxis);
+        chartArea.Axes.Add(timeAxis);
 
-        ChartLayerAppearance phaseAngleLayer = CreatePhaseAngleLayer(phaseAngleChartArea, timeAxis, phaseAngleAxis);
-        ChartDataDisplay.CompositeChart.ChartLayers.Add(phaseAngleLayer);
+        ChartLayerAppearance phaseAngleLayer = null;
+        ChartLayerAppearance analogLayer = null;
 
-        if (!m_applicationSettings.ShowPhaseAngleLegend)
+        if (showPhasors)
+        {
+            AxisItem phaseAngleAxis = CreatePhaseAngleAxis();
+            chartArea.Axes.Add(phaseAngleAxis);
+
+            phaseAngleLayer = CreatePhaseAngleLayer(chartArea, timeAxis, phaseAngleAxis);
+            ChartDataDisplay.CompositeChart.ChartLayers.Add(phaseAngleLayer);
+        }
+
+        if (showAnalogs)
+        {
+            // Use Y2 axis when overlaying with phasors, otherwise use primary Y for replacement mode
+            AxisItem analogAxis = CreateAnalogAxis(showPhasors ? AxisNumber.Y2_Axis : AxisNumber.Y_Axis);
+            chartArea.Axes.Add(analogAxis);
+
+            analogLayer = CreateAnalogLayer(chartArea, timeAxis, analogAxis);
+            ChartDataDisplay.CompositeChart.ChartLayers.Add(analogLayer);
+        }
+
+        if (!needsLegend)
             return;
 
-        CompositeLegend phasorLegend = CreatePhasorLegend();
-        ChartDataDisplay.CompositeChart.Legends.Add(phasorLegend);
-        phasorLegend.ChartLayers.Add(phaseAngleLayer);
+        CompositeLegend chartLegend = CreatePhasorLegend();
+        ChartDataDisplay.CompositeChart.Legends.Add(chartLegend);
+
+        if (showPhasors && m_applicationSettings.ShowPhaseAngleLegend && phaseAngleLayer is not null)
+            chartLegend.ChartLayers.Add(phaseAngleLayer);
+
+        if (showAnalogs && m_applicationSettings.ShowAnalogLegend && analogLayer is not null)
+            chartLegend.ChartLayers.Add(analogLayer);
     }
 
     private AxisItem CreateTimeAxis(int extent) => new()
@@ -3403,6 +3508,36 @@ public partial class PMUConnectionTester
         RangeMax = 180d
     };
 
+    private AxisItem CreateAnalogAxis(AxisNumber orientation)
+    {
+        AxisItem axis = new()
+        {
+            OrientationType = orientation,
+            DataType = AxisDataType.Numeric,
+            Visible = true,
+            Labels =
+            {
+                ItemFormatString = "<DATA_VALUE:0.###>",
+                Font = new Font("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point),
+                FontColor = m_applicationSettings.ForegroundColor,
+                HorizontalAlign = orientation == AxisNumber.Y2_Axis ? StringAlignment.Far : StringAlignment.Near
+            },
+            LineThickness = 1,
+            LineColor = m_applicationSettings.ForegroundColor,
+            Extent = 30,
+            MinorGridLines = { Visible = false },
+            MajorGridLines = { Visible = orientation == AxisNumber.Y_Axis },
+            TickmarkStyle = AxisTickStyle.Percentage,
+            TickmarkPercentage = 25d,
+            RangeType = AxisRangeType.Automatic
+        };
+
+        axis.Margin.Far.Value = 4d;
+        axis.Margin.Near.Value = 4d;
+
+        return axis;
+    }
+
     private ChartLayerAppearance CreateFrequencyLayer(ChartArea area, AxisItem xAxis, AxisItem yAxis)
     {
         ChartLayerAppearance frequencyLayer = new()
@@ -3459,6 +3594,43 @@ public partial class PMUConnectionTester
         }
 
         return phaseAngleLayer;
+    }
+
+    private ChartLayerAppearance CreateAnalogLayer(ChartArea area, AxisItem xAxis, AxisItem yAxis)
+    {
+        ChartLayerAppearance analogLayer = new()
+        {
+            ChartType = ChartType.SplineChart,
+            ChartArea = area,
+            AxisX = xAxis,
+            AxisY = yAxis
+        };
+
+        SplineChartAppearance appearance = (SplineChartAppearance)analogLayer.ChartTypeAppearance;
+        appearance.MidPointAnchors = m_applicationSettings.ShowDataPointsOnGraphs;
+        appearance.Thickness = m_applicationSettings.TrendLineWidth;
+
+        ApplicationSettings.ColorList analogColors = m_applicationSettings.AnalogColors;
+
+        if (analogColors is null || analogColors.Count == 0)
+            analogColors = [Color.DarkOrange];
+
+        for (int i = 0; i < m_analogData.Columns.Count; i++)
+        {
+            NumericSeries analogDataSeries = new();
+
+            analogDataSeries.SetNoUpdate(true);
+            analogDataSeries.DataBind(m_analogData, $"a{i}");
+            analogDataSeries.Label = m_selectedCell is null || i >= m_selectedCell.AnalogDefinitions.Count ?
+                $"Analog {(i + 1)}" :
+                m_selectedCell.AnalogDefinitions[i].Label;
+
+            analogDataSeries.PEs.Add(new PaintElement(analogColors[i % analogColors.Count]));
+            ChartDataDisplay.CompositeChart.Series.Add(analogDataSeries);
+            analogLayer.Series.Add(analogDataSeries);
+        }
+
+        return analogLayer;
     }
 
     private CompositeLegend CreatePhasorLegend()

@@ -89,6 +89,13 @@ public class ApplicationSettings : CategorizedSettingsBase
     private const int DefaultFrequencyPointsToPlot = 30;
     private const string DefaultFrequencyColor = "SteelBlue";
 
+    // Default analog graph settings
+    private const bool DefaultPlotAnalogValues = false;
+    private const string DefaultAnalogGraphStyle = "SecondaryAxis";
+    private const bool DefaultShowAnalogLegend = true;
+    private const int DefaultAnalogPointsToPlot = 30;
+    private const string DefaultAnalogColors = "DarkOrange;Teal;OliveDrab;MediumVioletRed;DodgerBlue;Sienna;DarkSlateGray;DarkOrchid";
+
     #endregion
 
     #region [ Public Member Declarations ]
@@ -97,6 +104,10 @@ public class ApplicationSettings : CategorizedSettingsBase
 
     public delegate void PhaseAngleColorsChangedEventHandler();
 
+    public event AnalogColorsChangedEventHandler AnalogColorsChanged;
+
+    public delegate void AnalogColorsChangedEventHandler();
+
     // Configuration file categories
     public const string ApplicationSettingsCategory = "Application Settings";
     public const string AttributeTreeCategory = "Attribute Tree";
@@ -104,6 +115,7 @@ public class ApplicationSettings : CategorizedSettingsBase
     public const string ConnectionSettingsCategory = "Connection Settings";
     public const string PhaseAngleGraphCategory = "Phase Angle Graph";
     public const string FrequencyGraphCategory = "Frequency Graph";
+    public const string AnalogGraphCategory = "Analog Graph";
 
     public enum AngleGraphStyle
     {
@@ -115,6 +127,14 @@ public class ApplicationSettings : CategorizedSettingsBase
     {
         Expanded,
         Collapsed
+    }
+
+    public enum AnalogDisplayStyle
+    {
+        // Render analog values on a secondary Y axis alongside phasor angles.
+        SecondaryAxis,
+        // Replace phasor angle plot with analog values (single axis).
+        ReplacePhasors
     }
 
     #region [ Color List with Content Cleared Notification ]
@@ -207,8 +227,13 @@ public class ApplicationSettings : CategorizedSettingsBase
     // Frequency graph settings
     private int m_frequencyPointsToPlot;
 
+    // Analog graph settings
+    private int m_analogPointsToPlot;
+    private ColorList m_analogColors;
+
     // Other members
-    private readonly Timer m_eventDelayTimer;
+    private readonly Timer m_phaseAngleColorsEventDelayTimer;
+    private readonly Timer m_analogColorsEventDelayTimer;
 
     #endregion
 
@@ -217,14 +242,23 @@ public class ApplicationSettings : CategorizedSettingsBase
     // Specify default category
     public ApplicationSettings() : base("General")
     {
-        m_eventDelayTimer = new Timer
+        m_phaseAngleColorsEventDelayTimer = new Timer
         {
             Interval = 250.0D,
             AutoReset = false,
             Enabled = false
         };
 
-        m_eventDelayTimer.Elapsed += m_eventDelayTimer_Elapsed;
+        m_phaseAngleColorsEventDelayTimer.Elapsed += m_phaseAngleColorsEventDelayTimer_Elapsed;
+
+        m_analogColorsEventDelayTimer = new Timer
+        {
+            Interval = 250.0D,
+            AutoReset = false,
+            Enabled = false
+        };
+
+        m_analogColorsEventDelayTimer.Elapsed += m_analogColorsEventDelayTimer_Elapsed;
     }
 
     #endregion
@@ -498,6 +532,57 @@ public class ApplicationSettings : CategorizedSettingsBase
 
     #endregion
 
+    #region [ Analog Graph Settings ]
+
+    [Category(AnalogGraphCategory)]
+    [Description("Set to True to graph analog values (e.g., SEL CWS point-on-wave streams) alongside or in place of phasor angles.")]
+    [DefaultValue(DefaultPlotAnalogValues)]
+    [UserScopedSetting]
+    public bool PlotAnalogValues { get; set; }
+
+    [Category(AnalogGraphCategory)]
+    [Description("Controls how analog values are graphed: SecondaryAxis overlays analogs on a secondary Y-axis with phasor angles; ReplacePhasors shows only the analog trends.")]
+    [DefaultValue(typeof(AnalogDisplayStyle), DefaultAnalogGraphStyle)]
+    [UserScopedSetting]
+    public AnalogDisplayStyle AnalogGraphStyle { get; set; }
+
+    [Category(AnalogGraphCategory)]
+    [Description("Set to True to show analog channel labels in the chart legend.")]
+    [DefaultValue(DefaultShowAnalogLegend)]
+    [UserScopedSetting]
+    public bool ShowAnalogLegend { get; set; }
+
+    [Category(AnalogGraphCategory)]
+    [Description("Sets the total number of analog points to display.")]
+    [DefaultValue(DefaultAnalogPointsToPlot)]
+    [UserScopedSetting]
+    public int AnalogPointsToPlot
+    {
+        get => m_analogPointsToPlot;
+        set => m_analogPointsToPlot = value < 2 ? DefaultAnalogPointsToPlot : value;
+    }
+
+    [Category(AnalogGraphCategory)]
+    [Description("Possible foreground colors for analog trends.")]
+    [DefaultValue(typeof(ColorList), DefaultAnalogColors)]
+    [UserScopedSetting]
+    public ColorList AnalogColors
+    {
+        get => m_analogColors;
+        set
+        {
+            if (m_analogColors is not null)
+                m_analogColors.ListContentCleared -= m_analogColors_ListContentCleared;
+
+            m_analogColors = value;
+
+            if (m_analogColors is not null)
+                m_analogColors.ListContentCleared += m_analogColors_ListContentCleared;
+        }
+    }
+
+    #endregion
+
     #region [ Private Method Implementation ]
 
     private void m_phaseAngleColors_ListContentCleared()
@@ -506,12 +591,22 @@ public class ApplicationSettings : CategorizedSettingsBase
         // so you're stuck with detecting a call to "Clear" in your personal collection.  However, the update
         // is not complete until a call to "Add" for each updated item, so we need to wait for a moment to
         // allow all the adds to finish - this isn't exact science - someone didn't think through this one.
-        m_eventDelayTimer.Enabled = true;
+        m_phaseAngleColorsEventDelayTimer.Enabled = true;
     }
 
-    private void m_eventDelayTimer_Elapsed(object sender, ElapsedEventArgs e)
+    private void m_phaseAngleColorsEventDelayTimer_Elapsed(object sender, ElapsedEventArgs e)
     {
         PhaseAngleColorsChanged?.Invoke();
+    }
+
+    private void m_analogColors_ListContentCleared()
+    {
+        m_analogColorsEventDelayTimer.Enabled = true;
+    }
+
+    private void m_analogColorsEventDelayTimer_Elapsed(object sender, ElapsedEventArgs e)
+    {
+        AnalogColorsChanged?.Invoke();
     }
 
     #endregion
