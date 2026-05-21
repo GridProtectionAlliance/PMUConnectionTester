@@ -244,9 +244,9 @@ public class ApplicationSettings : CategorizedSettingsBase
     private int m_analogPointsToPlot;
     private ColorList m_analogColors;
 
-    // Index filter settings
-    private string m_phasorIndexesToPlot;
-    private string m_analogIndexesToPlot;
+    // Index filter settings (default to "*" = all so an unconfigured filter shows everything)
+    private string m_phasorIndexesToPlot = DefaultPhasorIndexesToPlot;
+    private string m_analogIndexesToPlot = DefaultAnalogIndexesToPlot;
 
     // Axis assignment settings (phasors and analogs are always kept on opposite axes).
     // Initialized to a consistent opposite-axis state in case the settings loader only
@@ -702,15 +702,16 @@ public class ApplicationSettings : CategorizedSettingsBase
     // Parses an index expression like "*", "", "0-2,4" into the set of indexes it represents.
     // Returns null when the expression means "all" so callers can short-circuit; an empty set means
     // "plot nothing". Whitespace is tolerated; unparseable tokens are ignored.
+    //
+    // Semantics: "*" is the only value that means all. A blank expression (null, empty, or
+    // whitespace) means none - this is what FormatIndexList emits for an empty selection, so the
+    // two round-trip. The settings default to "*", so an unconfigured filter still shows all.
     public static HashSet<int> ParseIndexList(string expression, int channelCount)
     {
         if (channelCount <= 0)
             return [];
 
-        if (string.IsNullOrWhiteSpace(expression))
-            return null;
-
-        string trimmed = expression.Trim();
+        string trimmed = expression?.Trim() ?? string.Empty;
 
         if (trimmed == "*")
             return null;

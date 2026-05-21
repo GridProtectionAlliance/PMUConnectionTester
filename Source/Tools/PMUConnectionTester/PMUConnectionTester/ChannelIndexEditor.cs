@@ -39,6 +39,9 @@ internal abstract class ChannelIndexEditor : UITypeEditor
 {
     protected abstract string[] GetChannelLabels(ApplicationSettings settings);
 
+    // Title shown at the top of the popup so the user knows which channel list they are editing
+    protected abstract string Title { get; }
+
     public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
     {
         return UITypeEditorEditStyle.DropDown;
@@ -53,18 +56,18 @@ internal abstract class ChannelIndexEditor : UITypeEditor
             GetChannelLabels(settings) :
             null;
 
-        string current = value as string ?? "*";
+        string current = value as string;
 
         if (labels is null || labels.Length == 0)
         {
             using ChannelIndexEmptyPanel emptyPanel = new();
             editorService.DropDownControl(emptyPanel);
-            return current;
+            return value;
         }
 
         HashSet<int> selected = ApplicationSettings.ParseIndexList(current, labels.Length);
 
-        using ChannelIndexCheckList list = new(labels, selected);
+        using ChannelIndexCheckList list = new(Title, labels, selected);
 
         list.SelectionConfirmed += (_, _) => editorService.CloseDropDown();
         editorService.DropDownControl(list);
@@ -79,6 +82,8 @@ internal sealed class PhasorIndexEditor : ChannelIndexEditor
     {
         return settings.PhasorChannelLabels;
     }
+
+    protected override string Title => "Phasors to Plot";
 }
 
 internal sealed class AnalogIndexEditor : ChannelIndexEditor
@@ -87,6 +92,8 @@ internal sealed class AnalogIndexEditor : ChannelIndexEditor
     {
         return settings.AnalogChannelLabels;
     }
+
+    protected override string Title => "Analogs to Plot";
 }
 
 // Popup contents when channel labels are available
@@ -99,17 +106,28 @@ internal sealed class ChannelIndexCheckList : UserControl
 
     public event EventHandler SelectionConfirmed;
 
-    public ChannelIndexCheckList(string[] labels, HashSet<int> selected)
+    public ChannelIndexCheckList(string title, string[] labels, HashSet<int> selected)
     {
         Width = 280;
         Padding = new Padding(4);
+
+        int listHeight = Math.Min(260, Math.Max(80, labels.Length * 18 + 4));
+
+        Label titleLabel = new()
+        {
+            Dock = DockStyle.Top,
+            Height = 20,
+            Text = title,
+            TextAlign = ContentAlignment.MiddleLeft,
+            Font = new Font(SystemFonts.MessageBoxFont, FontStyle.Bold),
+            Padding = new Padding(2, 0, 0, 0)
+        };
 
         m_list = new CheckedListBox
         {
             CheckOnClick = true,
             IntegralHeight = false,
-            Dock = DockStyle.Top,
-            Height = Math.Min(260, Math.Max(80, labels.Length * 18 + 4))
+            Dock = DockStyle.Fill
         };
 
         bool selectAll = selected is null;
@@ -169,10 +187,17 @@ internal sealed class ChannelIndexCheckList : UserControl
         buttonRow.Controls.Add(m_noneButton);
         buttonRow.Controls.Add(m_okButton);
 
+        // Add order matters for docking (processed last-added first): the Fill list is added
+        // first so it docks last and fills the space left between the Top title and Bottom buttons
         Controls.Add(m_list);
         Controls.Add(buttonRow);
+        Controls.Add(titleLabel);
 
-        Height = m_list.Height + buttonRow.Height + 8;
+        Height = listHeight + titleLabel.Height + buttonRow.Height + Padding.Top + Padding.Bottom;
+
+        // Lock in the natural size so the control can't be collapsed when hosted
+        // (e.g., inside a ToolStripControlHost on a chart right-click popup)
+        MinimumSize = Size;
     }
 
     public IEnumerable<int> GetCheckedIndexes()

@@ -109,6 +109,13 @@ public partial class PMUConnectionTester
         ExtraParameters
     }
 
+    private enum AxisChannelType
+    {
+        None,
+        Phasor,
+        Analog
+    }
+
     // Phasor parsing variables
     private MultiProtocolFrameParser m_frameParser;
     private ImageQueue m_imageQueue;
@@ -142,6 +149,10 @@ public partial class PMUConnectionTester
     private DataTable m_analogData;
     private List<int> m_plottedPhasorIndexes = [];
     private List<int> m_plottedAnalogIndexes = [];
+    private AxisChannelType m_primaryAxisChannelType;
+    private AxisChannelType m_secondaryAxisChannelType;
+    private System.Windows.Forms.ToolTip m_chartChannelToolTip;
+    private ICancellationToken m_chartKickToken;
     private Angle m_lastPhaseAngle;
     private long m_lastRefresh;
 
@@ -284,6 +295,19 @@ public partial class PMUConnectionTester
 
         InitializeNetworkInterfaces();
         InitializeChart();
+
+        // Enable right-click channel selection directly on the graph: left side targets the
+        // primary-axis channel type, right side targets the secondary-axis channel type
+        ChartDataDisplay.MouseUp += ChartDataDisplay_MouseUp;
+
+        m_chartChannelToolTip = new System.Windows.Forms.ToolTip
+        {
+            AutoPopDelay = 4000,
+            InitialDelay = 600,
+            ReshowDelay = 1000
+        };
+
+        m_chartChannelToolTip.SetToolTip(ChartDataDisplay, "Right-click the left or right side of the graph to choose which channels are plotted on that axis.");
 
         ComboBoxProtocols.SelectedIndex = 0;
         ComboBoxCommands.SelectedIndex = 0;
@@ -1753,6 +1777,13 @@ public partial class PMUConnectionTester
             // traditional phasor data; a fraction of the frame rate shows the waveform shape
             // more clearly than a full second of data
             m_applicationSettings.AnalogPointsToPlot = Math.Max(30, frame.FrameRate / 10);
+
+            // The first chart setup for a connection can leave a throttled phasor layer
+            // un-rendered when an analog layer is also present - the composite chart needs a
+            // second initialization pass once it has painted and data is flowing. Firing this
+            // immediately (e.g., via BeginInvoke) is too early
+            m_chartKickToken?.Cancel();
+            m_chartKickToken = new Action(KickStartChart).DelayAndExecute(500);
         }
     }
 
@@ -2732,6 +2763,7 @@ public partial class PMUConnectionTester
 
         // Disconnect from PMU...
         m_frameParser.Stop();
+        m_chartKickToken?.Cancel();
         m_configurationFrame = null;
         m_selectedCell = null;
         m_applicationSettings.PhasorChannelLabels = null;
@@ -3323,6 +3355,112 @@ public partial class PMUConnectionTester
 
     #region [ Chart Initialization and Display Code ]
 
+    private void KickStartChart()
+    {
+        // DelayAndExecute fires on a background thread, so marshal the chart work to the UI thread
+        try
+        {
+            if (m_shuttingDown || IsDisposed || !IsHandleCreated)
+                return;
+
+            BeginInvoke(new Action(() =>
+            {
+                if (m_shuttingDown || m_selectedCell is null)
+                    return;
+
+                // Simply replaying same re-initialization a manual phasor re-selection
+                ComboBoxPmus_SelectedIndexChanged(this, EventArgs.Empty);
+                ChartDataDisplay.DataBind();
+                ChartDataDisplay.Refresh();
+            }));
+        }
+        catch (ObjectDisposedException)
+        {
+            // Form closed before the delayed kick fired - safe to ignore
+        }
+        catch (InvalidOperationException)
+        {
+            // Handle destroyed during shutdown - safe to ignore
+        }
+    }
+
+    private void ChartDataDisplay_MouseUp(object sender, MouseEventArgs e)
+    {
+        if (e.Button != MouseButtons.Right)
+            return;
+
+        // Left half of the chart maps to the primary axis, right half to the secondary axis
+        AxisChannelType channelType = e.X < ChartDataDisplay.Width / 2 ?
+            m_primaryAxisChannelType :
+            m_secondaryAxisChannelType;
+
+        // No-op when the clicked side has no plotted channel type
+        if (channelType == AxisChannelType.None)
+            return;
+
+        ShowChannelSelectorPopup(channelType, ChartDataDisplay.PointToScreen(new Point(e.X, e.Y)));
+    }
+
+    private void ShowChannelSelectorPopup(AxisChannelType channelType, Point screenLocation)
+    {
+        string[] labels = channelType == AxisChannelType.Phasor ?
+            m_applicationSettings.PhasorChannelLabels :
+            m_applicationSettings.AnalogChannelLabels;
+
+        if (labels is null || labels.Length == 0)
+            return;
+
+        string current = channelType == AxisChannelType.Phasor ?
+            m_applicationSettings.PhasorIndexesToPlot :
+            m_applicationSettings.AnalogIndexesToPlot;
+
+        HashSet<int> selected = ApplicationSettings.ParseIndexList(current, labels.Length);
+
+        string title = channelType == AxisChannelType.Phasor ? "Phasors to Plot" : "Analogs to Plot";
+
+        // Reuse the same checkbox list control the property-grid editor uses
+        ChannelIndexCheckList list = new(title, labels, selected);
+
+        // Capture the control's natural size before hosting - ToolStripControlHost AutoSize
+        // computes a collapsed PreferredSize for a UserControl with docked children, which
+        // renders the popup as a thin vertical bar
+        Size desiredSize = list.Size;
+
+        ToolStripDropDown dropDown = new()
+        {
+            AutoClose = true,
+            Padding = Padding.Empty,
+            DropShadowEnabled = true
+        };
+
+        ToolStripControlHost host = new(list)
+        {
+            AutoSize = false,
+            Padding = Padding.Empty,
+            Margin = Padding.Empty,
+            Size = desiredSize
+        };
+
+        dropDown.Items.Add(host);
+
+        // Apply selection whenever the popup closes (OK button or click-away), matching the
+        // property-grid editor's apply-on-close behavior
+        dropDown.Closed += (_, _) =>
+        {
+            string result = ApplicationSettings.FormatIndexList(list.GetCheckedIndexes(), labels.Length);
+
+            if (channelType == AxisChannelType.Phasor)
+                m_applicationSettings.PhasorIndexesToPlot = result;
+            else
+                m_applicationSettings.AnalogIndexesToPlot = result;
+
+            BeginInvoke(new Action(dropDown.Dispose));
+        };
+
+        list.SelectionConfirmed += (_, _) => dropDown.Close();
+        dropDown.Show(screenLocation);
+    }
+
     private void InitializeChart()
     {
         InitializeFrequencyLayer();
@@ -3408,6 +3546,27 @@ public partial class PMUConnectionTester
         AxisNumber phasorAxisNumber = bothShown && m_applicationSettings.PhasorGraphStyle == ApplicationSettings.GraphAxis.Secondary ? AxisNumber.Y2_Axis : AxisNumber.Y_Axis;
         AxisNumber analogAxisNumber = bothShown && m_applicationSettings.AnalogGraphStyle == ApplicationSettings.GraphAxis.Secondary ? AxisNumber.Y2_Axis : AxisNumber.Y_Axis;
 
+        // Track which channel type lives on each axis so right-clicking that side of the chart
+        // opens the matching channel selector
+        m_primaryAxisChannelType = AxisChannelType.None;
+        m_secondaryAxisChannelType = AxisChannelType.None;
+
+        if (showPhasors)
+        {
+            if (phasorAxisNumber == AxisNumber.Y_Axis)
+                m_primaryAxisChannelType = AxisChannelType.Phasor;
+            else
+                m_secondaryAxisChannelType = AxisChannelType.Phasor;
+        }
+
+        if (showAnalogs)
+        {
+            if (analogAxisNumber == AxisNumber.Y_Axis)
+                m_primaryAxisChannelType = AxisChannelType.Analog;
+            else
+                m_secondaryAxisChannelType = AxisChannelType.Analog;
+        }
+
         // Resolve the index-list filters to the actual channels that will be plotted. We only
         // create data columns and series for plotted channels so excluded channels never appear
         // in the chart or its legend.
@@ -3442,27 +3601,35 @@ public partial class PMUConnectionTester
 
         ChartDataDisplay.CompositeChart.ChartAreas.Add(chartArea);
 
-        AxisItem timeAxis = CreateTimeAxis(0);
-        chartArea.Axes.Add(timeAxis);
-
         ChartLayerAppearance phaseAngleLayer = null;
         ChartLayerAppearance analogLayer = null;
 
+        // Each layer gets its own time (X) axis. Phasor rows are throttled (added only on
+        // angle change) while analog rows are added every frame, so a shared X axis would scale
+        // to the larger row count and collapse the other trend into a sliver. Separate axes let
+        // each trend span the full plot width independently. The secondary X2 axis is invisible
+        // so only one bottom axis line is drawn.
         if (showPhasors)
         {
+            AxisItem phasorTimeAxis = CreateTimeAxis(0);
+            chartArea.Axes.Add(phasorTimeAxis);
+
             AxisItem phaseAngleAxis = CreatePhaseAngleAxis(phasorAxisNumber);
             chartArea.Axes.Add(phaseAngleAxis);
 
-            phaseAngleLayer = CreatePhaseAngleLayer(chartArea, timeAxis, phaseAngleAxis);
+            phaseAngleLayer = CreatePhaseAngleLayer(chartArea, phasorTimeAxis, phaseAngleAxis);
             ChartDataDisplay.CompositeChart.ChartLayers.Add(phaseAngleLayer);
         }
 
         if (showAnalogs)
         {
+            AxisItem analogTimeAxis = CreateTimeAxis(0, showPhasors ? AxisNumber.X2_Axis : AxisNumber.X_Axis);
+            chartArea.Axes.Add(analogTimeAxis);
+
             AxisItem analogAxis = CreateAnalogAxis(analogAxisNumber);
             chartArea.Axes.Add(analogAxis);
 
-            analogLayer = CreateAnalogLayer(chartArea, timeAxis, analogAxis);
+            analogLayer = CreateAnalogLayer(chartArea, analogTimeAxis, analogAxis);
             ChartDataDisplay.CompositeChart.ChartLayers.Add(analogLayer);
         }
 
@@ -3479,11 +3646,13 @@ public partial class PMUConnectionTester
             chartLegend.ChartLayers.Add(analogLayer);
     }
 
-    private AxisItem CreateTimeAxis(int extent) => new()
+    private AxisItem CreateTimeAxis(int extent, AxisNumber orientation = AxisNumber.X_Axis) => new()
     {
-        OrientationType = AxisNumber.X_Axis,
+        OrientationType = orientation,
         DataType = AxisDataType.String,
-        Visible = true,
+        // Only draw the primary (bottom) time axis line; a secondary X2 axis is used purely to
+        // scale a second layer independently and should not render a line at the top
+        Visible = orientation == AxisNumber.X_Axis,
         Labels = { Visible = false },
         SetLabelAxisType = SetLabelAxisType.ContinuousData,
         LineThickness = 1,
