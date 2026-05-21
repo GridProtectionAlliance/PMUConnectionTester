@@ -149,6 +149,8 @@ public partial class PMUConnectionTester
     private DataTable m_analogData;
     private List<int> m_plottedPhasorIndexes = [];
     private List<int> m_plottedAnalogIndexes = [];
+    private DataColumn[] m_plottedPhasorColumns = [];
+    private DataColumn[] m_plottedAnalogColumns = [];
     private AxisChannelType m_primaryAxisChannelType;
     private AxisChannelType m_secondaryAxisChannelType;
     private System.Windows.Forms.ToolTip m_chartChannelToolTip;
@@ -1825,10 +1827,12 @@ public partial class PMUConnectionTester
                     DataRow analogRow = m_analogData.NewRow();
                     int analogCount = cell.AnalogValues.Count;
 
-                    foreach (int i in m_plottedAnalogIndexes)
+                    for (int j = 0; j < m_plottedAnalogIndexes.Count; j++)
                     {
+                        int i = m_plottedAnalogIndexes[j];
+
                         if (i < analogCount)
-                            analogRow[$"a{i}"] = (float)cell.AnalogValues[i].AdjustedValue();
+                            analogRow[m_plottedAnalogColumns[j]] = (float)cell.AnalogValues[i].AdjustedValue();
                     }
 
                     m_analogData.Rows.Add(analogRow);
@@ -1858,19 +1862,23 @@ public partial class PMUConnectionTester
                             if (m_applicationSettings.PhaseAngleGraphStyle == ApplicationSettings.AngleGraphStyle.Raw)
                             {
                                 // Plot raw phase angles
-                                foreach (int i in m_plottedPhasorIndexes)
+                                for (int j = 0; j < m_plottedPhasorIndexes.Count; j++)
                                 {
+                                    int i = m_plottedPhasorIndexes[j];
+
                                     if (i < phasorCount)
-                                        row[$"y{i}"] = cell.PhasorValues[i].AdjustedAngle().ToDegrees();
+                                        row[m_plottedPhasorColumns[j]] = cell.PhasorValues[i].AdjustedAngle().ToDegrees();
                                 }
                             }
                             else
                             {
                                 // Plot relative phase angles
-                                foreach (int i in m_plottedPhasorIndexes)
+                                for (int j = 0; j < m_plottedPhasorIndexes.Count; j++)
                                 {
+                                    int i = m_plottedPhasorIndexes[j];
+
                                     if (i < phasorCount)
-                                        row[$"y{i}"] = (cell.PhasorValues[i].AdjustedAngle() - phasor.AdjustedAngle()).ToRange(-Math.PI, false).ToDegrees();
+                                        row[m_plottedPhasorColumns[j]] = (cell.PhasorValues[i].AdjustedAngle() - phasor.AdjustedAngle()).ToRange(-Math.PI, false).ToDegrees();
                                 }
                             }
 
@@ -3575,16 +3583,31 @@ public partial class PMUConnectionTester
 
         m_phasorData = new DataTable();
 
-        foreach (int i in m_plottedPhasorIndexes)
-            m_phasorData.Columns.Add(new DataColumn($"y{i}", typeof(float)));
+        // Cache the created columns in plotted-index order so the per-frame data handler can write
+        // values through the DataColumn reference (the fastest DataRow indexer) instead of resolving
+        // a "y{i}" column name on every row
+        m_plottedPhasorColumns = new DataColumn[m_plottedPhasorIndexes.Count];
+
+        for (int j = 0; j < m_plottedPhasorIndexes.Count; j++)
+        {
+            DataColumn column = new($"y{m_plottedPhasorIndexes[j]}", typeof(float));
+            m_phasorData.Columns.Add(column);
+            m_plottedPhasorColumns[j] = column;
+        }
 
         // We call BeginDataLoad to disable auto-refresh of charts
         m_phasorData.BeginLoadData();
 
         m_analogData = new DataTable();
 
-        foreach (int i in m_plottedAnalogIndexes)
-            m_analogData.Columns.Add(new DataColumn($"a{i}", typeof(float)));
+        m_plottedAnalogColumns = new DataColumn[m_plottedAnalogIndexes.Count];
+
+        for (int j = 0; j < m_plottedAnalogIndexes.Count; j++)
+        {
+            DataColumn column = new($"a{m_plottedAnalogIndexes[j]}", typeof(float));
+            m_analogData.Columns.Add(column);
+            m_plottedAnalogColumns[j] = column;
+        }
 
         m_analogData.BeginLoadData();
 
