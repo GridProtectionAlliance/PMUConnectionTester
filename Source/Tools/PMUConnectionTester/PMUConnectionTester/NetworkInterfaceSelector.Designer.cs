@@ -95,7 +95,7 @@ namespace ConnectionTester
             // NetworkInterfaceSelector
             // 
             AcceptButton = ButtonOK;
-            AutoScaleDimensions = new SizeF(6.0f, 13.0f);
+            AutoScaleDimensions = new SizeF(6.0F, 13.0F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = ButtonCancel;
             ClientSize = new Size(399, 98);

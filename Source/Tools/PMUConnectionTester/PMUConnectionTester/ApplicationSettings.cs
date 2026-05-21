@@ -51,7 +51,7 @@ public class ApplicationSettings : CategorizedSettingsBase
     private const bool DefaultRestoreLastConnectionSettings = true;
     private const bool DefaultForceIPv4 = false;
     private const int DefaultAllowedParsingExceptions = 10;
-    private const double DefaultParsingExceptionWindow = 5.0d;
+    private const double DefaultParsingExceptionWindow = 5.0D;
     private const bool DefaultShowConfigXmlExplorerAfterSave = false;
 
     // Default attribute tree settings
@@ -61,7 +61,7 @@ public class ApplicationSettings : CategorizedSettingsBase
     private const bool DefaultShowAttributesAsChildren = true;
 
     // Default general chart settings
-    private const float DefaultChartRefreshRate = 0.1f;
+    private const float DefaultChartRefreshRate = 0.1F;
     private const string DefaultBackgroundColor = "White";
     private const string DefaultForegroundColor = "Navy";
     private const int DefaultTrendLineWidth = 4;
@@ -368,7 +368,7 @@ public class ApplicationSettings : CategorizedSettingsBase
     public float RefreshRate
     {
         get => m_refreshRate;
-        set => m_refreshRate = value <= 0f ? DefaultChartRefreshRate : value;
+        set => m_refreshRate = value <= 0.0F ? DefaultChartRefreshRate : value;
     }
 
     [Category(ChartSettingsCategory)]

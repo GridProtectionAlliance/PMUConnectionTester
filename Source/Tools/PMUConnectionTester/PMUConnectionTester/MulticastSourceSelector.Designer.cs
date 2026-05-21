@@ -89,7 +89,7 @@ namespace ConnectionTester
             // MulticastSourceSelector
             // 
             AcceptButton = ButtonOK;
-            AutoScaleDimensions = new SizeF(6.0f, 13.0f);
+            AutoScaleDimensions = new SizeF(6.0F, 13.0F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(255, 108);
             ControlBox = false;

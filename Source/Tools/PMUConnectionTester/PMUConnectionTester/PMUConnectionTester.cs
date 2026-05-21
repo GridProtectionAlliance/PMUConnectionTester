@@ -94,6 +94,7 @@ public partial class PMUConnectionTester
     private const int BitRatePanel = 7;
     private const int QueuedBuffersPanel = 9;
     private const int TextFileWidth = 75;
+    private const double SqrtOf3 = 1.7320508075688772935274463415059D;
 
     private enum ChartTabs
     {
@@ -128,7 +129,6 @@ public partial class PMUConnectionTester
     private FundamentalFrameType m_lastFrameType;
     private ByteEncoding m_byteEncoding;
     private int m_byteCount;
-    private readonly float m_sqrtOf3 = Convert.ToSingle(Math.Sqrt(3d));
 
     // Application variables
     private ApplicationSettings m_applicationSettings;
@@ -154,7 +154,7 @@ public partial class PMUConnectionTester
     private AxisChannelType m_primaryAxisChannelType;
     private AxisChannelType m_secondaryAxisChannelType;
     private System.Windows.Forms.ToolTip m_chartChannelToolTip;
-    private ICancellationToken m_chartKickToken;
+    private ICancellationToken m_chartKickStartToken;
     private Angle m_lastPhaseAngle;
     private long m_lastRefresh;
 
@@ -266,7 +266,7 @@ public partial class PMUConnectionTester
 
         // Adjust size of comments area and label column ratio of application settings properties grid
         PropertyGridApplicationSettings.AdjustCommentAreaHeight(4);
-        PropertyGridApplicationSettings.AdjustLabelRatio(1.62d);
+        PropertyGridApplicationSettings.AdjustLabelRatio(1.62D);
 
         try
         {
@@ -1770,23 +1770,23 @@ public partial class PMUConnectionTester
 
         // Only seed chart sample counts on the initial configuration frame for this connection
         // so subsequent repeat configuration frames don't clobber user adjustments
-        if (isInitialConfigFrame)
-        {
-            m_applicationSettings.FrequencyPointsToPlot = frame.FrameRate;
-            m_applicationSettings.PhaseAnglePointsToPlot = frame.FrameRate;
+        if (!isInitialConfigFrame)
+            return;
+        
+        m_applicationSettings.FrequencyPointsToPlot = frame.FrameRate;
+        m_applicationSettings.PhaseAnglePointsToPlot = frame.FrameRate;
 
-            // Point-on-wave analog streams typically run at much higher frame rates than
-            // traditional phasor data; a fraction of the frame rate shows the waveform shape
-            // more clearly than a full second of data
-            m_applicationSettings.AnalogPointsToPlot = Math.Max(30, frame.FrameRate / 10);
+        // Point-on-wave analog streams typically run at much higher frame rates than
+        // traditional phasor data; a fraction of the frame rate shows the waveform shape
+        // more clearly than a full second of data
+        m_applicationSettings.AnalogPointsToPlot = Math.Max(30, frame.FrameRate / 10);
 
-            // The first chart setup for a connection can leave a throttled phasor layer
-            // un-rendered when an analog layer is also present - the composite chart needs a
-            // second initialization pass once it has painted and data is flowing. Firing this
-            // immediately (e.g., via BeginInvoke) is too early
-            m_chartKickToken?.Cancel();
-            m_chartKickToken = new Action(KickStartChart).DelayAndExecute(500);
-        }
+        // The first chart setup for a connection can leave a throttled phasor layer
+        // un-rendered when an analog layer is also present - the composite chart needs a
+        // second initialization pass once it has painted and data is flowing. Firing this
+        // immediately (e.g., via BeginInvoke) is too early
+        m_chartKickStartToken?.Cancel();
+        m_chartKickStartToken = new Action(KickStartChart).DelayAndExecute(500);
     }
 
     private static string GetCellName(IConfigurationCell cell)
@@ -1799,11 +1799,11 @@ public partial class PMUConnectionTester
         LabelTime.Text = frame.TimeTag.ToString();
         m_attributeFrames[frame.FrameType] = frame;
 
-        if (m_selectedCell is not null & frame.Cells.Count > 0)
+        if (m_selectedCell is not null && frame.Cells.Count > 0)
         {
             IDataCell cell = frame.Cells[ComboBoxPmus.SelectedIndex];
-            double frequency = default;
-            int phasorCount = default;
+            double frequency = 0.0D;
+            int phasorCount = 0;
 
             int phasorIndex = GetComboBoxPhasorsSelectedIndex();
 
@@ -1855,7 +1855,7 @@ public partial class PMUConnectionTester
 
                     if (phasor is not null)
                     {
-                        if (Math.Abs((phasor.AdjustedAngle() - m_lastPhaseAngle).ToDegrees()) >= 0.5d || m_phasorData.Rows.Count < 2)
+                        if (Math.Abs((phasor.AdjustedAngle() - m_lastPhaseAngle).ToDegrees()) >= 0.5D || m_phasorData.Rows.Count < 2)
                         {
                             DataRow row = m_phasorData.NewRow();
 
@@ -1933,7 +1933,7 @@ public partial class PMUConnectionTester
 
                             // Most PMU's are set up such that voltage magnitudes need to multiplied by the SQRT(3)
                             LabelMagnitude.Text = phasor.Type == PhasorType.Voltage ?
-                                $"{phasor.AdjustedMagnitude() / 1000d:0.0000} ({phasor.AdjustedMagnitude() * m_sqrtOf3 / 1000d:0.0000}) kV" :
+                                $"{phasor.AdjustedMagnitude() / 1000.0D:0.0000} ({phasor.AdjustedMagnitude() * SqrtOf3 / 1000.0D:0.0000}) kV" :
                                 $"{phasor.AdjustedMagnitude():0.0000} Amperes";
                         }
                     }
@@ -2047,7 +2047,7 @@ public partial class PMUConnectionTester
         UpdateChartTitle("Connection attempt failed...");
         AppendStatusMessage($"Device connection error: {ex.Message}");
 
-        if (m_applicationSettings.MaximumConnectionAttempts > 0 & connectionAttempts >= m_applicationSettings.MaximumConnectionAttempts)
+        if (m_applicationSettings.MaximumConnectionAttempts > 0 && connectionAttempts >= m_applicationSettings.MaximumConnectionAttempts)
         {
             Disconnect();
             MessageBox.Show(this, $"{ex.Message}{Environment.NewLine}{connectionAttempts}{(connectionAttempts > 1 ? " connections " : " connection ")}attempted.", "Device Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -2088,8 +2088,10 @@ public partial class PMUConnectionTester
         AppendStatusMessage($"Local server started.  Listening for connection on {ConnectionInformation}");
     }
 
-    private void ServerStopped() => 
+    private void ServerStopped()
+    {
         AppendStatusMessage("Local server stopped.");
+    }
 
     private void PhaseAngleColorsChanged()
     {
@@ -2219,7 +2221,7 @@ public partial class PMUConnectionTester
 
         Text = string.IsNullOrEmpty(filename) || string.Equals(filename, m_lastConnectionFileName, StringComparison.OrdinalIgnoreCase) ?
             m_applicationName :
-            $"{m_applicationName} - {TrimFileName(filename, Convert.ToInt32((Width - Offset) / 10d))}";
+            $"{m_applicationName} - {TrimFileName(filename, Convert.ToInt32((Width - Offset) / 10.0D))}";
     }
 
     private ConnectionSettings CurrentConnectionSettings
@@ -2771,7 +2773,7 @@ public partial class PMUConnectionTester
 
         // Disconnect from PMU...
         m_frameParser.Stop();
-        m_chartKickToken?.Cancel();
+        m_chartKickStartToken?.Cancel();
         m_configurationFrame = null;
         m_selectedCell = null;
         m_applicationSettings.PhasorChannelLabels = null;
@@ -3254,7 +3256,7 @@ public partial class PMUConnectionTester
                     nodeAppearance.BackColor = m_applicationSettings.ChannelNodeBackgroundColor;
                     nodeAppearance.ForeColor = m_applicationSettings.ChannelNodeForegroundColor;
                     nodeAppearance.FontData.Bold = DefaultableBoolean.True;
-                    nodeAppearance.FontData.SizeInPoints = 9f;
+                    nodeAppearance.FontData.SizeInPoints = 9.0F;
 
                     // Assign a tree key to root frames for quick reference later (used during expand all)
                     if (channelNode <= (int)FundamentalFrameType.Undetermined)
@@ -3485,7 +3487,7 @@ public partial class PMUConnectionTester
 
         titleTop.Margins.Top = 0;
         titleTop.Margins.Bottom = 10;
-        titleTop.Font = new Font("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point);
+        titleTop.Font = new Font("Verdana", 8.0F, FontStyle.Bold, GraphicsUnit.Point);
         titleTop.FontColor = m_applicationSettings.ForegroundColor;
         titleTop.ClipText = false;
 
@@ -3695,7 +3697,7 @@ public partial class PMUConnectionTester
             Labels =
             {
                 ItemFormatString = "<DATA_VALUE:0.0000>",
-                Font = new Font("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point),
+                Font = new Font("Verdana", 8F, FontStyle.Bold, GraphicsUnit.Point),
                 FontColor = m_applicationSettings.ForegroundColor
             },
             LineThickness = 1,
@@ -3704,15 +3706,15 @@ public partial class PMUConnectionTester
             MinorGridLines = { Visible = false },
             MajorGridLines = { Visible = true },
             TickmarkStyle = AxisTickStyle.Percentage,
-            TickmarkPercentage = 23d,
-            TickmarkInterval = 0.001d,
+            TickmarkPercentage = 23.0D,
+            TickmarkInterval = 0.001D,
             RangeType = AxisRangeType.Automatic,
-            RangeMin = 59.9d,
-            RangeMax = 60.1d
+            RangeMin = 59.9D,
+            RangeMax = 60.1D
         };
 
-        axis.Margin.Far.Value = 4d;
-        axis.Margin.Near.Value = 4d;
+        axis.Margin.Far.Value = 4.0D;
+        axis.Margin.Near.Value = 4.0D;
 
         return axis;
     }
@@ -3725,7 +3727,7 @@ public partial class PMUConnectionTester
         Labels =
         {
             ItemFormatString = "<DATA_VALUE:0.#>",
-            Font = new Font("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point),
+            Font = new Font("Verdana", 8.0F, FontStyle.Bold, GraphicsUnit.Point),
             FontColor = m_applicationSettings.ForegroundColor,
             HorizontalAlign = orientation == AxisNumber.Y2_Axis ? StringAlignment.Far : StringAlignment.Near
         },
@@ -3735,10 +3737,10 @@ public partial class PMUConnectionTester
         MinorGridLines = { Visible = false },
         MajorGridLines = { Visible = orientation == AxisNumber.Y_Axis },
         TickmarkStyle = AxisTickStyle.Percentage,
-        TickmarkPercentage = 25d,
+        TickmarkPercentage = 25.0D,
         RangeType = AxisRangeType.Custom,
-        RangeMin = -180,
-        RangeMax = 180d
+        RangeMin = -180.0D,
+        RangeMax = 180.0D
     };
 
     private AxisItem CreateAnalogAxis(AxisNumber orientation)
@@ -3751,7 +3753,7 @@ public partial class PMUConnectionTester
             Labels =
             {
                 ItemFormatString = "<DATA_VALUE:0.###>",
-                Font = new Font("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point),
+                Font = new Font("Verdana", 8.0F, FontStyle.Bold, GraphicsUnit.Point),
                 FontColor = m_applicationSettings.ForegroundColor,
                 HorizontalAlign = orientation == AxisNumber.Y2_Axis ? StringAlignment.Far : StringAlignment.Near
             },
@@ -3761,12 +3763,12 @@ public partial class PMUConnectionTester
             MinorGridLines = { Visible = false },
             MajorGridLines = { Visible = orientation == AxisNumber.Y_Axis },
             TickmarkStyle = AxisTickStyle.Percentage,
-            TickmarkPercentage = 25d,
+            TickmarkPercentage = 25.0D,
             RangeType = AxisRangeType.Automatic
         };
 
-        axis.Margin.Far.Value = 4d;
-        axis.Margin.Near.Value = 4d;
+        axis.Margin.Far.Value = 4.0D;
+        axis.Margin.Near.Value = 4.0D;
 
         return axis;
     }
