@@ -28,11 +28,13 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Configuration;
 using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Timers;
 using GSF.Configuration;
@@ -78,12 +80,15 @@ public class ApplicationSettings : CategorizedSettingsBase
     private const int DefaultConfigurationFrameVersion = -1;
 
     // Default phase angle graph settings
+    private const bool DefaultPlotPhasorValues = true;
     private const string DefaultPhaseAngleGraphStyle = "Relative";
+    private const string DefaultPhasorGraphStyle = "Primary";
     private const bool DefaultShowPhaseAngleLegend = true;
     private const int DefaultPhaseAnglePointsToPlot = 30;
     private const string DefaultLegendBackgroundColor = "AliceBlue";
     private const string DefaultLegendForegroundColor = "Navy";
     private const string DefaultPhaseAngleColors = "Black;Red;Green;SteelBlue;DarkGoldenrod;Brown;Coral;Purple";
+    private const string DefaultPhasorIndexesToPlot = "*";
 
     // Default frequency graph settings
     private const int DefaultFrequencyPointsToPlot = 30;
@@ -91,10 +96,11 @@ public class ApplicationSettings : CategorizedSettingsBase
 
     // Default analog graph settings
     private const bool DefaultPlotAnalogValues = false;
-    private const string DefaultAnalogGraphStyle = "SecondaryAxis";
+    private const string DefaultAnalogGraphStyle = "Secondary";
     private const bool DefaultShowAnalogLegend = true;
     private const int DefaultAnalogPointsToPlot = 30;
     private const string DefaultAnalogColors = "DarkOrange;Teal;OliveDrab;MediumVioletRed;DodgerBlue;Sienna;DarkSlateGray;DarkOrchid";
+    private const string DefaultAnalogIndexesToPlot = "*";
 
     #endregion
 
@@ -107,6 +113,13 @@ public class ApplicationSettings : CategorizedSettingsBase
     public event AnalogColorsChangedEventHandler AnalogColorsChanged;
 
     public delegate void AnalogColorsChangedEventHandler();
+
+    // Fired when the phasor or analog index-list filter changes. The main form subscribes
+    // and rebuilds the chart; PropertyGrid's PropertyValueChanged is unreliable for
+    // UITypeEditor-driven string updates, so this is the authoritative signal.
+    public event ChartFilterChangedEventHandler ChartFilterChanged;
+
+    public delegate void ChartFilterChangedEventHandler();
 
     // Configuration file categories
     public const string ApplicationSettingsCategory = "Application Settings";
@@ -129,12 +142,12 @@ public class ApplicationSettings : CategorizedSettingsBase
         Collapsed
     }
 
-    public enum AnalogDisplayStyle
+    public enum GraphAxis
     {
-        // Render analog values on a secondary Y axis alongside phasor angles.
-        SecondaryAxis,
-        // Replace phasor angle plot with analog values (single axis).
-        ReplacePhasors
+        // Plot on the primary (left) Y axis.
+        Primary,
+        // Plot on the secondary (right) Y axis.
+        Secondary
     }
 
     #region [ Color List with Content Cleared Notification ]
@@ -230,6 +243,17 @@ public class ApplicationSettings : CategorizedSettingsBase
     // Analog graph settings
     private int m_analogPointsToPlot;
     private ColorList m_analogColors;
+
+    // Index filter settings
+    private string m_phasorIndexesToPlot;
+    private string m_analogIndexesToPlot;
+
+    // Axis assignment settings (phasors and analogs are always kept on opposite axes).
+    // Initialized to a consistent opposite-axis state in case the settings loader only
+    // applies a subset of these properties.
+    private GraphAxis m_phasorGraphStyle = GraphAxis.Primary;
+    private GraphAxis m_analogGraphStyle = GraphAxis.Secondary;
+    private bool m_swappingGraphAxis;
 
     // Other members
     private readonly Timer m_phaseAngleColorsEventDelayTimer;
@@ -457,6 +481,33 @@ public class ApplicationSettings : CategorizedSettingsBase
     #region [ Phase Angle Graph Settings ]
 
     [Category(PhaseAngleGraphCategory)]
+    [Description("Set to True to graph phasor angle values.")]
+    [DefaultValue(DefaultPlotPhasorValues)]
+    [UserScopedSetting]
+    public bool PlotPhasorValues { get; set; }
+
+    [Category(PhaseAngleGraphCategory)]
+    [Description("Sets which Y axis phasor angles are plotted on. Phasors and analogs are always kept on opposite axes, so changing this automatically swaps the analog axis.")]
+    [DefaultValue(typeof(GraphAxis), DefaultPhasorGraphStyle)]
+    [UserScopedSetting]
+    public GraphAxis PhasorGraphStyle
+    {
+        get => m_phasorGraphStyle;
+        set
+        {
+            m_phasorGraphStyle = value;
+
+            if (m_swappingGraphAxis)
+                return;
+
+            // Keep analogs on the opposite axis
+            m_swappingGraphAxis = true;
+            AnalogGraphStyle = value == GraphAxis.Primary ? GraphAxis.Secondary : GraphAxis.Primary;
+            m_swappingGraphAxis = false;
+        }
+    }
+
+    [Category(PhaseAngleGraphCategory)]
     [Description("Sets the phase angle graph to plot either raw or relative phase angles.")]
     [DefaultValue(typeof(AngleGraphStyle), DefaultPhaseAngleGraphStyle)]
     [UserScopedSetting]
@@ -499,14 +550,32 @@ public class ApplicationSettings : CategorizedSettingsBase
     {
         get => m_phaseAngleColors;
         set
-        { 
+        {
             if (m_phaseAngleColors is not null)
                 m_phaseAngleColors.ListContentCleared -= m_phaseAngleColors_ListContentCleared;
 
             m_phaseAngleColors = value;
-            
+
             if (m_phaseAngleColors is not null)
                 m_phaseAngleColors.ListContentCleared += m_phaseAngleColors_ListContentCleared;
+        }
+    }
+
+    [Category(PhaseAngleGraphCategory)]
+    [Description("Phasor indexes to plot - use \"*\" for all, or a comma/range list like \"0-2,4\".")]
+    [DefaultValue(DefaultPhasorIndexesToPlot)]
+    [Editor(typeof(PhasorIndexEditor), typeof(System.Drawing.Design.UITypeEditor))]
+    [UserScopedSetting]
+    public string PhasorIndexesToPlot
+    {
+        get => m_phasorIndexesToPlot;
+        set
+        {
+            if (string.Equals(m_phasorIndexesToPlot, value, StringComparison.Ordinal))
+                return;
+
+            m_phasorIndexesToPlot = value;
+            ChartFilterChanged?.Invoke();
         }
     }
 
@@ -535,16 +604,31 @@ public class ApplicationSettings : CategorizedSettingsBase
     #region [ Analog Graph Settings ]
 
     [Category(AnalogGraphCategory)]
-    [Description("Set to True to graph analog values (e.g., SEL CWS point-on-wave streams) alongside or in place of phasor angles.")]
+    [Description("Set to True to graph analog values (e.g., SEL CWS point-on-wave streams).")]
     [DefaultValue(DefaultPlotAnalogValues)]
     [UserScopedSetting]
     public bool PlotAnalogValues { get; set; }
 
     [Category(AnalogGraphCategory)]
-    [Description("Controls how analog values are graphed: SecondaryAxis overlays analogs on a secondary Y-axis with phasor angles; ReplacePhasors shows only the analog trends.")]
-    [DefaultValue(typeof(AnalogDisplayStyle), DefaultAnalogGraphStyle)]
+    [Description("Sets which Y axis analog values are plotted on. Phasors and analogs are always kept on opposite axes, so changing this automatically swaps the phasor axis.")]
+    [DefaultValue(typeof(GraphAxis), DefaultAnalogGraphStyle)]
     [UserScopedSetting]
-    public AnalogDisplayStyle AnalogGraphStyle { get; set; }
+    public GraphAxis AnalogGraphStyle
+    {
+        get => m_analogGraphStyle;
+        set
+        {
+            m_analogGraphStyle = value;
+
+            if (m_swappingGraphAxis)
+                return;
+
+            // Keep phasors on the opposite axis
+            m_swappingGraphAxis = true;
+            PhasorGraphStyle = value == GraphAxis.Primary ? GraphAxis.Secondary : GraphAxis.Primary;
+            m_swappingGraphAxis = false;
+        }
+    }
 
     [Category(AnalogGraphCategory)]
     [Description("Set to True to show analog channel labels in the chart legend.")]
@@ -563,6 +647,24 @@ public class ApplicationSettings : CategorizedSettingsBase
     }
 
     [Category(AnalogGraphCategory)]
+    [Description("Analog indexes to plot - use \"*\" for all, or a comma/range list like \"0-2,4\".")]
+    [DefaultValue(DefaultAnalogIndexesToPlot)]
+    [Editor(typeof(AnalogIndexEditor), typeof(System.Drawing.Design.UITypeEditor))]
+    [UserScopedSetting]
+    public string AnalogIndexesToPlot
+    {
+        get => m_analogIndexesToPlot;
+        set
+        {
+            if (string.Equals(m_analogIndexesToPlot, value, StringComparison.Ordinal))
+                return;
+
+            m_analogIndexesToPlot = value;
+            ChartFilterChanged?.Invoke();
+        }
+    }
+
+    [Category(AnalogGraphCategory)]
     [Description("Possible foreground colors for analog trends.")]
     [DefaultValue(typeof(ColorList), DefaultAnalogColors)]
     [UserScopedSetting]
@@ -578,6 +680,122 @@ public class ApplicationSettings : CategorizedSettingsBase
 
             if (m_analogColors is not null)
                 m_analogColors.ListContentCleared += m_analogColors_ListContentCleared;
+        }
+    }
+
+    #endregion
+
+    #region [ Transient Channel Labels ]
+
+    // Populated by the main form whenever the selected PMU cell changes.
+    // Used by the index-list editors so the checkbox popup can show "i: Label" entries.
+    [Browsable(false)]
+    public string[] PhasorChannelLabels { get; set; }
+
+    [Browsable(false)]
+    public string[] AnalogChannelLabels { get; set; }
+
+    #endregion
+
+    #region [ Index List Parsing ]
+
+    // Parses an index expression like "*", "", "0-2,4" into the set of indexes it represents.
+    // Returns null when the expression means "all" so callers can short-circuit; an empty set means
+    // "plot nothing". Whitespace is tolerated; unparseable tokens are ignored.
+    public static HashSet<int> ParseIndexList(string expression, int channelCount)
+    {
+        if (channelCount <= 0)
+            return [];
+
+        if (string.IsNullOrWhiteSpace(expression))
+            return null;
+
+        string trimmed = expression.Trim();
+
+        if (trimmed == "*")
+            return null;
+
+        HashSet<int> indexes = [];
+
+        foreach (string raw in trimmed.Split(','))
+        {
+            string token = raw.Trim();
+
+            if (token.Length == 0)
+                continue;
+
+            int dash = token.IndexOf('-');
+
+            if (dash < 0)
+            {
+                if (int.TryParse(token, out int single) && single >= 0 && single < channelCount)
+                    indexes.Add(single);
+
+                continue;
+            }
+
+            if (!int.TryParse(token.Substring(0, dash).Trim(), out int start))
+                continue;
+
+            if (!int.TryParse(token.Substring(dash + 1).Trim(), out int end))
+                continue;
+
+            if (end < start)
+                (start, end) = (end, start);
+
+            for (int i = Math.Max(0, start); i <= Math.Min(channelCount - 1, end); i++)
+                indexes.Add(i);
+        }
+
+        return indexes;
+    }
+
+    // Canonical form: comma-separated ascending indexes, with consecutive runs collapsed to "a-b".
+    public static string FormatIndexList(IEnumerable<int> indexes, int channelCount)
+    {
+        if (indexes is null)
+            return DefaultPhasorIndexesToPlot;
+
+        int[] sorted = indexes.Where(i => i >= 0 && i < channelCount).Distinct().OrderBy(i => i).ToArray();
+
+        if (sorted.Length == 0)
+            return string.Empty;
+
+        if (sorted.Length == channelCount)
+            return "*";
+
+        StringBuilder result = new();
+        int runStart = sorted[0];
+        int runEnd = runStart;
+
+        for (int i = 1; i < sorted.Length; i++)
+        {
+            if (sorted[i] == runEnd + 1)
+            {
+                runEnd = sorted[i];
+                continue;
+            }
+
+            appendRun();
+            runStart = runEnd = sorted[i];
+        }
+
+        appendRun();
+        
+        return result.ToString();
+
+        void appendRun()
+        {
+            if (result.Length > 0)
+                result.Append(',');
+
+            result.Append(runStart);
+
+            if (runEnd <= runStart)
+                return;
+            
+            result.Append('-');
+            result.Append(runEnd);
         }
     }
 
