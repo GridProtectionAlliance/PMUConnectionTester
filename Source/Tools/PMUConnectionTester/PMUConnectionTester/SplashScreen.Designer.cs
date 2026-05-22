@@ -49,16 +49,16 @@ namespace ConnectionTester
             // 
             MainLayoutPanel.BackgroundImageLayout = ImageLayout.None;
             MainLayoutPanel.ColumnCount = 2;
-            MainLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 207f));
-            MainLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 186f));
+            MainLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 207.0F));
+            MainLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 186.0F));
             MainLayoutPanel.Controls.Add(DetailsLayoutPanel, 1, 1);
             MainLayoutPanel.Controls.Add(ApplicationTitle, 1, 0);
             MainLayoutPanel.Dock = DockStyle.Fill;
             MainLayoutPanel.Location = new Point(0, 0);
             MainLayoutPanel.Name = "MainLayoutPanel";
             MainLayoutPanel.RowCount = 2;
-            MainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 198f));
-            MainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 58f));
+            MainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 198.0F));
+            MainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 58.0F));
             MainLayoutPanel.Size = new Size(497, 296);
             MainLayoutPanel.TabIndex = 0;
             // 
@@ -70,7 +70,7 @@ namespace ConnectionTester
             DetailsLayoutPanel.ColumnStyles.Add(new ColumnStyle());
             DetailsLayoutPanel.Controls.Add(Version, 0, 0);
             DetailsLayoutPanel.Controls.Add(Copyright, 0, 1);
-            DetailsLayoutPanel.Font = new Font("Microsoft Sans Serif", 9f, FontStyle.Bold, GraphicsUnit.Point, 0);
+            DetailsLayoutPanel.Font = new Font("Microsoft Sans Serif", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0);
             DetailsLayoutPanel.Location = new Point(213, 208);
             DetailsLayoutPanel.Name = "DetailsLayoutPanel";
             DetailsLayoutPanel.RowCount = 2;
@@ -83,7 +83,7 @@ namespace ConnectionTester
             // 
             Version.Anchor = AnchorStyles.None;
             Version.BackColor = Color.Transparent;
-            Version.Font = new Font("Tahoma", 9f, FontStyle.Bold, GraphicsUnit.Point, 0);
+            Version.Font = new Font("Tahoma", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0);
             Version.ForeColor = Color.LemonChiffon;
             Version.Location = new Point(3, 0);
             Version.Name = "Version";
@@ -96,7 +96,7 @@ namespace ConnectionTester
             // 
             Copyright.Anchor = AnchorStyles.Right;
             Copyright.BackColor = Color.Transparent;
-            Copyright.Font = new Font("Tahoma", 8.75f, FontStyle.Bold, GraphicsUnit.Point, 0);
+            Copyright.Font = new Font("Tahoma", 8.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             Copyright.ForeColor = Color.LemonChiffon;
             Copyright.Location = new Point(112, 49);
             Copyright.Name = "Copyright";
@@ -109,7 +109,7 @@ namespace ConnectionTester
             // 
             ApplicationTitle.Anchor = AnchorStyles.None;
             ApplicationTitle.BackColor = Color.Transparent;
-            ApplicationTitle.Font = new Font("Tahoma", 22f, FontStyle.Bold, GraphicsUnit.Point, 0);
+            ApplicationTitle.Font = new Font("Tahoma", 22F, FontStyle.Bold, GraphicsUnit.Point, 0);
             ApplicationTitle.ForeColor = Color.LemonChiffon;
             ApplicationTitle.Location = new Point(211, 28);
             ApplicationTitle.Name = "ApplicationTitle";
@@ -120,7 +120,7 @@ namespace ConnectionTester
             // 
             // SplashScreen
             // 
-            AutoScaleDimensions = new SizeF(6f, 13f);
+            AutoScaleDimensions = new SizeF(6.0F, 13.0F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(497, 296);
             ControlBox = false;

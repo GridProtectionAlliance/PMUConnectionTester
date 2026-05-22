@@ -120,7 +120,7 @@ namespace ConnectionTester
             Appearance1.TextVAlignAsString = "Middle";
             LabelTcpNetworkInterface.Appearance = Appearance1;
             LabelTcpNetworkInterface.Cursor = Cursors.Hand;
-            LabelTcpNetworkInterface.Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Regular, GraphicsUnit.Point, 0);
+            LabelTcpNetworkInterface.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             Appearance2.FontData.UnderlineAsString = "True";
             LabelTcpNetworkInterface.HotTrackAppearance = Appearance2;
             LabelTcpNetworkInterface.Location = new Point(63, 72);
@@ -439,7 +439,7 @@ namespace ConnectionTester
             // AlternateCommandChannel
             // 
             AcceptButton = ButtonSave;
-            AutoScaleDimensions = new SizeF(6.0f, 13.0f);
+            AutoScaleDimensions = new SizeF(6.0F, 13.0F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = ButtonCancel;
             ClientSize = new Size(406, 142);
