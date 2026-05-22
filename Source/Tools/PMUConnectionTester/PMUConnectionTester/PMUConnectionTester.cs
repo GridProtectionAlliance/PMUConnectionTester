@@ -3616,10 +3616,17 @@ public partial class PMUConnectionTester
         bool needsLegend = (showPhasors && m_applicationSettings.ShowPhaseAngleLegend) ||
                            (showAnalogs && m_applicationSettings.ShowAnalogLegend);
 
+        // Type prefixes (∠ / A:) only disambiguate when both phasors and analogs share the one legend.
+        bool prefixLegendLabels = m_plottedPhasorIndexes.Count > 0 && m_applicationSettings.ShowPhaseAngleLegend &&
+                                  m_plottedAnalogIndexes.Count > 0 && m_applicationSettings.ShowAnalogLegend;
+
+        // When a secondary (right) axis is present, reserve a little more right-side room for its labels.
+        int plotWidth = needsLegend ? (bothShown ? 76 : 80) : 100;
+
         ChartArea chartArea = new()
         {
             BoundsMeasureType = MeasureType.Percentage,
-            Bounds = new Rectangle(0, 50, needsLegend ? 80 : 100, 50),
+            Bounds = new Rectangle(0, 50, plotWidth, 50),
             Border = { Thickness = 0 },
             PE = { Fill = m_applicationSettings.BackgroundColor }
         };
@@ -3642,7 +3649,7 @@ public partial class PMUConnectionTester
             AxisItem phaseAngleAxis = CreatePhaseAngleAxis(phasorAxisNumber);
             chartArea.Axes.Add(phaseAngleAxis);
 
-            phaseAngleLayer = CreatePhaseAngleLayer(chartArea, phasorTimeAxis, phaseAngleAxis);
+            phaseAngleLayer = CreatePhaseAngleLayer(chartArea, phasorTimeAxis, phaseAngleAxis, prefixLegendLabels);
             ChartDataDisplay.CompositeChart.ChartLayers.Add(phaseAngleLayer);
         }
 
@@ -3654,14 +3661,14 @@ public partial class PMUConnectionTester
             AxisItem analogAxis = CreateAnalogAxis(analogAxisNumber);
             chartArea.Axes.Add(analogAxis);
 
-            analogLayer = CreateAnalogLayer(chartArea, analogTimeAxis, analogAxis);
+            analogLayer = CreateAnalogLayer(chartArea, analogTimeAxis, analogAxis, prefixLegendLabels);
             ChartDataDisplay.CompositeChart.ChartLayers.Add(analogLayer);
         }
 
         if (!needsLegend)
             return;
 
-        CompositeLegend chartLegend = CreatePhasorLegend();
+        CompositeLegend chartLegend = CreatePhasorAndAnalogLegend();
         ChartDataDisplay.CompositeChart.Legends.Add(chartLegend);
 
         if (showPhasors && m_applicationSettings.ShowPhaseAngleLegend && phaseAngleLayer is not null)
@@ -3726,10 +3733,13 @@ public partial class PMUConnectionTester
         Visible = true,
         Labels =
         {
-            ItemFormatString = "<DATA_VALUE:0.#>",
+            // Leading spaces nudge Y2 (right-side) labels off the axis line; Layout.Padding has no effect here
+            ItemFormatString = orientation == AxisNumber.Y2_Axis ? "  <DATA_VALUE:0.#>" : "<DATA_VALUE:0.#>",
             Font = new Font("Verdana", 8.0F, FontStyle.Bold, GraphicsUnit.Point),
             FontColor = m_applicationSettings.ForegroundColor,
-            HorizontalAlign = orientation == AxisNumber.Y2_Axis ? StringAlignment.Far : StringAlignment.Near
+            // Must stay Near: Far (on this or the nested LabelStyle.HorizontalAlign) relocates the labels off the
+            // chart edge rather than right-justifying them, so this control can't right-align Y-axis label text
+            HorizontalAlign = StringAlignment.Near
         },
         LineThickness = 1,
         LineColor = m_applicationSettings.ForegroundColor,
@@ -3752,14 +3762,20 @@ public partial class PMUConnectionTester
             Visible = true,
             Labels =
             {
-                ItemFormatString = "<DATA_VALUE:0.###>",
+                // Pad labels off the axis line: leading spaces on the right (Y2), trailing non-breaking spaces on
+                // the left (plain trailing spaces get trimmed before FontSizeBestFit measures the text)
+                ItemFormatString = orientation == AxisNumber.Y2_Axis ? "  <DATA_VALUE:0.000>" : "<DATA_VALUE:0.000>",
                 Font = new Font("Verdana", 8.0F, FontStyle.Bold, GraphicsUnit.Point),
                 FontColor = m_applicationSettings.ForegroundColor,
-                HorizontalAlign = orientation == AxisNumber.Y2_Axis ? StringAlignment.Far : StringAlignment.Near
+                // Must stay Near: Far (on this or the nested LabelStyle.HorizontalAlign) relocates the labels off the
+                // chart edge rather than right-justifying them, so this control can't right-align Y-axis label text
+                HorizontalAlign = StringAlignment.Near,
+                // Shrinks over-long analog labels instead of clipping them (set once at build, not per frame).
+                FontSizeBestFit = true
             },
             LineThickness = 1,
             LineColor = m_applicationSettings.ForegroundColor,
-            Extent = 30,
+            Extent = 60,
             MinorGridLines = { Visible = false },
             MajorGridLines = { Visible = orientation == AxisNumber.Y_Axis },
             TickmarkStyle = AxisTickStyle.Percentage,
@@ -3767,7 +3783,8 @@ public partial class PMUConnectionTester
             RangeType = AxisRangeType.Automatic
         };
 
-        axis.Margin.Far.Value = 4.0D;
+        // Extra headroom at the top so the highest auto-ranged tick label clears the plot border
+        axis.Margin.Far.Value = 10.0D;
         axis.Margin.Near.Value = 4.0D;
 
         return axis;
@@ -3798,7 +3815,7 @@ public partial class PMUConnectionTester
         return frequencyLayer;
     }
 
-    private ChartLayerAppearance CreatePhaseAngleLayer(ChartArea area, AxisItem xAxis, AxisItem yAxis)
+    private ChartLayerAppearance CreatePhaseAngleLayer(ChartArea area, AxisItem xAxis, AxisItem yAxis, bool prefixLabels)
     {
         ChartLayerAppearance phaseAngleLayer = new()
         {
@@ -3818,9 +3835,13 @@ public partial class PMUConnectionTester
 
             phasorDataSeries.SetNoUpdate(true);
             phasorDataSeries.DataBind(m_phasorData, $"y{i}");
-            phasorDataSeries.Label = m_selectedCell is null ?
+
+            // V:/I: mirrors the phasor selector; ∠ is added only when analogs share the legend
+            IPhasorDefinition phasor = m_selectedCell?.PhasorDefinitions[i];
+            string label = phasor is null ?
                 $"Phasor {i + 1}" :
-                m_selectedCell.PhasorDefinitions[i].Label;
+                $"{(phasor.PhasorType == PhasorType.Voltage ? "V" : "I")}: {phasor.Label}";
+            phasorDataSeries.Label = prefixLabels ? $"∠ {label}" : label;
 
             // Set phase angle color (rotating through configured set of colors based on actual channel index)
             phasorDataSeries.PEs.Add(new PaintElement(m_applicationSettings.PhaseAngleColors[i % m_applicationSettings.PhaseAngleColors.Count]));
@@ -3831,7 +3852,7 @@ public partial class PMUConnectionTester
         return phaseAngleLayer;
     }
 
-    private ChartLayerAppearance CreateAnalogLayer(ChartArea area, AxisItem xAxis, AxisItem yAxis)
+    private ChartLayerAppearance CreateAnalogLayer(ChartArea area, AxisItem xAxis, AxisItem yAxis, bool prefixLabels)
     {
         ChartLayerAppearance analogLayer = new()
         {
@@ -3856,9 +3877,11 @@ public partial class PMUConnectionTester
 
             analogDataSeries.SetNoUpdate(true);
             analogDataSeries.DataBind(m_analogData, $"a{i}");
-            analogDataSeries.Label = m_selectedCell is null || i >= m_selectedCell.AnalogDefinitions.Count ?
+
+            string label = m_selectedCell is null || i >= m_selectedCell.AnalogDefinitions.Count ?
                 $"Analog {i + 1}" :
                 m_selectedCell.AnalogDefinitions[i].Label;
+            analogDataSeries.Label = prefixLabels ? $"A: {label}" : label;
 
             analogDataSeries.PEs.Add(new PaintElement(analogColors[i % analogColors.Count]));
             ChartDataDisplay.CompositeChart.Series.Add(analogDataSeries);
@@ -3883,7 +3906,7 @@ public partial class PMUConnectionTester
         return indexes;
     }
 
-    private CompositeLegend CreatePhasorLegend()
+    private CompositeLegend CreatePhasorAndAnalogLegend()
     {
         CompositeLegend phasorLegend = new();
         phasorLegend.Bounds = new Rectangle(79, 50, 20, 48); // 78, 83, 50, 15)
