@@ -38467,6 +38467,20 @@
              </code>
              </remarks>
         </member>
+        <member name="M:GSF.StringExtensions.ParseAsCSV(System.String)">
+            <summary>
+            Parses the string as a CSV document.
+            </summary>
+            <param name="csv">The string to be parsed</param>
+            <returns>An array of rows parsed as CSV data.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ReadCSVRow(System.IO.TextReader)">
+            <summary>
+            Reads characters from the text reader and returns a single row of CSV data.
+            </summary>
+            <param name="reader">The text reader providing the CSV data</param>
+            <returns>An array of fields in one row of CSV data or <c>null</c> if there is no more data available from the text reader.</returns>
+        </member>
         <member name="T:GSF.Text.Operation">
             <summary>
             The data structure representing a diff is a List of Diff objects:
@@ -47685,6 +47699,59 @@
             Shows the UTC time.
             </summary>
         </member>
+        <member name="T:GSF.Core.Threading.SynchronizedTask`1">
+            <summary>
+            Represents a task that cannot run while it is already in progress.
+            </summary>
+            <typeparam name="T">The type of object returned by the task when it executes.</typeparam>
+        </member>
+        <member name="M:GSF.Core.Threading.SynchronizedTask`1.#ctor(System.Func{System.Threading.Tasks.Task{`0}})">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Core.Threading.SynchronizedTask`1"/> class.
+            </summary>
+            <param name="callback">The callback to be executed when the task runs</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="callback"/> is null</exception>
+        </member>
+        <member name="P:GSF.Core.Threading.SynchronizedTask`1.IsRunning">
+            <summary>
+            Gets a value to indicate whether the synchronized
+            task is currently executing its callback.
+            </summary>
+        </member>
+        <member name="P:GSF.Core.Threading.SynchronizedTask`1.IsPending">
+            <summary>
+            Gets a value to indiate whether the synchronized task
+            has an additional callback that is pending execution after
+            the currently running task has completed.
+            </summary>
+        </member>
+        <member name="M:GSF.Core.Threading.SynchronizedTask`1.RunAsync">
+            <summary>
+            Executes the callback on another thread or marks the
+            task as pending if the callback is already running.
+            </summary>
+            <returns>A task that completes when the callback completes.</returns>
+        </member>
+        <member name="M:GSF.Core.Threading.SynchronizedTask`1.FlushAsync">
+            <summary>
+            Returns a task that completes when the currently
+            running and pending tasks are both complete.
+            </summary>
+            <returns>A task instance.</returns>
+        </member>
+        <member name="M:GSF.Core.Threading.SynchronizedTask`1.GetAwaiter">
+            <summary>
+            Returns an awaiter used to await the most recently completed callback.
+            </summary>
+            <returns>An awaiter instance.</returns>
+        </member>
+        <member name="M:GSF.Core.Threading.SynchronizedTask`1.ConfigureAwait(System.Boolean)">
+            <summary>
+            Configures an awaiter used to await the most recently completed callback.
+            </summary>
+            <param name="continueOnCapturedContext">true to attempt to marshal the continuation back to the original context captured; otherwise, false</param>
+            <returns>An object used to await the most recently completed callback.</returns>
+        </member>
         <member name="T:GSF.BaselineTimeInterval">
             <summary>
             Time intervals enumeration used by <see cref="M:GSF.Ticks.BaselinedTimestamp(GSF.BaselineTimeInterval)"/> method.
@@ -48717,7 +48784,7 @@
             </summary>
             <param name="timestamp">Timestamp to align.</param>
             <param name="samplesPerSecond">Samples per second to use for distribution.</param>
-            <param name="Baseline"> Starting Timestamp of the Distribution.</param>
+            <param name="baseline">Starting timestamp of the distribution.</param>
             <returns>The nearest distribution timestamp for given <paramref name="timestamp"/>.</returns>
         </member>
         <member name="M:GSF.Ticks.ToSecondDistribution(GSF.Ticks,System.Double,GSF.Ticks,System.Int32)">
