@@ -94,6 +94,7 @@ public partial class PMUConnectionTester
     private const int BitRatePanel = 7;
     private const int QueuedBuffersPanel = 9;
     private const int TextFileWidth = 75;
+    private const double SqrtOf3 = 1.7320508075688772935274463415059D;
 
     private enum ChartTabs
     {
@@ -109,6 +110,13 @@ public partial class PMUConnectionTester
         ExtraParameters
     }
 
+    private enum AxisChannelType
+    {
+        None,
+        Phasor,
+        Analog
+    }
+
     // Phasor parsing variables
     private MultiProtocolFrameParser m_frameParser;
     private ImageQueue m_imageQueue;
@@ -121,7 +129,6 @@ public partial class PMUConnectionTester
     private FundamentalFrameType m_lastFrameType;
     private ByteEncoding m_byteEncoding;
     private int m_byteCount;
-    private readonly float m_sqrtOf3 = Convert.ToSingle(Math.Sqrt(3d));
 
     // Application variables
     private ApplicationSettings m_applicationSettings;
@@ -139,6 +146,15 @@ public partial class PMUConnectionTester
     // Charting data variables
     private DataTable m_frequencyData;
     private DataTable m_phasorData;
+    private DataTable m_analogData;
+    private List<int> m_plottedPhasorIndexes = [];
+    private List<int> m_plottedAnalogIndexes = [];
+    private DataColumn[] m_plottedPhasorColumns = [];
+    private DataColumn[] m_plottedAnalogColumns = [];
+    private AxisChannelType m_primaryAxisChannelType;
+    private AxisChannelType m_secondaryAxisChannelType;
+    private System.Windows.Forms.ToolTip m_chartChannelToolTip;
+    private ICancellationToken m_chartKickStartToken;
     private Angle m_lastPhaseAngle;
     private long m_lastRefresh;
 
@@ -170,6 +186,8 @@ public partial class PMUConnectionTester
         // Make sure application settings exist
         m_applicationSettings = new ApplicationSettings();
         m_applicationSettings.PhaseAngleColorsChanged += m_chartSettings_PhaseAngleColorsChanged;
+        m_applicationSettings.AnalogColorsChanged += m_chartSettings_AnalogColorsChanged;
+        m_applicationSettings.ChartFilterChanged += m_chartSettings_ChartFilterChanged;
 
         // Create a new multi-protocol frame parser
         m_frameParser = new MultiProtocolFrameParser();
@@ -248,7 +266,7 @@ public partial class PMUConnectionTester
 
         // Adjust size of comments area and label column ratio of application settings properties grid
         PropertyGridApplicationSettings.AdjustCommentAreaHeight(4);
-        PropertyGridApplicationSettings.AdjustLabelRatio(1.62d);
+        PropertyGridApplicationSettings.AdjustLabelRatio(1.62D);
 
         try
         {
@@ -279,6 +297,19 @@ public partial class PMUConnectionTester
 
         InitializeNetworkInterfaces();
         InitializeChart();
+
+        // Enable right-click channel selection directly on the graph: left side targets the
+        // primary-axis channel type, right side targets the secondary-axis channel type
+        ChartDataDisplay.MouseUp += ChartDataDisplay_MouseUp;
+
+        m_chartChannelToolTip = new System.Windows.Forms.ToolTip
+        {
+            AutoPopDelay = 4000,
+            InitialDelay = 600,
+            ReshowDelay = 1000
+        };
+
+        m_chartChannelToolTip.SetToolTip(ChartDataDisplay, "Right-click the left or right side of the graph to choose which channels are plotted on that axis.");
 
         ComboBoxProtocols.SelectedIndex = 0;
         ComboBoxCommands.SelectedIndex = 0;
@@ -467,6 +498,15 @@ public partial class PMUConnectionTester
         LabelAnalogCount.Text = m_selectedCell.AnalogDefinitions.Count.ToString();
         LabelDigitalCount.Text = m_selectedCell.DigitalDefinitions.Count.ToString();
         LabelNominalFrequency.Text = ((int)m_selectedCell.NominalFrequency).ToString();
+
+        // Refresh transient channel labels so the index-list editors can populate their checkbox popups
+        m_applicationSettings.PhasorChannelLabels = m_selectedCell.PhasorDefinitions
+            .Select((p, i) => string.IsNullOrEmpty(p.Label) ? $"Phasor {i + 1}" : p.Label)
+            .ToArray();
+
+        m_applicationSettings.AnalogChannelLabels = m_selectedCell.AnalogDefinitions
+            .Select((a, i) => string.IsNullOrEmpty(a.Label) ? $"Analog {i + 1}" : a.Label)
+            .ToArray();
 
         lock (ComboBoxPhasors)
         {
@@ -675,7 +715,7 @@ public partial class PMUConnectionTester
             case (int)PhasorProtocol.BPAPDCstream:
             {
                 // If user selects the BPA protocol when a DST file is selected for input, make sure to automatically set the UsePhasorDataFileFormat to true
-                if (TabControlCommunications.SelectedTab.Index == (int)TransportProtocol.File & GetExtension(TextBoxFileCaptureName.Text).ToLower() == ".dst")
+                if (TabControlCommunications.SelectedTab.Index == (int)TransportProtocol.File && GetExtension(TextBoxFileCaptureName.Text).ToLower() == ".dst")
                 {
                     if (m_frameParser?.ConnectionParameters is GSF.PhasorProtocols.BPAPDCstream.ConnectionParameters connectionParameters)
                         connectionParameters.UsePhasorDataFileFormat = true;
@@ -971,6 +1011,7 @@ public partial class PMUConnectionTester
             case ApplicationSettings.ChartSettingsCategory:
             case ApplicationSettings.PhaseAngleGraphCategory:
             case ApplicationSettings.FrequencyGraphCategory:
+            case ApplicationSettings.AnalogGraphCategory:
             {
                 if (string.Equals(descriptor.Name, "PhaseAngleGraphStyle", StringComparison.OrdinalIgnoreCase))
                 {
@@ -980,6 +1021,14 @@ public partial class PMUConnectionTester
                 else
                 {
                     InitializeChart();
+                }
+
+                // Changing one axis assignment auto-swaps the other; refresh the grid so the
+                // swapped value is reflected in the display
+                if (string.Equals(descriptor.Name, nameof(ApplicationSettings.PhasorGraphStyle), StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(descriptor.Name, nameof(ApplicationSettings.AnalogGraphStyle), StringComparison.OrdinalIgnoreCase))
+                {
+                    PropertyGridApplicationSettings.Refresh();
                 }
 
                 // We show chart tab (if data is available) to display changes on any chart property change
@@ -1243,7 +1292,7 @@ public partial class PMUConnectionTester
         // nodes one at a time - resting between expansions to allow some UI thread time
         foreach (int value in Enum.GetValues(typeof(FundamentalFrameType)))
         {
-            string frameKey = $"Frame{(value + 1)}";
+            string frameKey = $"Frame{value + 1}";
 
             if (!nodes.Exists(frameKey))
                 continue;
@@ -1439,6 +1488,16 @@ public partial class PMUConnectionTester
     private void m_chartSettings_PhaseAngleColorsChanged()
     {
         BeginInvoke(new Action(PhaseAngleColorsChanged));
+    }
+
+    private void m_chartSettings_AnalogColorsChanged()
+    {
+        BeginInvoke(new Action(AnalogColorsChanged));
+    }
+
+    private void m_chartSettings_ChartFilterChanged()
+    {
+        BeginInvoke(new Action(ChartFilterChanged));
     }
 
     #endregion
@@ -1650,6 +1709,10 @@ public partial class PMUConnectionTester
         LabelTime.Text = frame.TimeTag.ToString();
         m_attributeFrames[frame.FrameType] = frame;
 
+        // Track whether this is the first config frame for this connection so subsequent
+        // repeat config frames don't overwrite the user's chart sample-count settings
+        bool isInitialConfigFrame = m_configChangeTime == 0L;
+
         // Cache config frame reference for future use...
         m_configChangeTime = DateTime.UtcNow.Ticks;
         m_configurationFrame = frame;
@@ -1705,9 +1768,25 @@ public partial class PMUConnectionTester
 
         UpdateChartTitle($"Configured frame rate: {frame.FrameRate} frames/second");
 
-        // Update chart settings based on new configuration frame
+        // Only seed chart sample counts on the initial configuration frame for this connection
+        // so subsequent repeat configuration frames don't clobber user adjustments
+        if (!isInitialConfigFrame)
+            return;
+        
         m_applicationSettings.FrequencyPointsToPlot = frame.FrameRate;
         m_applicationSettings.PhaseAnglePointsToPlot = frame.FrameRate;
+
+        // Point-on-wave analog streams typically run at much higher frame rates than
+        // traditional phasor data; a fraction of the frame rate shows the waveform shape
+        // more clearly than a full second of data
+        m_applicationSettings.AnalogPointsToPlot = Math.Max(30, frame.FrameRate / 10);
+
+        // The first chart setup for a connection can leave a throttled phasor layer
+        // un-rendered when an analog layer is also present - the composite chart needs a
+        // second initialization pass once it has painted and data is flowing. Firing this
+        // immediately (e.g., via BeginInvoke) is too early
+        m_chartKickStartToken?.Cancel();
+        m_chartKickStartToken = new Action(KickStartChart).DelayAndExecute(500);
     }
 
     private static string GetCellName(IConfigurationCell cell)
@@ -1720,11 +1799,11 @@ public partial class PMUConnectionTester
         LabelTime.Text = frame.TimeTag.ToString();
         m_attributeFrames[frame.FrameType] = frame;
 
-        if (m_selectedCell is not null & frame.Cells.Count > 0)
+        if (m_selectedCell is not null && frame.Cells.Count > 0)
         {
             IDataCell cell = frame.Cells[ComboBoxPmus.SelectedIndex];
-            double frequency = default;
-            int phasorCount = default;
+            double frequency = 0.0D;
+            int phasorCount = 0;
 
             int phasorIndex = GetComboBoxPhasorsSelectedIndex();
 
@@ -1740,6 +1819,33 @@ public partial class PMUConnectionTester
             while (m_frequencyData.Rows.Count > m_applicationSettings.FrequencyPointsToPlot)
                 m_frequencyData.Rows.RemoveAt(0);
 
+            // Plot real-time analog trends (one row per frame for smooth point-on-wave waveforms)
+            if (m_applicationSettings.PlotAnalogValues && cell.AnalogValues is not null && m_analogData.Columns.Count > 0)
+            {
+                try
+                {
+                    DataRow analogRow = m_analogData.NewRow();
+                    int analogCount = cell.AnalogValues.Count;
+
+                    for (int j = 0; j < m_plottedAnalogIndexes.Count; j++)
+                    {
+                        int i = m_plottedAnalogIndexes[j];
+
+                        if (i < analogCount)
+                            analogRow[m_plottedAnalogColumns[j]] = (float)cell.AnalogValues[i].AdjustedValue();
+                    }
+
+                    m_analogData.Rows.Add(analogRow);
+
+                    while (m_analogData.Rows.Count > m_applicationSettings.AnalogPointsToPlot)
+                        m_analogData.Rows.RemoveAt(0);
+                }
+                catch (Exception ex)
+                {
+                    AppendStatusMessage($"Exception occurred while attempting to plot analog data: {ex.Message}");
+                }
+            }
+
             // Plot real-time phasor trends
             if (phasorIndex < phasorCount && phasorIndex > -1 && phasorCount > 0)
             {
@@ -1749,26 +1855,30 @@ public partial class PMUConnectionTester
 
                     if (phasor is not null)
                     {
-                        if (Math.Abs((phasor.AdjustedAngle() - m_lastPhaseAngle).ToDegrees()) >= 0.5d || m_phasorData.Rows.Count < 2)
+                        if (Math.Abs((phasor.AdjustedAngle() - m_lastPhaseAngle).ToDegrees()) >= 0.5D || m_phasorData.Rows.Count < 2)
                         {
                             DataRow row = m_phasorData.NewRow();
 
                             if (m_applicationSettings.PhaseAngleGraphStyle == ApplicationSettings.AngleGraphStyle.Raw)
                             {
                                 // Plot raw phase angles
-                                for (int i = 0; i < phasorCount; i++)
+                                for (int j = 0; j < m_plottedPhasorIndexes.Count; j++)
                                 {
-                                    if (m_phasorData.Columns.Count > i)
-                                        row[i] = cell.PhasorValues[i].AdjustedAngle().ToDegrees();
+                                    int i = m_plottedPhasorIndexes[j];
+
+                                    if (i < phasorCount)
+                                        row[m_plottedPhasorColumns[j]] = cell.PhasorValues[i].AdjustedAngle().ToDegrees();
                                 }
                             }
                             else
                             {
                                 // Plot relative phase angles
-                                for (int i = 0; i < phasorCount; i++)
+                                for (int j = 0; j < m_plottedPhasorIndexes.Count; j++)
                                 {
-                                    if (m_phasorData.Columns.Count > i)
-                                        row[i] = (cell.PhasorValues[i].AdjustedAngle() - phasor.AdjustedAngle()).ToRange(-Math.PI, false).ToDegrees();
+                                    int i = m_plottedPhasorIndexes[j];
+
+                                    if (i < phasorCount)
+                                        row[m_plottedPhasorColumns[j]] = (cell.PhasorValues[i].AdjustedAngle() - phasor.AdjustedAngle()).ToRange(-Math.PI, false).ToDegrees();
                                 }
                             }
 
@@ -1821,9 +1931,9 @@ public partial class PMUConnectionTester
                             LabelFrequency.Text = $"{frequency:0.0000} Hz";
                             LabelAngle.Text = $"{phasor.AdjustedAngle().ToDegrees()}°";
 
-                            // Most PMU's are setup such that voltage magnitudes need to multiplied by the SQRT(3)
+                            // Most PMU's are set up such that voltage magnitudes need to multiplied by the SQRT(3)
                             LabelMagnitude.Text = phasor.Type == PhasorType.Voltage ?
-                                $"{(phasor.AdjustedMagnitude() / 1000d):0.0000} ({(phasor.AdjustedMagnitude() * m_sqrtOf3 / 1000d):0.0000}) kV" :
+                                $"{phasor.AdjustedMagnitude() / 1000.0D:0.0000} ({phasor.AdjustedMagnitude() * SqrtOf3 / 1000.0D:0.0000}) kV" :
                                 $"{phasor.AdjustedMagnitude():0.0000} Amperes";
                         }
                     }
@@ -1937,7 +2047,7 @@ public partial class PMUConnectionTester
         UpdateChartTitle("Connection attempt failed...");
         AppendStatusMessage($"Device connection error: {ex.Message}");
 
-        if (m_applicationSettings.MaximumConnectionAttempts > 0 & connectionAttempts >= m_applicationSettings.MaximumConnectionAttempts)
+        if (m_applicationSettings.MaximumConnectionAttempts > 0 && connectionAttempts >= m_applicationSettings.MaximumConnectionAttempts)
         {
             Disconnect();
             MessageBox.Show(this, $"{ex.Message}{Environment.NewLine}{connectionAttempts}{(connectionAttempts > 1 ? " connections " : " connection ")}attempted.", "Device Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -1978,8 +2088,10 @@ public partial class PMUConnectionTester
         AppendStatusMessage($"Local server started.  Listening for connection on {ConnectionInformation}");
     }
 
-    private void ServerStopped() => 
+    private void ServerStopped()
+    {
         AppendStatusMessage("Local server stopped.");
+    }
 
     private void PhaseAngleColorsChanged()
     {
@@ -1989,6 +2101,28 @@ public partial class PMUConnectionTester
         if (colorList.Count == 0)
             colorList.Add(Color.Black);
 
+        InitializeChart();
+
+        if (m_selectedCell is not null)
+            TabControlChart.Tabs[(int)ChartTabs.Graph].Selected = true;
+    }
+
+    private void AnalogColorsChanged()
+    {
+        // Validate that there is at least one color available for analog charts
+        ApplicationSettings.ColorList colorList = m_applicationSettings.AnalogColors;
+
+        if (colorList.Count == 0)
+            colorList.Add(Color.DarkOrange);
+
+        InitializeChart();
+
+        if (m_selectedCell is not null)
+            TabControlChart.Tabs[(int)ChartTabs.Graph].Selected = true;
+    }
+
+    private void ChartFilterChanged()
+    {
         InitializeChart();
 
         if (m_selectedCell is not null)
@@ -2087,7 +2221,7 @@ public partial class PMUConnectionTester
 
         Text = string.IsNullOrEmpty(filename) || string.Equals(filename, m_lastConnectionFileName, StringComparison.OrdinalIgnoreCase) ?
             m_applicationName :
-            $"{m_applicationName} - {TrimFileName(filename, Convert.ToInt32((Width - Offset) / 10d))}";
+            $"{m_applicationName} - {TrimFileName(filename, Convert.ToInt32((Width - Offset) / 10.0D))}";
     }
 
     private ConnectionSettings CurrentConnectionSettings
@@ -2639,12 +2773,16 @@ public partial class PMUConnectionTester
 
         // Disconnect from PMU...
         m_frameParser.Stop();
+        m_chartKickStartToken?.Cancel();
         m_configurationFrame = null;
         m_selectedCell = null;
+        m_applicationSettings.PhasorChannelLabels = null;
+        m_applicationSettings.AnalogChannelLabels = null;
         m_configChangeTime = 0L;
         m_lastConfigProcessedTime = 0L;
         m_frequencyData.Rows.Clear();
         m_phasorData.Rows.Clear();
+        m_analogData?.Rows.Clear();
         m_lastRefresh = 0L;
         m_lastFrameType = FundamentalFrameType.Undetermined;
         m_attributeFrames.Clear();
@@ -2824,7 +2962,7 @@ public partial class PMUConnectionTester
                 // Add frame to tree root using its frame type value as the ID
                 int lastNodeID = AddChannelNode(attributeTable, (int)frame.FrameType + 1, ref currentNodeID, frame, frame.Timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff"), associatedFrame);
 
-                // We add extra detail for non partial configuration and data frames...
+                // We add extra detail for partial configuration and data frames...
                 int lastCellNodeID;
 
                 if (frame.FrameType == FundamentalFrameType.ConfigurationFrame)
@@ -3118,7 +3256,7 @@ public partial class PMUConnectionTester
                     nodeAppearance.BackColor = m_applicationSettings.ChannelNodeBackgroundColor;
                     nodeAppearance.ForeColor = m_applicationSettings.ChannelNodeForegroundColor;
                     nodeAppearance.FontData.Bold = DefaultableBoolean.True;
-                    nodeAppearance.FontData.SizeInPoints = 9f;
+                    nodeAppearance.FontData.SizeInPoints = 9.0F;
 
                     // Assign a tree key to root frames for quick reference later (used during expand all)
                     if (channelNode <= (int)FundamentalFrameType.Undetermined)
@@ -3227,6 +3365,112 @@ public partial class PMUConnectionTester
 
     #region [ Chart Initialization and Display Code ]
 
+    private void KickStartChart()
+    {
+        // DelayAndExecute fires on a background thread, so marshal the chart work to the UI thread
+        try
+        {
+            if (m_shuttingDown || IsDisposed || !IsHandleCreated)
+                return;
+
+            BeginInvoke(new Action(() =>
+            {
+                if (m_shuttingDown || m_selectedCell is null)
+                    return;
+
+                // Simply replaying same re-initialization a manual phasor re-selection
+                ComboBoxPmus_SelectedIndexChanged(this, EventArgs.Empty);
+                ChartDataDisplay.DataBind();
+                ChartDataDisplay.Refresh();
+            }));
+        }
+        catch (ObjectDisposedException)
+        {
+            // Form closed before the delayed kick fired - safe to ignore
+        }
+        catch (InvalidOperationException)
+        {
+            // Handle destroyed during shutdown - safe to ignore
+        }
+    }
+
+    private void ChartDataDisplay_MouseUp(object sender, MouseEventArgs e)
+    {
+        if (e.Button != MouseButtons.Right)
+            return;
+
+        // Left half of the chart maps to the primary axis, right half to the secondary axis
+        AxisChannelType channelType = e.X < ChartDataDisplay.Width / 2 ?
+            m_primaryAxisChannelType :
+            m_secondaryAxisChannelType;
+
+        // No-op when the clicked side has no plotted channel type
+        if (channelType == AxisChannelType.None)
+            return;
+
+        ShowChannelSelectorPopup(channelType, ChartDataDisplay.PointToScreen(new Point(e.X, e.Y)));
+    }
+
+    private void ShowChannelSelectorPopup(AxisChannelType channelType, Point screenLocation)
+    {
+        string[] labels = channelType == AxisChannelType.Phasor ?
+            m_applicationSettings.PhasorChannelLabels :
+            m_applicationSettings.AnalogChannelLabels;
+
+        if (labels is null || labels.Length == 0)
+            return;
+
+        string current = channelType == AxisChannelType.Phasor ?
+            m_applicationSettings.PhasorIndexesToPlot :
+            m_applicationSettings.AnalogIndexesToPlot;
+
+        HashSet<int> selected = ApplicationSettings.ParseIndexList(current, labels.Length);
+
+        string title = channelType == AxisChannelType.Phasor ? "Phasors to Plot" : "Analogs to Plot";
+
+        // Reuse the same checkbox list control the property-grid editor uses
+        ChannelIndexCheckList list = new(title, labels, selected);
+
+        // Capture the control's natural size before hosting - ToolStripControlHost AutoSize
+        // computes a collapsed PreferredSize for a UserControl with docked children, which
+        // renders the popup as a thin vertical bar
+        Size desiredSize = list.Size;
+
+        ToolStripDropDown dropDown = new()
+        {
+            AutoClose = true,
+            Padding = Padding.Empty,
+            DropShadowEnabled = true
+        };
+
+        ToolStripControlHost host = new(list)
+        {
+            AutoSize = false,
+            Padding = Padding.Empty,
+            Margin = Padding.Empty,
+            Size = desiredSize
+        };
+
+        dropDown.Items.Add(host);
+
+        // Apply selection whenever the popup closes (OK button or click-away), matching the
+        // property-grid editor's apply-on-close behavior
+        dropDown.Closed += (_, _) =>
+        {
+            string result = ApplicationSettings.FormatIndexList(list.GetCheckedIndexes(), labels.Length);
+
+            if (channelType == AxisChannelType.Phasor)
+                m_applicationSettings.PhasorIndexesToPlot = result;
+            else
+                m_applicationSettings.AnalogIndexesToPlot = result;
+
+            BeginInvoke(new Action(dropDown.Dispose));
+        };
+
+        list.SelectionConfirmed += (_, _) => dropDown.Close();
+        dropDown.Show(screenLocation);
+    }
+
     private void InitializeChart()
     {
         InitializeFrequencyLayer();
@@ -3243,11 +3487,12 @@ public partial class PMUConnectionTester
 
         titleTop.Margins.Top = 0;
         titleTop.Margins.Bottom = 10;
-        titleTop.Font = new Font("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point);
+        titleTop.Font = new Font("Verdana", 8.0F, FontStyle.Bold, GraphicsUnit.Point);
         titleTop.FontColor = m_applicationSettings.ForegroundColor;
         titleTop.ClipText = false;
 
         chart.DataBind();
+        chart.Refresh();
     }
 
     private void InitializeFrequencyLayer()
@@ -3290,54 +3535,156 @@ public partial class PMUConnectionTester
 
         appearance.Legends.Clear();
 
-        if (appearance.Series.Count > 1)
+        // Frequency layer occupies index 0; clear any phasor/analog series, layers, and chart areas
+        while (appearance.Series.Count > 1)
             appearance.Series.RemoveAt(1);
 
-        if (appearance.ChartLayers.Count > 1)
+        while (appearance.ChartLayers.Count > 1)
             appearance.ChartLayers.RemoveAt(1);
 
-        if (appearance.ChartAreas.Count > 1)
+        while (appearance.ChartAreas.Count > 1)
             appearance.ChartAreas.RemoveAt(1);
+
+        int analogCount = m_selectedCell?.AnalogDefinitions?.Count ?? 0;
+        bool showPhasors = m_applicationSettings.PlotPhasorValues && phasorCount > 0;
+        bool showAnalogs = m_applicationSettings.PlotAnalogValues && analogCount > 0;
+
+        // Phasors and analogs are kept on opposite axes (enforced by the settings swap). When
+        // both are plotted each uses its assigned axis; when only one type is plotted it always
+        // uses the primary axis so a lone trend doesn't render against the right-hand axis.
+        bool bothShown = showPhasors && showAnalogs;
+        AxisNumber phasorAxisNumber = bothShown && m_applicationSettings.PhasorGraphStyle == ApplicationSettings.GraphAxis.Secondary ? AxisNumber.Y2_Axis : AxisNumber.Y_Axis;
+        AxisNumber analogAxisNumber = bothShown && m_applicationSettings.AnalogGraphStyle == ApplicationSettings.GraphAxis.Secondary ? AxisNumber.Y2_Axis : AxisNumber.Y_Axis;
+
+        // Track which channel type lives on each axis so right-clicking that side of the chart
+        // opens the matching channel selector
+        m_primaryAxisChannelType = AxisChannelType.None;
+        m_secondaryAxisChannelType = AxisChannelType.None;
+
+        if (showPhasors)
+        {
+            if (phasorAxisNumber == AxisNumber.Y_Axis)
+                m_primaryAxisChannelType = AxisChannelType.Phasor;
+            else
+                m_secondaryAxisChannelType = AxisChannelType.Phasor;
+        }
+
+        if (showAnalogs)
+        {
+            if (analogAxisNumber == AxisNumber.Y_Axis)
+                m_primaryAxisChannelType = AxisChannelType.Analog;
+            else
+                m_secondaryAxisChannelType = AxisChannelType.Analog;
+        }
+
+        // Resolve the index-list filters to the actual channels that will be plotted. We only
+        // create data columns and series for plotted channels so excluded channels never appear
+        // in the chart or its legend.
+        m_plottedPhasorIndexes = GetPlottedIndexes(m_applicationSettings.PhasorIndexesToPlot, showPhasors ? phasorCount : 0);
+        m_plottedAnalogIndexes = GetPlottedIndexes(m_applicationSettings.AnalogIndexesToPlot, showAnalogs ? analogCount : 0);
 
         m_phasorData = new DataTable();
 
-        for (int i = 0; i < phasorCount; i++)
-            m_phasorData.Columns.Add(new DataColumn($"y{i}", typeof(float)));
+        // Cache the created columns in plotted-index order so the per-frame data handler can write
+        // values through the DataColumn reference (the fastest DataRow indexer) instead of resolving
+        // a "y{i}" column name on every row
+        m_plottedPhasorColumns = new DataColumn[m_plottedPhasorIndexes.Count];
+
+        for (int j = 0; j < m_plottedPhasorIndexes.Count; j++)
+        {
+            DataColumn column = new($"y{m_plottedPhasorIndexes[j]}", typeof(float));
+            m_phasorData.Columns.Add(column);
+            m_plottedPhasorColumns[j] = column;
+        }
 
         // We call BeginDataLoad to disable auto-refresh of charts
         m_phasorData.BeginLoadData();
 
-        ChartArea phaseAngleChartArea = new()
+        m_analogData = new DataTable();
+
+        m_plottedAnalogColumns = new DataColumn[m_plottedAnalogIndexes.Count];
+
+        for (int j = 0; j < m_plottedAnalogIndexes.Count; j++)
+        {
+            DataColumn column = new($"a{m_plottedAnalogIndexes[j]}", typeof(float));
+            m_analogData.Columns.Add(column);
+            m_plottedAnalogColumns[j] = column;
+        }
+
+        m_analogData.BeginLoadData();
+
+        bool needsLegend = (showPhasors && m_applicationSettings.ShowPhaseAngleLegend) ||
+                           (showAnalogs && m_applicationSettings.ShowAnalogLegend);
+
+        // Type prefixes (∠ / A:) only disambiguate when both phasors and analogs share the one legend.
+        bool prefixLegendLabels = m_plottedPhasorIndexes.Count > 0 && m_applicationSettings.ShowPhaseAngleLegend &&
+                                  m_plottedAnalogIndexes.Count > 0 && m_applicationSettings.ShowAnalogLegend;
+
+        // When a secondary (right) axis is present, reserve a little more right-side room for its labels.
+        int plotWidth = needsLegend ? (bothShown ? 76 : 80) : 100;
+
+        ChartArea chartArea = new()
         {
             BoundsMeasureType = MeasureType.Percentage,
-            Bounds = new Rectangle(0, 50, m_applicationSettings.ShowPhaseAngleLegend ? 80 : 100, 50),
+            Bounds = new Rectangle(0, 50, plotWidth, 50),
             Border = { Thickness = 0 },
             PE = { Fill = m_applicationSettings.BackgroundColor }
         };
 
-        ChartDataDisplay.CompositeChart.ChartAreas.Add(phaseAngleChartArea);
+        ChartDataDisplay.CompositeChart.ChartAreas.Add(chartArea);
 
-        AxisItem timeAxis = CreateTimeAxis(0);
-        phaseAngleChartArea.Axes.Add(timeAxis);
-        AxisItem phaseAngleAxis = CreatePhaseAngleAxis();
-        phaseAngleChartArea.Axes.Add(phaseAngleAxis);
+        ChartLayerAppearance phaseAngleLayer = null;
+        ChartLayerAppearance analogLayer = null;
 
-        ChartLayerAppearance phaseAngleLayer = CreatePhaseAngleLayer(phaseAngleChartArea, timeAxis, phaseAngleAxis);
-        ChartDataDisplay.CompositeChart.ChartLayers.Add(phaseAngleLayer);
+        // Each layer gets its own time (X) axis. Phasor rows are throttled (added only on
+        // angle change) while analog rows are added every frame, so a shared X axis would scale
+        // to the larger row count and collapse the other trend into a sliver. Separate axes let
+        // each trend span the full plot width independently. The secondary X2 axis is invisible
+        // so only one bottom axis line is drawn.
+        if (showPhasors)
+        {
+            AxisItem phasorTimeAxis = CreateTimeAxis(0);
+            chartArea.Axes.Add(phasorTimeAxis);
 
-        if (!m_applicationSettings.ShowPhaseAngleLegend)
+            AxisItem phaseAngleAxis = CreatePhaseAngleAxis(phasorAxisNumber);
+            chartArea.Axes.Add(phaseAngleAxis);
+
+            phaseAngleLayer = CreatePhaseAngleLayer(chartArea, phasorTimeAxis, phaseAngleAxis, prefixLegendLabels);
+            ChartDataDisplay.CompositeChart.ChartLayers.Add(phaseAngleLayer);
+        }
+
+        if (showAnalogs)
+        {
+            AxisItem analogTimeAxis = CreateTimeAxis(0, showPhasors ? AxisNumber.X2_Axis : AxisNumber.X_Axis);
+            chartArea.Axes.Add(analogTimeAxis);
+
+            AxisItem analogAxis = CreateAnalogAxis(analogAxisNumber);
+            chartArea.Axes.Add(analogAxis);
+
+            analogLayer = CreateAnalogLayer(chartArea, analogTimeAxis, analogAxis, prefixLegendLabels);
+            ChartDataDisplay.CompositeChart.ChartLayers.Add(analogLayer);
+        }
+
+        if (!needsLegend)
             return;
 
-        CompositeLegend phasorLegend = CreatePhasorLegend();
-        ChartDataDisplay.CompositeChart.Legends.Add(phasorLegend);
-        phasorLegend.ChartLayers.Add(phaseAngleLayer);
+        CompositeLegend chartLegend = CreatePhasorAndAnalogLegend();
+        ChartDataDisplay.CompositeChart.Legends.Add(chartLegend);
+
+        if (showPhasors && m_applicationSettings.ShowPhaseAngleLegend && phaseAngleLayer is not null)
+            chartLegend.ChartLayers.Add(phaseAngleLayer);
+
+        if (showAnalogs && m_applicationSettings.ShowAnalogLegend && analogLayer is not null)
+            chartLegend.ChartLayers.Add(analogLayer);
     }
 
-    private AxisItem CreateTimeAxis(int extent) => new()
+    private AxisItem CreateTimeAxis(int extent, AxisNumber orientation = AxisNumber.X_Axis) => new()
     {
-        OrientationType = AxisNumber.X_Axis,
+        OrientationType = orientation,
         DataType = AxisDataType.String,
-        Visible = true,
+        // Only draw the primary (bottom) time axis line; a secondary X2 axis is used purely to
+        // scale a second layer independently and should not render a line at the top
+        Visible = orientation == AxisNumber.X_Axis,
         Labels = { Visible = false },
         SetLabelAxisType = SetLabelAxisType.ContinuousData,
         LineThickness = 1,
@@ -3357,7 +3704,7 @@ public partial class PMUConnectionTester
             Labels =
             {
                 ItemFormatString = "<DATA_VALUE:0.0000>",
-                Font = new Font("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point),
+                Font = new Font("Verdana", 8F, FontStyle.Bold, GraphicsUnit.Point),
                 FontColor = m_applicationSettings.ForegroundColor
             },
             LineThickness = 1,
@@ -3366,42 +3713,82 @@ public partial class PMUConnectionTester
             MinorGridLines = { Visible = false },
             MajorGridLines = { Visible = true },
             TickmarkStyle = AxisTickStyle.Percentage,
-            TickmarkPercentage = 23d,
-            TickmarkInterval = 0.001d,
+            TickmarkPercentage = 23.0D,
+            TickmarkInterval = 0.001D,
             RangeType = AxisRangeType.Automatic,
-            RangeMin = 59.9d,
-            RangeMax = 60.1d
+            RangeMin = 59.9D,
+            RangeMax = 60.1D
         };
 
-        axis.Margin.Far.Value = 4d;
-        axis.Margin.Near.Value = 4d;
+        axis.Margin.Far.Value = 4.0D;
+        axis.Margin.Near.Value = 4.0D;
 
         return axis;
     }
 
-    private AxisItem CreatePhaseAngleAxis() => new()
+    private AxisItem CreatePhaseAngleAxis(AxisNumber orientation) => new()
     {
-        OrientationType = AxisNumber.Y_Axis,
+        OrientationType = orientation,
         DataType = AxisDataType.Numeric,
         Visible = true,
         Labels =
         {
-            ItemFormatString = "<DATA_VALUE:0.#>",
-            Font = new Font("Verdana", 8f, FontStyle.Bold, GraphicsUnit.Point),
+            // Leading spaces nudge Y2 (right-side) labels off the axis line; Layout.Padding has no effect here
+            ItemFormatString = orientation == AxisNumber.Y2_Axis ? "  <DATA_VALUE:0.#>" : "<DATA_VALUE:0.#>",
+            Font = new Font("Verdana", 8.0F, FontStyle.Bold, GraphicsUnit.Point),
             FontColor = m_applicationSettings.ForegroundColor,
+            // Must stay Near: Far (on this or the nested LabelStyle.HorizontalAlign) relocates the labels off the
+            // chart edge rather than right-justifying them, so this control can't right-align Y-axis label text
             HorizontalAlign = StringAlignment.Near
         },
         LineThickness = 1,
         LineColor = m_applicationSettings.ForegroundColor,
         Extent = 30,
         MinorGridLines = { Visible = false },
-        MajorGridLines = { Visible = true },
+        MajorGridLines = { Visible = orientation == AxisNumber.Y_Axis },
         TickmarkStyle = AxisTickStyle.Percentage,
-        TickmarkPercentage = 25d,
+        TickmarkPercentage = 25.0D,
         RangeType = AxisRangeType.Custom,
-        RangeMin = -180,
-        RangeMax = 180d
+        RangeMin = -180.0D,
+        RangeMax = 180.0D
     };
+
+    private AxisItem CreateAnalogAxis(AxisNumber orientation)
+    {
+        AxisItem axis = new()
+        {
+            OrientationType = orientation,
+            DataType = AxisDataType.Numeric,
+            Visible = true,
+            Labels =
+            {
+                // Pad labels off the axis line: leading spaces on the right (Y2), trailing non-breaking spaces on
+                // the left (plain trailing spaces get trimmed before FontSizeBestFit measures the text)
+                ItemFormatString = orientation == AxisNumber.Y2_Axis ? "  <DATA_VALUE:0.000>" : "<DATA_VALUE:0.000>",
+                Font = new Font("Verdana", 8.0F, FontStyle.Bold, GraphicsUnit.Point),
+                FontColor = m_applicationSettings.ForegroundColor,
+                // Must stay Near: Far (on this or the nested LabelStyle.HorizontalAlign) relocates the labels off the
+                // chart edge rather than right-justifying them, so this control can't right-align Y-axis label text
+                HorizontalAlign = StringAlignment.Near,
+                // Shrinks over-long analog labels instead of clipping them (set once at build, not per frame).
+                FontSizeBestFit = true
+            },
+            LineThickness = 1,
+            LineColor = m_applicationSettings.ForegroundColor,
+            Extent = 60,
+            MinorGridLines = { Visible = false },
+            MajorGridLines = { Visible = orientation == AxisNumber.Y_Axis },
+            TickmarkStyle = AxisTickStyle.Percentage,
+            TickmarkPercentage = 25.0D,
+            RangeType = AxisRangeType.Automatic
+        };
+
+        // Extra headroom at the top so the highest auto-ranged tick label clears the plot border
+        axis.Margin.Far.Value = 10.0D;
+        axis.Margin.Near.Value = 4.0D;
+
+        return axis;
+    }
 
     private ChartLayerAppearance CreateFrequencyLayer(ChartArea area, AxisItem xAxis, AxisItem yAxis)
     {
@@ -3428,7 +3815,7 @@ public partial class PMUConnectionTester
         return frequencyLayer;
     }
 
-    private ChartLayerAppearance CreatePhaseAngleLayer(ChartArea area, AxisItem xAxis, AxisItem yAxis)
+    private ChartLayerAppearance CreatePhaseAngleLayer(ChartArea area, AxisItem xAxis, AxisItem yAxis, bool prefixLabels)
     {
         ChartLayerAppearance phaseAngleLayer = new()
         {
@@ -3442,17 +3829,21 @@ public partial class PMUConnectionTester
         appearance.MidPointAnchors = m_applicationSettings.ShowDataPointsOnGraphs;
         appearance.Thickness = m_applicationSettings.TrendLineWidth;
 
-        for (int i = 0; i < m_phasorData.Columns.Count; i++)
+        foreach (int i in m_plottedPhasorIndexes)
         {
             NumericSeries phasorDataSeries = new();
 
             phasorDataSeries.SetNoUpdate(true);
             phasorDataSeries.DataBind(m_phasorData, $"y{i}");
-            phasorDataSeries.Label = m_selectedCell is null ?
-                $"Phasor {(i + 1)}" :
-                m_selectedCell.PhasorDefinitions[i].Label;
 
-            // Set phase angle color (rotating through configured set of colors)
+            // V:/I: mirrors the phasor selector; ∠ is added only when analogs share the legend
+            IPhasorDefinition phasor = m_selectedCell?.PhasorDefinitions[i];
+            string label = phasor is null ?
+                $"Phasor {i + 1}" :
+                $"{(phasor.PhasorType == PhasorType.Voltage ? "V" : "I")}: {phasor.Label}";
+            phasorDataSeries.Label = prefixLabels ? $"∠ {label}" : label;
+
+            // Set phase angle color (rotating through configured set of colors based on actual channel index)
             phasorDataSeries.PEs.Add(new PaintElement(m_applicationSettings.PhaseAngleColors[i % m_applicationSettings.PhaseAngleColors.Count]));
             ChartDataDisplay.CompositeChart.Series.Add(phasorDataSeries);
             phaseAngleLayer.Series.Add(phasorDataSeries);
@@ -3461,7 +3852,61 @@ public partial class PMUConnectionTester
         return phaseAngleLayer;
     }
 
-    private CompositeLegend CreatePhasorLegend()
+    private ChartLayerAppearance CreateAnalogLayer(ChartArea area, AxisItem xAxis, AxisItem yAxis, bool prefixLabels)
+    {
+        ChartLayerAppearance analogLayer = new()
+        {
+            ChartType = ChartType.SplineChart,
+            ChartArea = area,
+            AxisX = xAxis,
+            AxisY = yAxis
+        };
+
+        SplineChartAppearance appearance = (SplineChartAppearance)analogLayer.ChartTypeAppearance;
+        appearance.MidPointAnchors = m_applicationSettings.ShowDataPointsOnGraphs;
+        appearance.Thickness = m_applicationSettings.TrendLineWidth;
+
+        ApplicationSettings.ColorList analogColors = m_applicationSettings.AnalogColors;
+
+        if (analogColors is null || analogColors.Count == 0)
+            analogColors = [Color.DarkOrange];
+
+        foreach (int i in m_plottedAnalogIndexes)
+        {
+            NumericSeries analogDataSeries = new();
+
+            analogDataSeries.SetNoUpdate(true);
+            analogDataSeries.DataBind(m_analogData, $"a{i}");
+
+            string label = m_selectedCell is null || i >= m_selectedCell.AnalogDefinitions.Count ?
+                $"Analog {i + 1}" :
+                m_selectedCell.AnalogDefinitions[i].Label;
+            analogDataSeries.Label = prefixLabels ? $"A: {label}" : label;
+
+            analogDataSeries.PEs.Add(new PaintElement(analogColors[i % analogColors.Count]));
+            ChartDataDisplay.CompositeChart.Series.Add(analogDataSeries);
+            analogLayer.Series.Add(analogDataSeries);
+        }
+
+        return analogLayer;
+    }
+
+    // Resolves an index-list filter expression into the ordered list of channel indexes to plot.
+    private static List<int> GetPlottedIndexes(string expression, int channelCount)
+    {
+        HashSet<int> selected = ApplicationSettings.ParseIndexList(expression, channelCount);
+        List<int> indexes = [];
+
+        for (int i = 0; i < channelCount; i++)
+        {
+            if (selected is null || selected.Contains(i))
+                indexes.Add(i);
+        }
+
+        return indexes;
+    }
+
+    private CompositeLegend CreatePhasorAndAnalogLegend()
     {
         CompositeLegend phasorLegend = new();
         phasorLegend.Bounds = new Rectangle(79, 50, 20, 48); // 78, 83, 50, 15)

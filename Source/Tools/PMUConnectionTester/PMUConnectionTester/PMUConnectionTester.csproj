@@ -138,7 +138,12 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\GSF\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -163,6 +168,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ApplicationSettings.cs" />
+    <Compile Include="ChannelIndexEditor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ReceiveFromSelector.Designer.cs">
       <DependentUpon>ReceiveFromSelector.cs</DependentUpon>

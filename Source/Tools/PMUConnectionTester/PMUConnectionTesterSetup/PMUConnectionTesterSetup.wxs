@@ -108,31 +108,31 @@
         </File>
       </Component>
       <Component Id="System_Buffers_dll" Guid="{FB16BAA9-C6CB-4845-B657-AEA3520FBC17}" Win64="$(var.Win64)">
-        <File Id="System_Buffers_dll" Name="System.Buffers.dll" KeyPath="yes" Assembly=".net" DiskId="1"
+        <File Id="System_Buffers_dll" Name="System.Buffers.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="System_Buffers_dll" AssemblyApplication="System_Buffers_dll" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\GSF\System.Buffers.dll" >
           <netfx:NativeImage Id="ngen_System.Buffers.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
         </File>
       </Component>
       <Component Id="System_Memory_dll" Guid="{78F25B05-B607-4686-8E28-7134EDAE683C}" Win64="$(var.Win64)">
-        <File Id="System_Memory_dll" Name="System.Memory.dll" KeyPath="yes" Assembly=".net" DiskId="1"
+        <File Id="System_Memory_dll" Name="System.Memory.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="System_Memory_dll" AssemblyApplication="System_Memory_dll" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\GSF\System.Memory.dll" >
           <netfx:NativeImage Id="ngen_System.Memory.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
         </File>
       </Component>
       <Component Id="System_Numerics_Vectors_dll" Guid="{1E27C0E6-F427-484A-98D2-004EF851B0D4}" Win64="$(var.Win64)">
-        <File Id="System_Numerics_Vectors_dll" Name="System.Numerics.Vectors.dll" KeyPath="yes" Assembly=".net" DiskId="1"
+        <File Id="System_Numerics_Vectors_dll" Name="System.Numerics.Vectors.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="System_Numerics_Vectors_dll" AssemblyApplication="System_Numerics_Vectors_dll" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\GSF\System.Numerics.Vectors.dll" >
           <netfx:NativeImage Id="ngen_System.Numerics.Vectors.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
         </File>
       </Component>
       <Component Id="System_Runtime_CompilerServices_Unsafe_dll" Guid="{E575D04A-0C73-4FA1-8C51-DD078BF3EFC2}" Win64="$(var.Win64)">
-        <File Id="System_Runtime_CompilerServices_Unsafe_dll" Name="System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Assembly=".net" DiskId="1"
+        <File Id="System_Runtime_CompilerServices_Unsafe_dll" Name="System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="System_Runtime_CompilerServices_Unsafe_dll" AssemblyApplication="System_Runtime_CompilerServices_Unsafe_dll" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\GSF\System.Runtime.CompilerServices.Unsafe.dll" >
           <netfx:NativeImage Id="ngen_System.Runtime.CompilerServices.Unsafe.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
         </File>
       </Component>
       <Component Id="System_ValueTuple_dll" Guid="{42649E65-7AFA-424C-BC19-B3F2B0A98785}" Win64="$(var.Win64)">
-        <File Id="System_ValueTuple_dll" Name="System.ValueTuple.dll" KeyPath="yes" Assembly=".net" DiskId="1"
+        <File Id="System_ValueTuple_dll" Name="System.ValueTuple.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="System_ValueTuple_dll" AssemblyApplication="System_ValueTuple_dll" DiskId="1"
               Source="$(var.SolutionDir)\Dependencies\GSF\System.ValueTuple.dll" >
           <netfx:NativeImage Id="ngen_System.ValueTuple.dll" Platform="all" Priority="0" AppBaseDirectory="TARGETDIR"/>
         </File>
