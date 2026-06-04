@@ -570,7 +570,12 @@ public partial class PMUConnectionTester
             }
         }
 
-        InitializePhaseAngleLayer(m_selectedCell.PhasorDefinitions.Count);
+        // Rebuild the whole chart (not just the phase-angle layer) so the frequency layer is recreated with
+        // the frame-rate-appropriate trend type now that a configuration frame (and its frame rate) is known
+        // - see ApplyTrendChartType. KickStartChart drives this pass after the first configuration frame. A
+        // same-PMU repeat configuration frame leaves the selected index unchanged, so this does not fire and
+        // the frequency trend is preserved; an actual PMU change rebuilds (and resets) it, which is correct.
+        InitializeChart();
     }
 
     private void ComboBoxPhasors_SelectedIndexChanged(object sender, EventArgs e)
@@ -3790,19 +3795,47 @@ public partial class PMUConnectionTester
         return axis;
     }
 
+    // Applies the trend chart type and shared appearance to a layer: a spline at normal synchrophasor frame
+    // rates (for the smoother look) or a straight line above the configurable ApplicationSettings
+    // SplineRenderingMaxFrameRate threshold. At high rates - e.g., SEL CWS point-on-wave at 3000 fps - spline
+    // tessellation of the dense, fast-updating (and, for low-smoothing configurations, noisy) trend is
+    // expensive enough per render to saturate the UI thread and lock the application up; straight-line
+    // rendering is O(points) regardless of data shape. NOTE: the frequency layer is only built by
+    // InitializeChart (not the per-PMU InitializePhaseAngleLayer pass), so the chart must be fully rebuilt
+    // once the configuration frame rate is known for this to take effect on the frequency trend - see
+    // ComboBoxPmus_SelectedIndexChanged. (The settings grid rebuilds the chart on any Chart Settings change.)
+    private void ApplyTrendChartType(ChartLayerAppearance layer)
+    {
+        bool highFrameRate = m_configurationFrame is not null && m_configurationFrame.FrameRate > m_applicationSettings.SplineRenderingMaxFrameRate;
+
+        if (highFrameRate)
+        {
+            layer.ChartType = ChartType.LineChart;
+
+            LineChartAppearance appearance = (LineChartAppearance)layer.ChartTypeAppearance;
+            appearance.MidPointAnchors = m_applicationSettings.ShowDataPointsOnGraphs;
+            appearance.Thickness = m_applicationSettings.TrendLineWidth;
+        }
+        else
+        {
+            layer.ChartType = ChartType.SplineChart;
+
+            SplineChartAppearance appearance = (SplineChartAppearance)layer.ChartTypeAppearance;
+            appearance.MidPointAnchors = m_applicationSettings.ShowDataPointsOnGraphs;
+            appearance.Thickness = m_applicationSettings.TrendLineWidth;
+        }
+    }
+
     private ChartLayerAppearance CreateFrequencyLayer(ChartArea area, AxisItem xAxis, AxisItem yAxis)
     {
         ChartLayerAppearance frequencyLayer = new()
         {
-            ChartType = ChartType.SplineChart,
             ChartArea = area,
             AxisX = xAxis,
             AxisY = yAxis
         };
 
-        SplineChartAppearance appearance = (SplineChartAppearance)frequencyLayer.ChartTypeAppearance;
-        appearance.MidPointAnchors = m_applicationSettings.ShowDataPointsOnGraphs;
-        appearance.Thickness = m_applicationSettings.TrendLineWidth;
+        ApplyTrendChartType(frequencyLayer);
 
         NumericSeries frequencyDataSeries = new();
         frequencyDataSeries.DataBind(m_frequencyData, "y");
@@ -3819,15 +3852,12 @@ public partial class PMUConnectionTester
     {
         ChartLayerAppearance phaseAngleLayer = new()
         {
-            ChartType = ChartType.SplineChart,
             ChartArea = area,
             AxisX = xAxis,
             AxisY = yAxis
         };
 
-        SplineChartAppearance appearance = (SplineChartAppearance)phaseAngleLayer.ChartTypeAppearance;
-        appearance.MidPointAnchors = m_applicationSettings.ShowDataPointsOnGraphs;
-        appearance.Thickness = m_applicationSettings.TrendLineWidth;
+        ApplyTrendChartType(phaseAngleLayer);
 
         foreach (int i in m_plottedPhasorIndexes)
         {
@@ -3856,15 +3886,12 @@ public partial class PMUConnectionTester
     {
         ChartLayerAppearance analogLayer = new()
         {
-            ChartType = ChartType.SplineChart,
             ChartArea = area,
             AxisX = xAxis,
             AxisY = yAxis
         };
 
-        SplineChartAppearance appearance = (SplineChartAppearance)analogLayer.ChartTypeAppearance;
-        appearance.MidPointAnchors = m_applicationSettings.ShowDataPointsOnGraphs;
-        appearance.Thickness = m_applicationSettings.TrendLineWidth;
+        ApplyTrendChartType(analogLayer);
 
         ApplicationSettings.ColorList analogColors = m_applicationSettings.AnalogColors;
 
@@ -3935,6 +3962,7 @@ public partial class PMUConnectionTester
     #endregion
 }
 
+// ReSharper disable once InconsistentNaming
 public static class IDataCellValueExtensions
 {
     public static double AdjustedMagnitude(this IPhasorValue phasor)
