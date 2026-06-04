@@ -67,6 +67,7 @@ public class ApplicationSettings : CategorizedSettingsBase
     private const int DefaultTrendLineWidth = 4;
     private const bool DefaultShowDataPointsOnGraphs = false;
     private const bool DefaultShowMessagesTabOnDataException = true;
+    private const int DefaultSplineRenderingMaxFrameRate = 500;
 
     // Default connection settings
     private const int DefaultMaximumConnectionAttempts = 1;
@@ -370,6 +371,12 @@ public class ApplicationSettings : CategorizedSettingsBase
         get => m_refreshRate;
         set => m_refreshRate = value <= 0.0F ? DefaultChartRefreshRate : value;
     }
+
+    [Category(ChartSettingsCategory)]
+    [Description("Frame rate (frames/second) above which trends are drawn as straight lines instead of splines. Splines look smoother at normal synchrophasor rates (e.g., 30/60/120/240), but at high rates - such as point-on-wave streams (commonly 3000) - spline rendering becomes expensive enough to saturate the UI and lock up the display. Lower this to favor responsiveness; raise it to keep splines at higher frame rates.")]
+    [DefaultValue(DefaultSplineRenderingMaxFrameRate)]
+    [UserScopedSetting]
+    public int SplineRenderingMaxFrameRate { get; set; }
 
     [Category(ChartSettingsCategory)]
     [Description("Background color for graph region.")]

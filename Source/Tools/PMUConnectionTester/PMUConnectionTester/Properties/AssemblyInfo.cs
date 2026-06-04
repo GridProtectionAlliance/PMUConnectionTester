@@ -2,11 +2,11 @@
 using System.Runtime.InteropServices;
 
 // Assembly identity attributes.
-[assembly: AssemblyVersion("4.7.9.0")]
+[assembly: AssemblyVersion("4.7.10.0")]
 
 // Informational attributes.
 [assembly: AssemblyCompany("Grid Protection Alliance")]
-[assembly: AssemblyCopyright("Copyright © 2010-2022, All Rights Reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2010-2026, All Rights Reserved.")]
 [assembly: AssemblyProduct("GSF")]
 
 // Assembly manifest attributes.
