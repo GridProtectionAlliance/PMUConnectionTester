@@ -38,7 +38,7 @@ When connected to a high frame-rate source — for example SEL CWS point-on-wave
 
 ## Documentation and Support
 
-* Documentation for PMUConnectionTester can be found [here](https://pmuconnectiontester.info//HELP).
+* Read [Documentation for PMUConnectionTester](https://pmuconnectiontester.info//HELP).
 * Get in contact with our development team on our new [discussion board](http://discussions.gridprotectionalliance.org/c/gpa-products/pmu-connection-tester).
 
 ## Deployment
