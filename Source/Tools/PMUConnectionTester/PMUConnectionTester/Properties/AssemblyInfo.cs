@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 // Informational attributes.
 [assembly: AssemblyCompany("Grid Protection Alliance")]
-[assembly: AssemblyCopyright("Copyright © 2010-2022, All Rights Reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2010-2026, All Rights Reserved.")]
 [assembly: AssemblyProduct("GSF")]
 
 // Assembly manifest attributes.

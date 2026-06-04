@@ -25,10 +25,20 @@ Any device that supports one of the following phasor protocols may be tested:
 * UTK F-Net
 * SEL Fast Message
 * Macrodyne (M and G starting with version 4.3)
+* SEL CWS — point-on-wave (PoW) streaming (starting with version 4.7); synchrophasors, frequency and ROCOF are derived in real time from the streamed waveform samples
+
+## Real-Time Visualization
+
+As data is received it is graphed live. Alongside the phase-angle and frequency trends, the graph screen supports:
+
+* **Analog plotting** — plot analog channels (such as the point-on-wave samples streamed by SEL CWS) as trends together with the phasor data. Phasors and analogs are kept on opposite Y axes, and either type can be assigned to the primary (left) or secondary (right) axis.
+* **Right-click channel selection** — right-click directly on the graph to choose which phasors or analogs are plotted: the left half of the chart selects the channels on the primary axis and the right half selects those on the secondary axis. The same selections are also available from the property-grid settings.
+
+When connected to a high frame-rate source — for example SEL CWS point-on-wave at 3000 frames per second — trends automatically switch from spline to straight-line rendering above a configurable frame-rate threshold (set under **Chart Settings**, default 500) to keep the display responsive; normal synchrophasor rates retain the smoother spline appearance.
 
 ## Documentation and Support
 
-* Documentation for PMUConnectionTester can be found [here](https://pmuconnectiontester.info//HELP).
+* Read [Documentation for PMUConnectionTester](https://pmuconnectiontester.info//HELP).
 * Get in contact with our development team on our new [discussion board](http://discussions.gridprotectionalliance.org/c/gpa-products/pmu-connection-tester).
 
 ## Deployment
@@ -42,7 +52,7 @@ Any device that supports one of the following phasor protocols may be tested:
 
 ### Requirements
 
-* .NET 4.6 or higher.
+* .NET Framework 4.8 or higher.
 
 ### Latest Stable Release
 
