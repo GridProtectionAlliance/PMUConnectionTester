@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37301.10 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{FAB15BC8-FFA7-4BBB-B52A-83BBF800FDCF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{18CAC75A-26A1-443A-8049-ED5353E5C60B}"
 	ProjectSection(SolutionItems) = preProject
+		..\docs\HELP.md = ..\docs\HELP.md
 		Documentation\PMU Connection Tester Help Documents.zip = Documentation\PMU Connection Tester Help Documents.zip
+		..\docs\README.md = ..\docs\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{34207C22-6EEE-48B6-AD0D-5880BCE89091}"
@@ -33,7 +35,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE.txt = LICENSE.txt
 		NOTICE.txt = NOTICE.txt
 		..\Build\Scripts\PMUConnectionTester.version = ..\Build\Scripts\PMUConnectionTester.version
-		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PMUConnectionTester", "Tools\PMUConnectionTester\PMUConnectionTester\PMUConnectionTester.csproj", "{19BEDCE7-F49A-0C62-1181-762AEC479F98}"
