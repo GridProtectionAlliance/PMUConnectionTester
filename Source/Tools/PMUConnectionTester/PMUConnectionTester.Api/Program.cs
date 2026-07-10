@@ -1,6 +1,7 @@
-using System;
 using ConnectionTester.Api.Infrastructure;
 using Microsoft.Owin.Hosting;
+using System;
+using System.ServiceProcess;
 
 namespace ConnectionTester.Api;
 
@@ -8,6 +9,14 @@ internal static class Program
 {
     private static void Main()
     {
+        // When launched by the Service Control Manager there is no interactive session - run as a
+        // Windows service instead of the console loop below.
+        if (!Environment.UserInteractive)
+        {
+            ServiceBase.Run(new ApiWindowsService());
+            return;
+        }
+
         string url = $"http://localhost:{ApiSettings.ListenPort}/";
 
         using (WebApp.Start<Startup>(url))
