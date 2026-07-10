@@ -1,24 +1,25 @@
-using System;
-using System.Net;
-using System.Web.Http;
 using ConnectionTester.Api.Engine;
 using ConnectionTester.Api.Infrastructure;
 using ConnectionTester.Api.Models;
 using GSF.Communication;
 using GSF.PhasorProtocols;
 using Newtonsoft.Json;
+using System;
+using System.Net;
+using System.Web.Http;
 
 namespace ConnectionTester.Api.Controllers;
 
 /// <summary>
 /// Synchronous PMU connectivity test endpoints - file playback, TCP and UDP.
 /// </summary>
-[RoutePrefix("api/pmuconnectiontester")]
 public class PmuConnectionTesterController : ApiController
 {
     private readonly PmuConnectionTestEngine _engine = new();
 
-    /// <summary>Runs a connectivity test by replaying a captured ".PmuCapture" file.</summary>
+    /// <summary>
+    /// Runs a connectivity test by replaying a captured ".PmuCapture" file.
+    /// </summary>
     [HttpPost]
     [Route("file")]
     public IHttpActionResult File(FileTestRequest request)
@@ -55,7 +56,9 @@ public class PmuConnectionTesterController : ApiController
         return RunAndRespond(correlationId, engineRequest, protocol, request.DeviceIdCode, request.FrameRate);
     }
 
-    /// <summary>Runs a connectivity test against a TCP host/port.</summary>
+    /// <summary>
+    /// Runs a connectivity test against a TCP host/port.
+    /// </summary>
     [HttpPost]
     [Route("tcp")]
     public IHttpActionResult Tcp(TcpTestRequest request)
@@ -85,7 +88,9 @@ public class PmuConnectionTesterController : ApiController
         return RunAndRespond(correlationId, engineRequest, protocol, request.DeviceIdCode, request.FrameRate);
     }
 
-    /// <summary>Runs a connectivity test against a UDP host/port pair.</summary>
+    /// <summary>
+    /// Runs a connectivity test against a UDP host/port pair.
+    /// </summary>
     [HttpPost]
     [Route("udp")]
     public IHttpActionResult Udp(UdpTestRequest request)
@@ -115,15 +120,21 @@ public class PmuConnectionTesterController : ApiController
         return RunAndRespond(correlationId, engineRequest, protocol, request.DeviceIdCode, request.FrameRate);
     }
 
-    private IHttpActionResult RunAndRespond(Guid correlationId, PmuTestRequest engineRequest, PhasorProtocol protocol, ushort deviceIdCode, int frameRate)
-    {
-        PmuTestOutcome outcome = _engine.Run(engineRequest);
-        TestResponse response = MapOutcome(outcome, protocol, deviceIdCode, frameRate);
-
-        ApiLogger.Result(correlationId, response.OverallStatus, response.ExecutionTimeMs, outcome.DataFramesReceived, response.Message);
-
-        return Ok(response);
-    }
+    private static TestResponse BuildFailResponse(string message, PhasorProtocol protocol, ushort deviceIdCode, int frameRate) =>
+        new()
+        {
+            Configuration = new ConfigurationInfo
+            {
+                ConfigurationFrameReceived = false,
+                DeviceIdCode = deviceIdCode,
+                FrameRate = frameRate,
+                Protocol = protocol.ToString()
+            },
+            Data = new DataMetrics(),
+            ExecutionTimeMs = 0,
+            OverallStatus = "FAIL",
+            Message = message
+        };
 
     private static TestResponse MapOutcome(PmuTestOutcome outcome, PhasorProtocol protocol, ushort deviceIdCode, int frameRate)
     {
@@ -174,21 +185,8 @@ public class PmuConnectionTesterController : ApiController
         };
     }
 
-    private static TestResponse BuildFailResponse(string message, PhasorProtocol protocol, ushort deviceIdCode, int frameRate) =>
-        new()
-        {
-            Configuration = new ConfigurationInfo
-            {
-                ConfigurationFrameReceived = false,
-                DeviceIdCode = deviceIdCode,
-                FrameRate = frameRate,
-                Protocol = protocol.ToString()
-            },
-            Data = new DataMetrics(),
-            ExecutionTimeMs = 0,
-            OverallStatus = "FAIL",
-            Message = message
-        };
+    private static bool TryParseProtocol(string protocol, out PhasorProtocol result) =>
+        Enum.TryParse(protocol, true, out result);
 
     private IHttpActionResult BadRequestResponse(Guid correlationId, string endpoint, string message)
     {
@@ -221,6 +219,13 @@ public class PmuConnectionTesterController : ApiController
         return "Invalid request parameters.";
     }
 
-    private static bool TryParseProtocol(string protocol, out PhasorProtocol result) =>
-        Enum.TryParse(protocol, true, out result);
+    private IHttpActionResult RunAndRespond(Guid correlationId, PmuTestRequest engineRequest, PhasorProtocol protocol, ushort deviceIdCode, int frameRate)
+    {
+        PmuTestOutcome outcome = _engine.Run(engineRequest);
+        TestResponse response = MapOutcome(outcome, protocol, deviceIdCode, frameRate);
+
+        ApiLogger.Result(correlationId, response.OverallStatus, response.ExecutionTimeMs, outcome.DataFramesReceived, response.Message);
+
+        return Ok(response);
+    }
 }
