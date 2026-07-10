@@ -8,6 +8,8 @@ namespace ConnectionTester.Api.Infrastructure;
 /// </summary>
 internal static class ApiSettings
 {
+    public static string ListenAddress { get; } = ReadString("ListenAddress", "localhost");
+
     public static int ListenPort { get; } = ReadInt("ListenPort", 8888);
 
     public static int MaxExecutionTimeoutSeconds { get; } = ReadInt("MaxExecutionTimeoutSeconds", 60);
@@ -18,6 +20,12 @@ internal static class ApiSettings
     {
         string value = ConfigurationManager.AppSettings[key];
         return int.TryParse(value, out int result) ? result : defaultValue;
+    }
+
+    private static string ReadString(string key, string defaultValue)
+    {
+        string value = ConfigurationManager.AppSettings[key];
+        return string.IsNullOrWhiteSpace(value) ? defaultValue : value;
     }
 
     /// <summary>

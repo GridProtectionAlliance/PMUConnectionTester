@@ -22,7 +22,7 @@ internal sealed class ApiWindowsService : ServiceBase
 
     protected override void OnStart(string[] args)
     {
-        string url = $"http://localhost:{ApiSettings.ListenPort}/";
+        string url = $"http://{ApiSettings.ListenAddress}:{ApiSettings.ListenPort}/";
 
         m_webApp = WebApp.Start<Startup>(url);
     }

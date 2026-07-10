@@ -17,7 +17,7 @@ internal static class Program
             return;
         }
 
-        string url = $"http://localhost:{ApiSettings.ListenPort}/";
+        string url = $"http://{ApiSettings.ListenAddress}:{ApiSettings.ListenPort}/";
 
         using (WebApp.Start<Startup>(url))
         {
