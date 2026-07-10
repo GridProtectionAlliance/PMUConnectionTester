@@ -1,5 +1,6 @@
 using Newtonsoft.Json.Serialization;
 using Owin;
+using Swashbuckle.Application;
 using System.Net.Http.Formatting;
 using System.Web.Http;
 
@@ -22,8 +23,8 @@ public class Startup
         jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         jsonFormatter.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
 
-        //config.EnableSwagger(c => c.SingleApiVersion("v1", "PMU Connection Tester API"))
-        //      .EnableSwaggerUi();
+        config.EnableSwagger(c => c.SingleApiVersion("v1", "PMU Connection Tester API"))
+              .EnableSwaggerUi();
 
         app.UseWebApi(config);
     }

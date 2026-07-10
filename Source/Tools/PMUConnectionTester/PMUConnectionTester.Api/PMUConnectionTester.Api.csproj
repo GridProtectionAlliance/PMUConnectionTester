@@ -149,7 +149,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(ProjectDir)..\..\..\Dependencies\GSF\ValidateAssemblyBindings.exe" "$(TargetPath).config"</PostBuildEvent>
+    <PostBuildEvent>"$(ProjectDir)..\..\..\Dependencies\GSF\ValidateAssemblyBindings.exe" "$(TargetPath).config" "leaveExistingBindings=true"</PostBuildEvent>
   </PropertyGroup>
   <Target Name="AfterBuild">
     <CallTarget Targets="SignBuild" />
