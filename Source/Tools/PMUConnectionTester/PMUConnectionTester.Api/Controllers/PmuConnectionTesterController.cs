@@ -7,12 +7,14 @@ using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace ConnectionTester.Api.Controllers;
 
 /// <summary>
 /// Synchronous PMU connectivity test endpoints - file playback, TCP and UDP.
 /// </summary>
+[RoutePrefix("api/pmuconnectiontester")]
 public class PmuConnectionTesterController : ApiController
 {
     private readonly PmuConnectionTestEngine _engine = new();
@@ -20,8 +22,16 @@ public class PmuConnectionTesterController : ApiController
     /// <summary>
     /// Runs a connectivity test by replaying a captured ".PmuCapture" file.
     /// </summary>
+    /// <param name="request">File path, protocol and pass/fail thresholds for the playback test.</param>
+    /// <response code="200">
+    /// The test ran to completion; check <see cref="TestResponse.OverallStatus"/> for PASS/FAIL.
+    /// </response>
+    /// <response code="400">
+    /// The request is malformed (missing/invalid fields or an unrecognized protocol).
+    /// </response>
     [HttpPost]
     [Route("file")]
+    [ResponseType(typeof(TestResponse))]
     public IHttpActionResult File(FileTestRequest request)
     {
         Guid correlationId = Guid.NewGuid();
@@ -59,8 +69,16 @@ public class PmuConnectionTesterController : ApiController
     /// <summary>
     /// Runs a connectivity test against a TCP host/port.
     /// </summary>
+    /// <param name="request">Target host/port, protocol and pass/fail thresholds for the TCP test.</param>
+    /// <response code="200">
+    /// The test ran to completion; check <see cref="TestResponse.OverallStatus"/> for PASS/FAIL.
+    /// </response>
+    /// <response code="400">
+    /// The request is malformed (missing/invalid fields or an unrecognized protocol).
+    /// </response>
     [HttpPost]
     [Route("tcp")]
+    [ResponseType(typeof(TestResponse))]
     public IHttpActionResult Tcp(TcpTestRequest request)
     {
         Guid correlationId = Guid.NewGuid();
@@ -91,8 +109,18 @@ public class PmuConnectionTesterController : ApiController
     /// <summary>
     /// Runs a connectivity test against a UDP host/port pair.
     /// </summary>
+    /// <param name="request">
+    /// Local/remote ports, target host, protocol and pass/fail thresholds for the UDP test.
+    /// </param>
+    /// <response code="200">
+    /// The test ran to completion; check <see cref="TestResponse.OverallStatus"/> for PASS/FAIL.
+    /// </response>
+    /// <response code="400">
+    /// The request is malformed (missing/invalid fields or an unrecognized protocol).
+    /// </response>
     [HttpPost]
     [Route("udp")]
+    [ResponseType(typeof(TestResponse))]
     public IHttpActionResult Udp(UdpTestRequest request)
     {
         Guid correlationId = Guid.NewGuid();

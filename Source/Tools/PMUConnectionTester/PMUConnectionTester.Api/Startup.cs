@@ -1,7 +1,10 @@
 using Newtonsoft.Json.Serialization;
 using Owin;
 using Swashbuckle.Application;
+using System;
+using System.IO;
 using System.Net.Http.Formatting;
+using System.Reflection;
 using System.Web.Http;
 
 namespace ConnectionTester.Api;
@@ -23,8 +26,25 @@ public class Startup
         jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         jsonFormatter.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
 
-        config.EnableSwagger(c => c.SingleApiVersion("v1", "PMU Connection Tester API"))
-              .EnableSwaggerUi();
+        config.EnableSwagger(c =>
+        {
+            c.SingleApiVersion("v1", "PMU Connection Tester API")
+             .Description("REST API for running PMU/PDC connectivity tests (file playback, TCP and UDP) without the desktop application.")
+             .Contact(cc => cc
+                 .Name("Grid Protection Alliance")
+                 .Url("https://www.gridprotectionalliance.org/"))
+             .License(lc => lc
+                 .Name("MIT")
+                 .Url("https://github.com/GridProtectionAlliance/PMUConnectionTester/blob/master/LICENSE"));
+
+            string xmlCommentsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
+
+            if (File.Exists(xmlCommentsPath))
+                c.IncludeXmlComments(xmlCommentsPath);
+
+            c.DescribeAllEnumsAsStrings();
+        })
+        .EnableSwaggerUi();
 
         app.UseWebApi(config);
     }

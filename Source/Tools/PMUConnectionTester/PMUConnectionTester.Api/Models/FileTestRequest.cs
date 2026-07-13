@@ -11,8 +11,10 @@ public class FileTestRequest
     [Required]
     public string Filename { get; set; }
 
+    /// <summary>Expected PMU/PDC device ID code, used to label the response; not validated against the capture.</summary>
     public ushort DeviceIdCode { get; set; }
 
+    /// <summary>Nominal frame rate (frames/second) of the captured data, used to label the response.</summary>
     public int FrameRate { get; set; } = 30;
 
     /// <summary>One of the <see cref="GSF.PhasorProtocols.PhasorProtocol"/> enumeration names (e.g. "IEEE1344", "IEEEC37_118V1").</summary>
