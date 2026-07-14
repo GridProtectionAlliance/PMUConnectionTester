@@ -12,7 +12,7 @@ namespace ConnectionTester.Api.Engine;
 /// test run. This mirrors the setup performed by the WinForms app's <c>Connect()</c> method, but blocks
 /// the caller until a pass/fail outcome is determined instead of driving a UI.
 /// </summary>
-internal class PmuConnectionTestEngine
+internal class PmuConnectionTestEngine : IPmuConnectionTestEngine
 {
     public PmuTestOutcome Run(PmuTestRequest request)
     {

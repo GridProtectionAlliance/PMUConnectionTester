@@ -17,7 +17,16 @@ namespace ConnectionTester.Api.Controllers;
 [RoutePrefix("api/pmuconnectiontester")]
 public class PmuConnectionTesterController : ApiController
 {
-    private readonly PmuConnectionTestEngine _engine = new();
+    private readonly IPmuConnectionTestEngine _engine;
+
+    public PmuConnectionTesterController() : this(new PmuConnectionTestEngine())
+    {
+    }
+
+    internal PmuConnectionTesterController(IPmuConnectionTestEngine engine)
+    {
+        _engine = engine;
+    }
 
     /// <summary>
     /// Runs a connectivity test by replaying a captured ".PmuCapture" file.

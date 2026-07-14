@@ -135,6 +135,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\PmuConnectionTesterController.cs" />
+    <Compile Include="Engine\IPmuConnectionTestEngine.cs" />
     <Compile Include="Engine\PmuConnectionTestEngine.cs" />
     <Compile Include="Engine\PmuTestRequest.cs" />
     <Compile Include="Engine\PmuTestOutcome.cs" />

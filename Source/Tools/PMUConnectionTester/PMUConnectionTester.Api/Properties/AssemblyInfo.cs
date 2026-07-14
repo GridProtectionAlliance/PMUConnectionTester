@@ -1,8 +1,15 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Assembly identity attributes.
 [assembly: AssemblyVersion("4.7.11.0")]
+
+// Grants the test project access to internal types (ApiSettings, engine types) for unit testing.
+[assembly: InternalsVisibleTo("PMUConnectionTester.Api.Tests")]
+
+// Lets Moq's Castle DynamicProxy generate a mock for the internal IPmuConnectionTestEngine interface.
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 
 // Informational attributes.
 [assembly: AssemblyCompany("Grid Protection Alliance")]
