@@ -63,10 +63,14 @@
   <ItemGroup>
     <Compile Include="Controllers\PmuConnectionTesterControllerTests.cs" />
     <Compile Include="Controllers\PmuConnectionTesterControllerMoqTests.cs" />
+    <Compile Include="Controllers\LiveConnectionTesterControllerTests.cs" />
+    <Compile Include="Engine\Live\LiveCaptureEngineTests.cs" />
+    <Compile Include="Engine\Live\LiveSessionStoreTests.cs" />
     <Compile Include="Infrastructure\ApiSettingsTests.cs" />
     <Compile Include="Models\FileTestRequestTests.cs" />
     <Compile Include="Models\TcpTestRequestTests.cs" />
     <Compile Include="Models\UdpTestRequestTests.cs" />
+    <Compile Include="Models\StartLiveSessionRequestTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

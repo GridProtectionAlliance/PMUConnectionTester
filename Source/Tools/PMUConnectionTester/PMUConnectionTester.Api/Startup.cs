@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Owin;
 using Swashbuckle.Application;
@@ -25,6 +26,7 @@ public class Startup
         JsonMediaTypeFormatter jsonFormatter = config.Formatters.JsonFormatter;
         jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         jsonFormatter.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
+        jsonFormatter.SerializerSettings.Converters.Add(new StringEnumConverter());
 
         config.EnableSwagger(c =>
         {
