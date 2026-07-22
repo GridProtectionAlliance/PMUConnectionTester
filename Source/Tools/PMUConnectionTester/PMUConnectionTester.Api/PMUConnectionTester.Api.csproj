@@ -97,7 +97,7 @@
     </Reference>
     <Reference Include="Owin">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Owin.1.0.0\lib\net40\Owin.dll</HintPath>
+      <HintPath>..\..\..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.Formatting">
       <SpecificVersion>False</SpecificVersion>

@@ -9,4 +9,9 @@ public class PmuPhasorLabelDto
     /// Phasor channel label as reported by the device (e.g. "VA GOIGU_230").
     /// </summary>
     public string Label { get; set; }
+
+    /// <summary>
+    /// Phasor type reported by the device: "V" for voltage or "I" for current.
+    /// </summary>
+    public string Type { get; set; }
 }

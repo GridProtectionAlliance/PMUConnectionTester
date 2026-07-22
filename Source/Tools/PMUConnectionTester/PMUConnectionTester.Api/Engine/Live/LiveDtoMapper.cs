@@ -28,7 +28,23 @@ internal static class LiveDtoMapper
             if (cell.PhasorDefinitions is not null)
             {
                 foreach (IPhasorDefinition phasor in cell.PhasorDefinitions)
-                    cellDto.Phasors.Add(new PmuPhasorLabelDto { Label = phasor.Label });
+                    cellDto.Phasors.Add(new PmuPhasorLabelDto
+                    {
+                        Label = phasor.Label,
+                        Type = phasor.PhasorType == GSF.Units.EE.PhasorType.Current ? "I" : "V"
+                    });
+            }
+
+            if (cell.AnalogDefinitions is not null)
+            {
+                foreach (IAnalogDefinition analog in cell.AnalogDefinitions)
+                    cellDto.AnalogLabels.Add(analog.Label);
+            }
+
+            if (cell.DigitalDefinitions is not null)
+            {
+                foreach (IDigitalDefinition digital in cell.DigitalDefinitions)
+                    cellDto.DigitalLabels.Add(digital.Label);
             }
 
             dto.Cells.Add(cellDto);

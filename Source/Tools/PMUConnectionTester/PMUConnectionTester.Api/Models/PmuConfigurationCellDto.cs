@@ -18,6 +18,16 @@ public class PmuConfigurationCellDto
     public List<PmuPhasorLabelDto> Phasors { get; set; } = new();
 
     /// <summary>
+    /// Analog channel labels defined for this device (one entry per analog definition).
+    /// </summary>
+    public List<string> AnalogLabels { get; set; } = new();
+
+    /// <summary>
+    /// Digital channel labels defined for this device (one entry per digital definition).
+    /// </summary>
+    public List<string> DigitalLabels { get; set; } = new();
+
+    /// <summary>
     /// Status flags word reported for the device.
     /// </summary>
     public int Stat { get; set; }
