@@ -157,6 +157,49 @@ public class PmuConnectionTesterController : ApiController
         return RunAndRespond(correlationId, engineRequest, protocol, request.DeviceIdCode, request.FrameRate);
     }
 
+    /// <summary>
+    /// Runs a connectivity test by passively listening on a local UDP port, without dialing or
+    /// filtering by a remote host/port. Equivalent to disabling "Enable Multicast / Remote Udp".
+    /// </summary>
+    /// <param name="request">
+    /// Local port, protocol and pass/fail thresholds for the passive UDP test.
+    /// </param>
+    /// <response code="200">
+    /// The test ran to completion; check <see cref="TestResponse.OverallStatus"/> for PASS/FAIL.
+    /// </response>
+    /// <response code="400">
+    /// The request is malformed (missing/invalid fields or an unrecognized protocol).
+    /// </response>
+    [HttpPost]
+    [Route("udp/passive")]
+    [ResponseType(typeof(TestResponse))]
+    public IHttpActionResult UdpPassive(UdpPassiveTestRequest request)
+    {
+        Guid correlationId = Guid.NewGuid();
+
+        if (request is null || !ModelState.IsValid)
+            return BadRequestResponse(correlationId, "udp/passive", ModelStateErrorMessage());
+
+        if (!TryParseProtocol(request.Protocol, out PhasorProtocol protocol))
+            return BadRequestResponse(correlationId, "udp/passive", $"Invalid protocol \"{request.Protocol}\".");
+
+        ApiLogger.Start(correlationId, "udp/passive", JsonConvert.SerializeObject(request));
+
+        PmuTestRequest engineRequest = new()
+        {
+            PhasorProtocol = protocol,
+            TransportProtocol = TransportProtocol.Udp,
+            ConnectionString = $"localport={request.LocalPort}; interface=0.0.0.0",
+            DeviceIdCode = request.DeviceIdCode,
+            FrameRate = request.FrameRate,
+            AutoRepeat = false,
+            MinimumFrames = ApiSettings.ResolveMinimumFrames(request.MinimumFrames),
+            TimeoutSeconds = ApiSettings.ResolveTimeoutSeconds(request.TimeoutSeconds)
+        };
+
+        return RunAndRespond(correlationId, engineRequest, protocol, request.DeviceIdCode, request.FrameRate);
+    }
+
     private static TestResponse BuildFailResponse(string message, PhasorProtocol protocol, ushort deviceIdCode, int frameRate) =>
         new()
         {

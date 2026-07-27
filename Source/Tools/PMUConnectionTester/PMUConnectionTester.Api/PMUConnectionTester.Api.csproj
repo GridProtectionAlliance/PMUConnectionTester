@@ -152,6 +152,7 @@
     <Compile Include="Models\FileTestRequest.cs" />
     <Compile Include="Models\TcpTestRequest.cs" />
     <Compile Include="Models\UdpTestRequest.cs" />
+    <Compile Include="Models\UdpPassiveTestRequest.cs" />
     <Compile Include="Models\TestResponse.cs" />
     <Compile Include="Models\ConfigurationInfo.cs" />
     <Compile Include="Models\DataMetrics.cs" />

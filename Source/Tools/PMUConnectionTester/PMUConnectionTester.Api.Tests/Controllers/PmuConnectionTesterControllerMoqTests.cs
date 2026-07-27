@@ -65,6 +65,14 @@ public class PmuConnectionTesterControllerMoqTests
         FrameRate = 30
     };
 
+    private static UdpPassiveTestRequest ValidUdpPassiveRequest() => new()
+    {
+        LocalPort = 4712,
+        Protocol = "IEEE1344",
+        DeviceIdCode = 42,
+        FrameRate = 30
+    };
+
     private static FileTestRequest ValidFileRequest() => new()
     {
         Filename = SampleCapturePath,
@@ -245,6 +253,39 @@ public class PmuConnectionTesterControllerMoqTests
         Assert.AreEqual(TransportProtocol.Udp, captured.TransportProtocol);
         Assert.AreEqual(PhasorProtocol.IEEE1344, captured.PhasorProtocol);
         Assert.AreEqual("localport=4712; server=10.0.0.5; remoteport=4713; interface=0.0.0.0", captured.ConnectionString);
+        Assert.AreEqual((ushort)9, captured.DeviceIdCode);
+        Assert.IsFalse(captured.AutoRepeat);
+        Assert.AreEqual(6, captured.MinimumFrames);
+        Assert.AreEqual(8, captured.TimeoutSeconds);
+    }
+
+    [TestMethod]
+    public void UdpPassive_MapsRequestFieldsAndBuildsExpectedConnectionString()
+    {
+        Mock<IPmuConnectionTestEngine> engine = new();
+        PmuTestRequest captured = null;
+
+        engine.Setup(e => e.Run(It.IsAny<PmuTestRequest>()))
+              .Callback<PmuTestRequest>(r => captured = r)
+              .Returns(Outcome(CompletionReason.MinimumFramesReached));
+
+        PmuConnectionTesterController controller = new(engine.Object);
+        UdpPassiveTestRequest request = new()
+        {
+            LocalPort = 4712,
+            Protocol = "IEEE1344",
+            DeviceIdCode = 9,
+            FrameRate = 60,
+            MinimumFrames = 6,
+            TimeoutSeconds = 8
+        };
+
+        controller.UdpPassive(request);
+
+        Assert.IsNotNull(captured);
+        Assert.AreEqual(TransportProtocol.Udp, captured.TransportProtocol);
+        Assert.AreEqual(PhasorProtocol.IEEE1344, captured.PhasorProtocol);
+        Assert.AreEqual("localport=4712; interface=0.0.0.0", captured.ConnectionString);
         Assert.AreEqual((ushort)9, captured.DeviceIdCode);
         Assert.IsFalse(captured.AutoRepeat);
         Assert.AreEqual(6, captured.MinimumFrames);

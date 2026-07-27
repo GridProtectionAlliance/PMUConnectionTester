@@ -136,4 +136,29 @@ public class PmuConnectionTesterControllerTests
         Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         StringAssert.Contains(result.Content.Message, "NotAProtocol");
     }
+
+    [TestMethod]
+    public void UdpPassive_InvalidModelState_ReturnsBadRequest()
+    {
+        PmuConnectionTesterController controller = NewController();
+        controller.ModelState.AddModelError(nameof(UdpPassiveTestRequest.LocalPort), "Required");
+
+        NegotiatedContentResult<TestResponse> result = controller.UdpPassive(new UdpPassiveTestRequest()) as NegotiatedContentResult<TestResponse>;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+    [TestMethod]
+    public void UdpPassive_InvalidProtocol_ReturnsBadRequestMentioningProtocol()
+    {
+        PmuConnectionTesterController controller = NewController();
+        UdpPassiveTestRequest request = new() { LocalPort = 4712, Protocol = "NotAProtocol" };
+
+        NegotiatedContentResult<TestResponse> result = controller.UdpPassive(request) as NegotiatedContentResult<TestResponse>;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        StringAssert.Contains(result.Content.Message, "NotAProtocol");
+    }
 }

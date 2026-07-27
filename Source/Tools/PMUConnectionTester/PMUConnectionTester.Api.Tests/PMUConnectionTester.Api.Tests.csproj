@@ -70,6 +70,7 @@
     <Compile Include="Models\FileTestRequestTests.cs" />
     <Compile Include="Models\TcpTestRequestTests.cs" />
     <Compile Include="Models\UdpTestRequestTests.cs" />
+    <Compile Include="Models\UdpPassiveTestRequestTests.cs" />
     <Compile Include="Models\StartLiveSessionRequestTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
