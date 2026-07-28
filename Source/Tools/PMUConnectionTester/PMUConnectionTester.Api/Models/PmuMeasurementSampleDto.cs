@@ -31,12 +31,12 @@ public class PmuMeasurementSampleDto
 
     /// <summary>
     /// UTC instant this frame was actually received and parsed by this process (stamped in
-    /// <c>LiveCaptureEngine.RecordDataFrame</c>, as the frame arrives from
-    /// <see cref="GSF.PhasorProtocols.MultiProtocolFrameParser"/>) - distinct from
-    /// <see cref="Timestamp"/>, which is the source timestamp embedded by the PMU itself. The
-    /// difference between the two is the real per-frame latency (device to this process), which the
-    /// consumer (GestorBase) uses instead of comparing every sample in a capture window against a
-    /// single "now" taken after the whole session completes.
+    /// <c>LiveCaptureEngine.RecordDataFrame</c>, as the frame arrives from <see
+    /// cref="GSF.PhasorProtocols.MultiProtocolFrameParser"/>) - distinct from <see
+    /// cref="Timestamp"/>, which is the source timestamp embedded by the PMU itself. The difference
+    /// between the two is the real per-frame latency (device to this process), which the consumer
+    /// (GestorBase) uses instead of comparing every sample in a capture window against a single
+    /// "now" taken after the whole session completes.
     /// </summary>
     public DateTime ReceivedAtUtc { get; set; }
 
@@ -44,6 +44,13 @@ public class PmuMeasurementSampleDto
     /// Rate of change of frequency (ROCOF), in Hz/s.
     /// </summary>
     public double Rocof { get; set; }
+
+    /// <summary>
+    /// Status flags word (STAT) reported in this data frame for the device. Unlike <see
+    /// cref="PmuConfigurationCellDto.Stat"/> - which is always 0, since the field doesn't exist on
+    /// the configuration frame - this is the real value reported per data frame.
+    /// </summary>
+    public int Stat { get; set; }
 
     /// <summary>
     /// UTC timestamp of the data frame, as embedded by the PMU.

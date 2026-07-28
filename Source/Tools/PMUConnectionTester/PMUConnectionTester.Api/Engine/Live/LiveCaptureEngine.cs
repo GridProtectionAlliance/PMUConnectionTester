@@ -218,7 +218,8 @@ internal class LiveCaptureEngine : ILiveCaptureEngine
                 Rocof = rocof,
                 ActivePower = activePower,
                 ReactivePower = reactivePower,
-                Phasors = phasors
+                Phasors = phasors,
+                Stat = cell.StatusFlags
             });
         }
     }
