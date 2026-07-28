@@ -88,6 +88,13 @@ public class LiveCaptureEngineTests
         Assert.AreNotEqual(0.0D, sample.Frequency);
         Assert.IsTrue(sample.Phasors.Count > 0);
         Assert.IsTrue(sample.Phasors.All(p => p.Type == "FV" || p.Type == "FA"));
+
+        // ReceivedAtUtc is stamped independently from the frame's own source timestamp - it must be
+        // populated (not the default DateTime) and, since it reflects wall-clock time at parse time
+        // while the sample capture file may carry historic timestamps, it need not be close to
+        // sample.Timestamp.
+        Assert.AreNotEqual(default(DateTime), sample.ReceivedAtUtc);
+        Assert.IsTrue(deviceSeries.Measurements.All(m => m.ReceivedAtUtc != default(DateTime)));
     }
 
     private static LiveCaptureRequest FileRequest(int minCommunicationWaitSeconds = 10, int captureDurationSeconds = 3) => new()

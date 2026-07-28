@@ -30,12 +30,23 @@ public class PmuMeasurementSampleDto
     public double? ReactivePower { get; set; }
 
     /// <summary>
+    /// UTC instant this frame was actually received and parsed by this process (stamped in
+    /// <c>LiveCaptureEngine.RecordDataFrame</c>, as the frame arrives from
+    /// <see cref="GSF.PhasorProtocols.MultiProtocolFrameParser"/>) - distinct from
+    /// <see cref="Timestamp"/>, which is the source timestamp embedded by the PMU itself. The
+    /// difference between the two is the real per-frame latency (device to this process), which the
+    /// consumer (GestorBase) uses instead of comparing every sample in a capture window against a
+    /// single "now" taken after the whole session completes.
+    /// </summary>
+    public DateTime ReceivedAtUtc { get; set; }
+
+    /// <summary>
     /// Rate of change of frequency (ROCOF), in Hz/s.
     /// </summary>
     public double Rocof { get; set; }
 
     /// <summary>
-    /// UTC timestamp of the data frame.
+    /// UTC timestamp of the data frame, as embedded by the PMU.
     /// </summary>
     public DateTime Timestamp { get; set; }
 }

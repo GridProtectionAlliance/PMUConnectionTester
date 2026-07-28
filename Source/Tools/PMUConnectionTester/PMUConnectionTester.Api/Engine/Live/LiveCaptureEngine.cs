@@ -162,6 +162,12 @@ internal class LiveCaptureEngine : ILiveCaptureEngine
     {
         DateTime timestamp = frame.Timestamp;
 
+        // Stamped here, synchronously, as the frame is handed off by the parser - this is the
+        // closest this process gets to "when the frame actually arrived", used by the consumer to
+        // compute real per-frame latency instead of comparing every sample against a single "now"
+        // taken after the whole capture window ends.
+        DateTime receivedAtUtc = DateTime.UtcNow;
+
         foreach (IDataCell cell in frame.Cells)
         {
             double frequency = cell.FrequencyValue?.Frequency ?? 0.0D;
@@ -207,6 +213,7 @@ internal class LiveCaptureEngine : ILiveCaptureEngine
             session.AppendMeasurement(cell.IDCode, new PmuMeasurementSampleDto
             {
                 Timestamp = timestamp,
+                ReceivedAtUtc = receivedAtUtc,
                 Frequency = frequency,
                 Rocof = rocof,
                 ActivePower = activePower,
