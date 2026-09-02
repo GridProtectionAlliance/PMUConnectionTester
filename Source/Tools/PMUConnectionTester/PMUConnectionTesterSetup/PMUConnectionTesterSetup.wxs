@@ -217,6 +217,69 @@
         <File Id="_9EB0416D5ABBB116E21DF22C99296ACB" Name="$(var.PMUConnectionTester.TargetFileName).config" KeyPath="yes" DiskId="1"
               Source="$(var.PMUConnectionTester.TargetPath).config" />
       </Component>
+
+      <!-- PMU Connection Tester API - installed alongside the main application and registered as a
+           Windows service so it is running and available on the host machine right after setup completes. -->
+      <Component Id="C__PMUConnectionTesterApi_exe" Guid="{1C112ECD-5A21-45B1-A83D-6C1ECCD0E17D}" Win64="$(var.Win64)">
+        <File Id="PMUConnectionTester.Api.exe" Name="$(var.PMUConnectionTesterApi.TargetFileName)" KeyPath="yes" DiskId="1"
+              Source="$(var.PMUConnectionTesterApi.TargetPath)" />
+        <ServiceInstall Id="PMUConnectionTesterApiServiceInstall"
+                        Name="PMUConnectionTesterApi"
+                        DisplayName="PMU Connection Tester API"
+                        Description="Hosts the PMU Connection Tester REST API (with Swagger UI) so connection tests can be run on this machine without the desktop application."
+                        Type="ownProcess"
+                        Start="auto"
+                        Account="LocalSystem"
+                        ErrorControl="normal"
+                        Vital="yes" />
+        <ServiceControl Id="PMUConnectionTesterApiServiceControl"
+                         Name="PMUConnectionTesterApi"
+                         Start="install"
+                         Stop="both"
+                         Remove="uninstall"
+                         Wait="yes" />
+      </Component>
+      <Component Id="C__PMUConnectionTesterApi_exe_config" Guid="{B3EABDA7-1893-4991-8809-0DEC03995141}" Win64="$(var.Win64)">
+        <File Id="PMUConnectionTester.Api.exe.config" Name="$(var.PMUConnectionTesterApi.TargetFileName).config" KeyPath="yes" DiskId="1"
+              Source="$(var.PMUConnectionTesterApi.TargetPath).config" />
+      </Component>
+      <Component Id="C__PMUConnectionTesterApi_MicrosoftOwin_dll" Guid="{15A77764-0E15-4B3D-B893-F3C24EB8BA0B}" Win64="$(var.Win64)">
+        <File Id="Microsoft.Owin.dll" Name="Microsoft.Owin.dll" KeyPath="yes" DiskId="1"
+              Source="$(var.PMUConnectionTesterApi.TargetDir)Microsoft.Owin.dll" />
+      </Component>
+      <Component Id="C__PMUConnectionTesterApi_MicrosoftOwinHostHttpListener_dll" Guid="{2B10E9E8-01D3-44E0-867B-28AD8F124FD1}" Win64="$(var.Win64)">
+        <File Id="Microsoft.Owin.Host.HttpListener.dll" Name="Microsoft.Owin.Host.HttpListener.dll" KeyPath="yes" DiskId="1"
+              Source="$(var.PMUConnectionTesterApi.TargetDir)Microsoft.Owin.Host.HttpListener.dll" />
+      </Component>
+      <Component Id="C__PMUConnectionTesterApi_MicrosoftOwinHosting_dll" Guid="{8F07155A-F92A-4A79-9540-9CDFA0F4F6BC}" Win64="$(var.Win64)">
+        <File Id="Microsoft.Owin.Hosting.dll" Name="Microsoft.Owin.Hosting.dll" KeyPath="yes" DiskId="1"
+              Source="$(var.PMUConnectionTesterApi.TargetDir)Microsoft.Owin.Hosting.dll" />
+      </Component>
+      <Component Id="C__PMUConnectionTesterApi_Owin_dll" Guid="{1C1F6E3A-35CE-4386-8D8D-746218A60E7D}" Win64="$(var.Win64)">
+        <File Id="Owin.dll" Name="Owin.dll" KeyPath="yes" DiskId="1"
+              Source="$(var.PMUConnectionTesterApi.TargetDir)Owin.dll" />
+      </Component>
+      <Component Id="C__PMUConnectionTesterApi_SystemNetHttpFormatting_dll" Guid="{9C0EB69B-8EB2-4DF6-B6AD-B8965C0B15A0}" Win64="$(var.Win64)">
+        <File Id="System.Net.Http.Formatting.dll" Name="System.Net.Http.Formatting.dll" KeyPath="yes" DiskId="1"
+              Source="$(var.PMUConnectionTesterApi.TargetDir)System.Net.Http.Formatting.dll" />
+      </Component>
+      <Component Id="C__PMUConnectionTesterApi_SystemWebHttp_dll" Guid="{A3D57886-79DE-4ABE-AD99-5526F16A5DA9}" Win64="$(var.Win64)">
+        <File Id="System.Web.Http.dll" Name="System.Web.Http.dll" KeyPath="yes" DiskId="1"
+              Source="$(var.PMUConnectionTesterApi.TargetDir)System.Web.Http.dll" />
+      </Component>
+      <Component Id="C__PMUConnectionTesterApi_SystemWebHttpOwin_dll" Guid="{6D979AE5-CDA3-487C-BEBC-CB876AC8581C}" Win64="$(var.Win64)">
+        <File Id="System.Web.Http.Owin.dll" Name="System.Web.Http.Owin.dll" KeyPath="yes" DiskId="1"
+              Source="$(var.PMUConnectionTesterApi.TargetDir)System.Web.Http.Owin.dll" />
+      </Component>
+      <Component Id="C__PMUConnectionTesterApi_NewtonsoftJson_dll" Guid="{94B1C69A-B88B-4EA7-9AD4-21B324A774C4}" Win64="$(var.Win64)">
+        <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" KeyPath="yes" DiskId="1"
+              Source="$(var.PMUConnectionTesterApi.TargetDir)Newtonsoft.Json.dll" />
+      </Component>
+      <Component Id="C__PMUConnectionTesterApi_SwashbuckleCore_dll" Guid="{A6C6EFC1-4B26-4C79-9E0F-2F44E5F6E4A8}" Win64="$(var.Win64)">
+        <File Id="Swashbuckle.Core.dll" Name="Swashbuckle.Core.dll" KeyPath="yes" DiskId="1"
+              Source="$(var.PMUConnectionTesterApi.TargetDir)Swashbuckle.Core.dll" />
+      </Component>
+
       <Component Id="C__1E7CA3EDC34387ED3324B8B6FBBFF485" Guid="{CE57E20A-C52A-E7DF-CFFD-5D499ADF508F}" Win64="$(var.Win64)">
         <File Id="_1E7CA3EDC34387ED3324B8B6FBBFF485" Name="PMUConnectionTester.chm" KeyPath="yes" DiskId="1"
               Source="$(var.PMUConnectionTester.ProjectDir)\PMUConnectionTester.chm" />
@@ -292,6 +355,17 @@
       <ComponentRef Id="C__2CAA468AA9A4C657C05DD8A1F234FBC9" Primary="yes" />
       <ComponentRef Id="C__746C69616E6711D38E0D00C04F6837D0" />
       <ComponentRef Id="C__9EB0416D5ABBB116E21DF22C99296ACB" />
+      <ComponentRef Id="C__PMUConnectionTesterApi_exe" Primary="yes" />
+      <ComponentRef Id="C__PMUConnectionTesterApi_exe_config" />
+      <ComponentRef Id="C__PMUConnectionTesterApi_MicrosoftOwin_dll" />
+      <ComponentRef Id="C__PMUConnectionTesterApi_MicrosoftOwinHostHttpListener_dll" />
+      <ComponentRef Id="C__PMUConnectionTesterApi_MicrosoftOwinHosting_dll" />
+      <ComponentRef Id="C__PMUConnectionTesterApi_Owin_dll" />
+      <ComponentRef Id="C__PMUConnectionTesterApi_SystemNetHttpFormatting_dll" />
+      <ComponentRef Id="C__PMUConnectionTesterApi_SystemWebHttp_dll" />
+      <ComponentRef Id="C__PMUConnectionTesterApi_SystemWebHttpOwin_dll" />
+      <ComponentRef Id="C__PMUConnectionTesterApi_NewtonsoftJson_dll" />
+      <ComponentRef Id="C__PMUConnectionTesterApi_SwashbuckleCore_dll" />
       <ComponentRef Id="C__1E7CA3EDC34387ED3324B8B6FBBFF485" />
       <ComponentRef Id="C__C58E3C5B33681014D53D4C4A7D47F8F1" />
       <ComponentRef Id="C__DFF74BBBE504A85F10FC6994355DEB88" />
