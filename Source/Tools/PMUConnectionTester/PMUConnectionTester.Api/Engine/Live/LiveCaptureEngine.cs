@@ -60,11 +60,11 @@ internal class LiveCaptureEngine : ILiveCaptureEngine
         {
             session.SetConfiguration(LiveDtoMapper.BuildConfiguration(e.Argument));
 
-            if (!communicationReceived)
-            {
-                communicationReceived = true;
-                phaseGate.Set();
-            }
+            // Does NOT signal communicationReceived: with AutoStartDataParsingSequence (GSF default),
+            // this config frame only triggers the parser to send EnableRealTimeData next - actual
+            // continuous data streaming starts some round-trips later. Gating on this frame used to
+            // start the CapturandoDados clock too early, burning part of the fixed capture window as
+            // dead time before any data frame arrived and silently deflating the measured FPS.
         };
 
         parser.ReceivedDataFrame += (_, e) =>
